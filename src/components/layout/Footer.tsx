@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="flex flex-col gap-6">
-            <img src={logo} alt="Avance" className="h-14 w-auto brightness-0 invert" />
+            <img src={logo} alt="Avance" className="h-16 w-auto object-contain brightness-0 invert" />
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
               Moda fitness de qualidade para quem busca estilo e performance nos treinos.
             </p>
