@@ -3,11 +3,11 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
 import CategoriesSection from "@/components/sections/CategoriesSection";
-import ProductsSection from "@/components/sections/ProductsSection";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import InstagramSection from "@/components/sections/InstagramSection";
 import PromoBanner from "@/components/sections/PromoBanner";
+import ShopifyProductGrid from "@/components/shopify/ShopifyProductGrid";
 
 const Index = () => {
   return (
@@ -19,7 +19,11 @@ const Index = () => {
         <HeroSection />
         <FeaturesSection />
         <CategoriesSection />
-        <ProductsSection />
+        <ShopifyProductGrid 
+          title="Mais Vendidos" 
+          subtitle="Conheça os produtos preferidos das nossas clientes."
+          limit={8}
+        />
         <PromoBanner />
         <NewsletterSection />
         <InstagramSection />
