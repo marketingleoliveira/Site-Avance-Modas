@@ -110,7 +110,7 @@ const ShopifyProductGrid = ({
   }
 
   return (
-    <section className="py-20 bg-background">
+    <section id="produtos" className="py-20 bg-background">
       <div className="container">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
           <div>

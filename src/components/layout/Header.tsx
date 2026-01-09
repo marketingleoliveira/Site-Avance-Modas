@@ -7,17 +7,17 @@ const navLinks = [
   { name: "Início", href: "/" },
   { 
     name: "Produtos", 
-    href: "/produtos",
+    href: "/#produtos",
     submenu: [
-      { name: "Shorts", href: "/shorts" },
-      { name: "Leggings", href: "/leggings" },
-      { name: "Tops", href: "/tops" },
-      { name: "Conjuntos", href: "/conjuntos" },
+      { name: "Shorts", href: "/#produtos" },
+      { name: "Leggings", href: "/#produtos" },
+      { name: "Tops", href: "/#produtos" },
+      { name: "Conjuntos", href: "/#produtos" },
     ]
   },
-  { name: "Lançamentos", href: "/lancamentos" },
-  { name: "Promoções", href: "/promocoes" },
-  { name: "Contato", href: "/contato" },
+  { name: "Lançamentos", href: "/#produtos" },
+  { name: "Promoções", href: "/#produtos" },
+  { name: "Contato", href: "/#contato" },
 ];
 
 const Header = () => {

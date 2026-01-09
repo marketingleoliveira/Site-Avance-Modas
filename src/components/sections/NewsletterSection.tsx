@@ -13,7 +13,7 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-20 gradient-hero">
+    <section id="contato" className="py-20 gradient-hero">
       <div className="container">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
