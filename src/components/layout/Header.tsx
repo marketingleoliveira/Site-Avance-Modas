@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Search, ShoppingBag, User, Menu, X, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, User, Menu, X, ChevronDown } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
+import CartDrawer from "@/components/cart/CartDrawer";
 
 const navLinks = [
   { name: "Início", href: "/" },
@@ -75,12 +75,7 @@ const Header = () => {
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <User className="w-5 h-5" />
             </button>
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors relative">
-              <ShoppingBag className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                0
-              </span>
-            </button>
+            <CartDrawer />
             
             {/* Mobile Menu Button */}
             <button 
