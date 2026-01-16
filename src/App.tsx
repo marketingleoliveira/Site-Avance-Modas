@@ -3,7 +3,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import StoreSelector from "./pages/StoreSelector";
+import InicioAtacado from "./pages/InicioAtacado";
+import InicioVarejo from "./pages/InicioVarejo";
 import ShopifyProductPage from "./pages/ShopifyProductPage";
 import NotFound from "./pages/NotFound";
 
@@ -16,7 +18,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<StoreSelector />} />
+          <Route path="/atacado" element={<InicioAtacado />} />
+          <Route path="/varejo" element={<InicioVarejo />} />
           <Route path="/produto/:handle" element={<ShopifyProductPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
