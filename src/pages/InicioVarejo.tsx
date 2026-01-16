@@ -1,9 +1,8 @@
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/sections/HeroSection";
-import CollectionsSection from "@/components/sections/CollectionsSection";
-import FeaturesSection from "@/components/sections/FeaturesSection";
+import HeroSectionDynamic from "@/components/sections/HeroSectionDynamic";
+import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic";
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import InstagramSection from "@/components/sections/InstagramSection";
 import PromoBanner from "@/components/sections/PromoBanner";
@@ -16,9 +15,8 @@ const InicioVarejo = () => {
       <Header />
       
       <main className="flex-1">
-        <HeroSection />
-        <FeaturesSection />
-        <CollectionsSection type="VAREJO" />
+        <HeroSectionDynamic type="VAREJO" />
+        <FeaturesSectionDynamic />
         <ShopifyProductGridFiltered 
           title="Produtos Varejo" 
           subtitle="Conheça nossa coleção com a qualidade Avance Modas."
