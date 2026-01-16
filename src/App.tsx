@@ -7,6 +7,8 @@ import StoreSelector from "./pages/StoreSelector";
 import InicioAtacado from "./pages/InicioAtacado";
 import InicioVarejo from "./pages/InicioVarejo";
 import ShopifyProductPage from "./pages/ShopifyProductPage";
+import AdminLogin from "./pages/AdminLogin";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +24,8 @@ const App = () => (
           <Route path="/atacado" element={<InicioAtacado />} />
           <Route path="/varejo" element={<InicioVarejo />} />
           <Route path="/produto/:handle" element={<ShopifyProductPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
