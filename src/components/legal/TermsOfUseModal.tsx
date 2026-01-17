@@ -20,9 +20,10 @@ const TermsOfUseModal = ({ open, onOpenChange }: TermsOfUseModalProps) => {
         </DialogHeader>
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6 text-sm text-muted-foreground">
-            <p className="text-xs text-muted-foreground/70">
-              Última atualização: Janeiro de 2026
-            </p>
+            <div className="text-xs text-muted-foreground/70 space-y-1">
+              <p>Última atualização: Janeiro de 2026</p>
+              <p className="font-medium">AVANCE MODAS - CNPJ: 61.705.129/0001-90</p>
+            </div>
 
             <section>
               <h3 className="text-base font-semibold text-foreground mb-2">1. Aceitação dos Termos</h3>
