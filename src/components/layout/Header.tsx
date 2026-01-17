@@ -28,12 +28,12 @@ const Header = () => {
   const location = useLocation();
 
   return (
-    <header className="bg-card sticky top-0 z-50 shadow-soft">
+    <header className="bg-background sticky top-0 z-50 border-b border-border">
       <div className="container">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Avance" className="h-16 w-auto object-contain" />
+            <img src={logo} alt="Avance" className="h-10 w-auto object-contain" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -46,15 +46,15 @@ const Header = () => {
                 onMouseLeave={() => setActiveSubmenu(null)}
               >
                 {link.submenu ? (
-                  <span className="flex items-center gap-1 text-sm font-semibold tracking-wider uppercase text-foreground hover:text-accent transition-colors py-2 cursor-pointer">
+                  <span className="flex items-center gap-1 text-xs font-semibold tracking-[0.15em] uppercase text-foreground hover:text-muted-foreground transition-colors py-2 cursor-pointer">
                     {link.name}
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-3 h-3" />
                   </span>
                 ) : (
                   <Link 
                     to={link.href} 
-                    className={`flex items-center gap-1 text-sm font-semibold tracking-wider uppercase transition-colors py-2 ${
-                      location.pathname === link.href ? 'text-accent' : 'text-foreground hover:text-accent'
+                    className={`flex items-center gap-1 text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2 ${
+                      location.pathname === link.href ? 'text-accent' : 'text-foreground hover:text-muted-foreground'
                     }`}
                   >
                     {link.name}
@@ -62,12 +62,12 @@ const Header = () => {
                 )}
                 
                 {link.submenu && activeSubmenu === link.name && (
-                  <div className="absolute top-full left-0 bg-card shadow-hover py-4 min-w-[180px] animate-fade-in">
+                  <div className="absolute top-full left-0 bg-background border border-border py-2 min-w-[160px] animate-fade-in shadow-lg">
                     {link.submenu.map((sublink) => (
                       <Link 
                         key={sublink.name}
                         to={sublink.href}
-                        className={`block px-6 py-2 text-sm font-medium transition-colors ${
+                        className={`block px-4 py-2 text-xs font-medium tracking-wide transition-colors ${
                           location.pathname === sublink.href 
                             ? 'text-accent bg-secondary' 
                             : 'text-foreground hover:text-accent hover:bg-secondary'
@@ -83,12 +83,12 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4" />
             </button>
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <User className="w-5 h-5" />
+              <User className="w-4 h-4" />
             </button>
             <CartDrawer />
             
@@ -97,7 +97,7 @@ const Header = () => {
               className="lg:hidden p-2 hover:bg-secondary rounded-full transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -105,19 +105,19 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-card border-t border-border animate-slide-in">
-          <nav className="container py-6 flex flex-col gap-4">
+        <div className="lg:hidden bg-background border-t border-border animate-slide-in">
+          <nav className="container py-4 flex flex-col gap-2">
             {navLinks.map((link) => (
               <div key={link.name}>
                 {link.submenu ? (
-                  <span className="block text-sm font-semibold tracking-wider uppercase text-foreground py-2">
+                  <span className="block text-xs font-semibold tracking-[0.15em] uppercase text-foreground py-2">
                     {link.name}
                   </span>
                 ) : (
                   <Link 
                     to={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block text-sm font-semibold tracking-wider uppercase transition-colors py-2 ${
+                    className={`block text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2 ${
                       location.pathname === link.href ? 'text-accent' : 'text-foreground hover:text-accent'
                     }`}
                   >
@@ -125,13 +125,13 @@ const Header = () => {
                   </Link>
                 )}
                 {link.submenu && (
-                  <div className="pl-4 mt-2 flex flex-col gap-2">
+                  <div className="pl-4 flex flex-col gap-1">
                     {link.submenu.map((sublink) => (
                       <Link 
                         key={sublink.name}
                         to={sublink.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`text-sm font-medium transition-colors py-1 ${
+                        className={`text-xs font-medium transition-colors py-1.5 ${
                           location.pathname === sublink.href 
                             ? 'text-accent' 
                             : 'text-muted-foreground hover:text-accent'
