@@ -4,7 +4,6 @@ import Footer from "@/components/layout/Footer";
 import HeroSectionDynamic from "@/components/sections/HeroSectionDynamic";
 import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic";
 import NewsletterSection from "@/components/sections/NewsletterSection";
-import InstagramSection from "@/components/sections/InstagramSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 
@@ -20,7 +19,6 @@ const InicioAtacado = () => {
         <ProductSectionsDynamic type="ATACADO" />
         <PromoBanner />
         <NewsletterSection />
-        <InstagramSection />
       </main>
       
       <Footer />
