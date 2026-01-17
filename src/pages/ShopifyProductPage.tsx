@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, RefreshCcw, Shield, ArrowLeft, Ruler, X, Check, Package, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, RefreshCcw, Shield, ArrowLeft, Ruler, Check, Package, Sparkles, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -12,6 +12,7 @@ import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import tabelaMedidas from "@/assets/tabela-medidas.jpg";
+import VirtualFittingRoom from "@/components/product/VirtualFittingRoom";
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -22,6 +23,7 @@ const ShopifyProductPage = () => {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [sizeTableOpen, setSizeTableOpen] = useState(false);
+  const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
   const addItem = useCartStore(state => state.addItem);
 
   useEffect(() => {
@@ -318,35 +320,11 @@ const ShopifyProductPage = () => {
 
               {/* Size Selection - FIRST */}
               {sizes.length > 0 && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-foreground">
-                      Tamanho: {selectedSize && <span className="text-primary">{selectedSize}</span>}
-                    </p>
-                    <Dialog open={sizeTableOpen} onOpenChange={setSizeTableOpen}>
-                      <DialogTrigger asChild>
-                        <button className="text-sm text-primary hover:underline flex items-center gap-1">
-                          <Ruler className="w-4 h-4" />
-                          Tabela de Medidas
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle className="text-xl">Tabela de Medidas</DialogTitle>
-                        </DialogHeader>
-                        <div className="mt-4">
-                          <img 
-                            src={tabelaMedidas} 
-                            alt="Tabela de Medidas Avance" 
-                            className="w-full rounded-lg"
-                          />
-                        </div>
-                        <p className="text-sm text-muted-foreground text-center mt-4">
-                          Para medir o seu corpo é necessário ter uma fita métrica.
-                        </p>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                <div className="space-y-4">
+                  <p className="font-semibold text-foreground">
+                    Tamanho: {selectedSize && <span className="text-primary">{selectedSize}</span>}
+                  </p>
+                  
                   <div className="flex flex-wrap gap-2">
                     {sizes.map((size) => (
                       <button
@@ -365,6 +343,64 @@ const ShopifyProductPage = () => {
                       </button>
                     ))}
                   </div>
+
+                  {/* Size Help Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                    <Dialog open={sizeTableOpen} onOpenChange={setSizeTableOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 gap-2 h-11 border-2 hover:border-primary hover:bg-primary/5 transition-all"
+                        >
+                          <Ruler className="w-4 h-4" />
+                          Tabela de Medidas
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl flex items-center gap-2">
+                            <Ruler className="w-5 h-5 text-primary" />
+                            Tabela de Medidas
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="mt-4">
+                          <img 
+                            src={tabelaMedidas} 
+                            alt="Tabela de Medidas Avance" 
+                            className="w-full rounded-lg"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground text-center mt-4">
+                          Para medir o seu corpo é necessário ter uma fita métrica.
+                        </p>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 gap-2 h-11 border-2 border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 hover:border-primary transition-all group"
+                      onClick={() => setVirtualFittingOpen(true)}
+                    >
+                      <User className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium">Descubra seu Tamanho</span>
+                      <Sparkles className="w-3 h-3 text-primary" />
+                    </Button>
+                  </div>
+
+                  {/* Virtual Fitting Room Modal */}
+                  <VirtualFittingRoom 
+                    open={virtualFittingOpen}
+                    onOpenChange={setVirtualFittingOpen}
+                    sizes={sizes}
+                    onSizeRecommendation={(size) => {
+                      setSelectedSize(size);
+                      setSelectedColor(null);
+                      toast.success(`Tamanho ${size} selecionado!`, {
+                        description: "Baseado nas suas medidas",
+                        position: "top-center"
+                      });
+                    }}
+                  />
                 </div>
               )}
 
