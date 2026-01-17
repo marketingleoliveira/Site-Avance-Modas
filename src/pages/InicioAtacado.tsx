@@ -48,40 +48,40 @@ const InicioAtacado = () => {
       
       {/* Notice Modal */}
       <Dialog open={showNotice} onOpenChange={setShowNotice}>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-          <div className="bg-primary p-6 text-primary-foreground">
+        <DialogContent className="sm:max-w-lg w-[95vw] p-0 overflow-hidden">
+          <div className="bg-primary p-5 text-primary-foreground">
             <DialogHeader>
-              <DialogTitle className="text-center text-xl font-bold flex items-center justify-center gap-2 text-primary-foreground">
-                <ShoppingBag className="w-6 h-6" />
+              <DialogTitle className="text-center text-lg font-bold flex items-center justify-center gap-2 text-primary-foreground">
+                <ShoppingBag className="w-5 h-5" />
                 Bem-vindo ao Atacado
               </DialogTitle>
             </DialogHeader>
           </div>
           
-          <div className="p-6 space-y-4">
+          <div className="p-5 space-y-4">
             <div className="text-center space-y-3">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Você está na área de <strong className="text-foreground">ATACADO</strong>
               </p>
               
               <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                <p className="text-lg font-bold text-amber-800 dark:text-amber-400">
+                <p className="text-base font-bold text-amber-800 dark:text-amber-400">
                   Pedido Mínimo
                 </p>
-                <p className="text-2xl font-bold text-amber-900 dark:text-amber-300 mt-1">
-                  R$ {atacadoSettings.minimum_order.toFixed(2)}
+                <p className="text-xl font-bold text-amber-900 dark:text-amber-300 mt-1">
+                  R$ {atacadoSettings.minimum_order.toFixed(2).replace('.', ',')}
                 </p>
               </div>
               
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground px-2">
                 Deseja comprar sem pedido mínimo? Acesse nossa loja de varejo.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="flex flex-col gap-2 pt-2">
               <Button 
                 onClick={handleContinueAtacado} 
-                className="flex-1 gap-2"
+                className="w-full gap-2"
                 size="lg"
               >
                 <ShoppingBag className="w-4 h-4" />
@@ -90,8 +90,8 @@ const InicioAtacado = () => {
               <Button 
                 onClick={handleGoToVarejo} 
                 variant="outline"
-                className="flex-1 gap-2"
-                size="lg"
+                className="w-full gap-2"
+                size="default"
               >
                 <Store className="w-4 h-4" />
                 Ir para Varejo
