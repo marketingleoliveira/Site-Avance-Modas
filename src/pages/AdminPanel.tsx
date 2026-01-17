@@ -723,7 +723,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {features?.items.map((item, index) => (
-                  <div key={index} className="grid md:grid-cols-3 gap-4 p-4 bg-secondary rounded-lg">
+                  <div key={index} className="grid md:grid-cols-4 gap-4 p-4 bg-secondary rounded-lg items-end">
                     <div className="space-y-2">
                       <Label>Ícone</Label>
                       <select
@@ -735,11 +735,21 @@ const AdminPanel = () => {
                           setFeatures({ items: newItems });
                         }}
                       >
-                        <option value="truck">Caminhão</option>
-                        <option value="percent">Porcentagem</option>
-                        <option value="tag">Tag</option>
-                        <option value="credit-card">Cartão</option>
-                        <option value="refresh">Troca</option>
+                        <option value="truck">🚚 Caminhão</option>
+                        <option value="percent">% Porcentagem</option>
+                        <option value="tag">🏷️ Tag</option>
+                        <option value="credit-card">💳 Cartão</option>
+                        <option value="refresh">🔄 Troca</option>
+                        <option value="shield">🛡️ Escudo</option>
+                        <option value="star">⭐ Estrela</option>
+                        <option value="gift">🎁 Presente</option>
+                        <option value="clock">⏰ Relógio</option>
+                        <option value="check">✓ Check</option>
+                        <option value="heart">❤️ Coração</option>
+                        <option value="package">📦 Pacote</option>
+                        <option value="zap">⚡ Raio</option>
+                        <option value="award">🏆 Prêmio</option>
+                        <option value="thumbs-up">👍 Positivo</option>
                       </select>
                     </div>
                     <div className="space-y-2">
@@ -764,15 +774,39 @@ const AdminPanel = () => {
                         }}
                       />
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        const newItems = features?.items.filter((_, i) => i !== index) || [];
+                        setFeatures({ items: newItems });
+                      }}
+                      disabled={(features?.items.length || 0) <= 1}
+                      className="text-destructive hover:text-destructive shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 ))}
-                <Button 
-                  onClick={() => saveSettings('features', features)}
-                  disabled={saving}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {saving ? "Salvando..." : "Salvar Configurações"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const newItem = { icon: "truck", title: "Novo Benefício", description: "Descrição" };
+                      setFeatures({ items: [...(features?.items || []), newItem] });
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Adicionar Benefício
+                  </Button>
+                  <Button 
+                    onClick={() => saveSettings('features', features)}
+                    disabled={saving}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {saving ? "Salvando..." : "Salvar Configurações"}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
