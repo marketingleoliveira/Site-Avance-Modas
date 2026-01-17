@@ -6,7 +6,7 @@ import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import InstagramSection from "@/components/sections/InstagramSection";
 import PromoBanner from "@/components/sections/PromoBanner";
-import ShopifyProductGridFiltered from "@/components/shopify/ShopifyProductGridFiltered";
+import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 
 const InicioVarejo = () => {
   return (
@@ -17,12 +17,7 @@ const InicioVarejo = () => {
       <main className="flex-1">
         <HeroSectionDynamic type="VAREJO" />
         <FeaturesSectionDynamic />
-        <ShopifyProductGridFiltered 
-          title="Produtos Varejo" 
-          subtitle="Conheça nossa coleção com a qualidade Avance Modas."
-          limit={8}
-          type="VAREJO"
-        />
+        <ProductSectionsDynamic type="VAREJO" />
         <PromoBanner />
         <NewsletterSection />
         <InstagramSection />
