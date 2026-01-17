@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useCartSync } from "@/hooks/useCartSync";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import StoreSelector from "./pages/StoreSelector";
 import InicioAtacado from "./pages/InicioAtacado";
 import InicioVarejo from "./pages/InicioVarejo";
@@ -21,17 +22,20 @@ const AppContent = () => {
   useCartSync();
   
   return (
-    <Routes>
-      <Route path="/" element={<StoreSelector />} />
-      <Route path="/atacado" element={<InicioAtacado />} />
-      <Route path="/varejo" element={<InicioVarejo />} />
-      <Route path="/produto/:handle" element={<ShopifyProductPage />} />
-      <Route path="/categoria/:category" element={<CategoryPage />} />
-      <Route path="/contato" element={<ContactPage />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin" element={<AdminPanel />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<StoreSelector />} />
+        <Route path="/atacado" element={<InicioAtacado />} />
+        <Route path="/varejo" element={<InicioVarejo />} />
+        <Route path="/produto/:handle" element={<ShopifyProductPage />} />
+        <Route path="/categoria/:category" element={<CategoryPage />} />
+        <Route path="/contato" element={<ContactPage />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <WhatsAppButton />
+    </>
   );
 };
 

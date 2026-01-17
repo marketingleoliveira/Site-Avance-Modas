@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, invalidateSettingsCache } from "@/lib/site-settings";
+import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, ContactSettings, invalidateSettingsCache } from "@/lib/site-settings";
 
 export function useHeroSettings(type: 'ATACADO' | 'VAREJO') {
   const [settings, setSettings] = useState<HeroSettings | null>(null);
@@ -164,6 +164,30 @@ export function usePromoBannerSettings() {
       description: "Promoção por tempo limitado. Não perca!",
       button_text: "Aproveitar",
       button_link: "/#produtos"
+    });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { settings, loading, refetch };
+}
+
+export function useContactSettings() {
+  const [settings, setSettings] = useState<ContactSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    invalidateSettingsCache('contact_settings');
+    const data = await getSiteSetting<ContactSettings>('contact_settings');
+    setSettings(data || {
+      whatsapp_number: '',
+      email: '',
+      address: '',
+      instagram: ''
     });
     setLoading(false);
   }, []);
