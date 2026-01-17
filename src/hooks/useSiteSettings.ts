@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, invalidateSettingsCache } from "@/lib/site-settings";
+import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, invalidateSettingsCache } from "@/lib/site-settings";
 
 export function useHeroSettings(type: 'ATACADO' | 'VAREJO') {
   const [settings, setSettings] = useState<HeroSettings | null>(null);
@@ -120,6 +120,25 @@ export function useInstagramSettings() {
       button_text: 'Ver nosso Instagram',
       subtitle_text: 'Siga-nos no Instagram'
     });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { settings, loading, refetch };
+}
+
+export function useVideosSettings() {
+  const [settings, setSettings] = useState<VideosSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    invalidateSettingsCache('videos_settings');
+    const data = await getSiteSetting<VideosSettings>('videos_settings');
+    setSettings(data || { videos: [] });
     setLoading(false);
   }, []);
 
