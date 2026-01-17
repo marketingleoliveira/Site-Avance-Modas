@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useProductSections, useLayoutSettings } from "@/hooks/useSiteSettings";
-import { fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
-import { fetchProductsByTag, ShopifyProduct } from "@/lib/shopify-api";
+import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 
@@ -114,8 +113,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
-      const collections = await fetchCollectionsByType(type);
-      const products = getProductsFromCollections(collections);
+      // Fetch products filtered by store type directly
+      const products = await fetchProductsByType(type, 100);
       setAllProducts(products);
       setLoading(false);
     };
@@ -130,7 +129,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   // Mapping of filter categories to title keywords
   const categoryKeywords: Record<string, string[]> = {
     leggings: ['legging', 'leggings', 'calça'],
-    tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped'],
+    tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped', 'baby look', 'tapa bumbum'],
     shorts: ['short', 'shorts'],
     bermudas: ['bermuda', 'bermudas'],
     conjuntos: ['conjunto', 'conjuntos'],

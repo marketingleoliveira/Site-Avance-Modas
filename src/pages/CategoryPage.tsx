@@ -1,95 +1,111 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
-import { fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
-import { ShopifyProduct } from "@/lib/shopify-api";
+import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { ShoppingBag, ChevronRight } from "lucide-react";
 
-const categoryConfig: Record<string, { title: string; description: string; keywords: string[] }> = {
+// Mapping of filter categories to title keywords
+const categoryKeywords: Record<string, string[]> = {
+  leggings: ['legging', 'leggings', 'calça'],
+  tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped', 'baby look', 'tapa bumbum'],
+  shorts: ['short', 'shorts'],
+  bermudas: ['bermuda', 'bermudas'],
+  conjuntos: ['conjunto', 'conjuntos'],
+  blusas: ['blusa', 'blusas', 'camiseta', 'regata', 'top', 'cropped', 'baby look', 'tapa bumbum'],
+};
+
+const categoryConfig: Record<string, { title: string; description: string }> = {
   shorts: {
     title: "Shorts",
     description: "Os melhores shorts fitness para seu treino",
-    keywords: ["short", "shorts"]
   },
   bermudas: {
     title: "Bermudas",
     description: "Bermudas confortáveis para todas as atividades",
-    keywords: ["bermuda", "bermudas"]
   },
   leggings: {
     title: "Leggings",
     description: "Leggings de alta qualidade e compressão",
-    keywords: ["legging", "leggings", "calça"]
   },
   tops: {
     title: "Tops",
     description: "Tops e blusas para seu look fitness",
-    keywords: ["top", "tops", "blusa", "camiseta", "regata", "cropped"]
   },
   blusas: {
     title: "Blusas",
     description: "Blusas e tops para seu look fitness",
-    keywords: ["blusa", "blusas", "camiseta", "regata", "top", "cropped"]
   },
   conjuntos: {
     title: "Conjuntos",
     description: "Conjuntos completos para arrasar no treino",
-    keywords: ["conjunto", "conjuntos"]
   },
   lancamentos: {
     title: "Lançamentos",
     description: "As novidades mais recentes da Avance Modas",
-    keywords: ["lançamento", "lancamento", "novo", "novidade"]
   },
   promocoes: {
     title: "Promoções",
     description: "Ofertas imperdíveis para você",
-    keywords: ["promoção", "promocao", "oferta", "desconto"]
   },
   todos: {
     title: "Todos os Produtos",
     description: "Veja todos os nossos produtos",
-    keywords: []
   }
 };
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
-  const [allProducts, setAllProducts] = useState<ShopifyProduct[]>([]);
+  const location = useLocation();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
 
   const config = category ? categoryConfig[category] : null;
 
-  // Detect current store type from URL
-  const isAtacado = window.location.pathname.includes('/atacado') || 
-                    sessionStorage.getItem('store_type') === 'atacado';
-  const storeType: 'ATACADO' | 'VAREJO' = isAtacado ? 'ATACADO' : 'VAREJO';
+  // Detect current store type - check referrer or sessionStorage
+  const getStoreType = (): 'ATACADO' | 'VAREJO' => {
+    // Check if coming from atacado route
+    const referrer = document.referrer;
+    if (referrer.includes('/atacado')) {
+      sessionStorage.setItem('store_type', 'atacado');
+      return 'ATACADO';
+    }
+    // Check sessionStorage
+    const stored = sessionStorage.getItem('store_type');
+    if (stored === 'atacado') return 'ATACADO';
+    if (stored === 'varejo') return 'VAREJO';
+    // Default to VAREJO
+    return 'VAREJO';
+  };
+
+  const storeType = getStoreType();
 
   useEffect(() => {
     const loadProducts = async () => {
       if (!config) return;
       setLoading(true);
       
-      // Fetch all products from collections by type
-      const collections = await fetchCollectionsByType(storeType);
-      const fetchedProducts = getProductsFromCollections(collections);
-      setAllProducts(fetchedProducts);
+      // Fetch all products filtered by store type (ATACADO/VAREJO)
+      const allProducts = await fetchProductsByType(storeType, 100);
       
       // Filter by category keywords (or show all if category is 'todos')
-      if (category === 'todos' || config.keywords.length === 0) {
-        setProducts(fetchedProducts);
+      if (category === 'todos') {
+        setProducts(allProducts);
       } else {
-        const filtered = fetchedProducts.filter(product => {
-          const title = product.node.title.toLowerCase();
-          return config.keywords.some(keyword => title.includes(keyword.toLowerCase()));
-        });
-        setProducts(filtered);
+        const keywords = categoryKeywords[category || ''] || [];
+        if (keywords.length === 0) {
+          setProducts(allProducts);
+        } else {
+          const filtered = allProducts.filter(product => {
+            const title = product.node.title.toLowerCase();
+            return keywords.some(keyword => title.includes(keyword.toLowerCase()));
+          });
+          setProducts(filtered);
+        }
       }
       
       setLoading(false);

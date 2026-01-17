@@ -204,6 +204,34 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
   }
 }
 
+export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: number = 100): Promise<ShopifyProduct[]> {
+  try {
+    // Fetch all products and filter by title containing the type
+    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: null });
+    if (!data) return [];
+    
+    const allProducts: ShopifyProduct[] = data.data.products.edges;
+    
+    // Filter products that have the type in title OR don't have either type (shared products)
+    return allProducts.filter(product => {
+      const title = product.node.title.toUpperCase();
+      const hasAtacado = title.includes('ATACADO');
+      const hasVarejo = title.includes('VAREJO');
+      
+      // If product has neither type, show in both stores
+      if (!hasAtacado && !hasVarejo) {
+        return true;
+      }
+      
+      // Otherwise, only show if matches the requested type
+      return title.includes(type);
+    });
+  } catch (error) {
+    console.error(`Error fetching ${type} products:`, error);
+    return [];
+  }
+}
+
 export async function fetchProductByHandle(handle: string): Promise<ShopifyProduct['node'] | null> {
   try {
     const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });

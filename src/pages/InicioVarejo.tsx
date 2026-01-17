@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -9,6 +10,10 @@ import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 
 const InicioVarejo = () => {
+  useEffect(() => {
+    // Set store type for category pages
+    sessionStorage.setItem("store_type", "varejo");
+  }, []);
   return (
     <div className="min-h-screen flex flex-col">
       <AnnouncementBar />
