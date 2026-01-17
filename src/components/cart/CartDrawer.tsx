@@ -190,38 +190,95 @@ export const CartDrawer = () => {
               </div>
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
-                {/* Minimum order warning for atacado with varejo recommendation */}
-                {isAtacado && isBelowMinimum && (
-                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-3">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                          Pedido mínimo não atingido
-                        </p>
-                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
-                          Para compras no atacado, o valor mínimo é de <strong>{formatPrice(minimumOrder)}</strong>.
-                          Faltam <strong>{formatPrice(remainingForMinimum)}</strong> para finalizar.
-                        </p>
+                {/* Minimum order progress indicator for atacado */}
+                {isAtacado && items.length > 0 && (
+                  <div className={`rounded-xl p-4 space-y-3 ${
+                    isBelowMinimum 
+                      ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800' 
+                      : 'bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800'
+                  }`}>
+                    {/* Progress header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {isBelowMinimum ? (
+                          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                        ) : (
+                          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500" />
+                        )}
+                        <span className={`text-sm font-medium ${
+                          isBelowMinimum 
+                            ? 'text-amber-800 dark:text-amber-400' 
+                            : 'text-green-800 dark:text-green-400'
+                        }`}>
+                          {isBelowMinimum ? 'Pedido mínimo' : 'Pedido mínimo atingido! ✓'}
+                        </span>
+                      </div>
+                      <span className={`text-sm font-bold ${
+                        isBelowMinimum 
+                          ? 'text-amber-700 dark:text-amber-500' 
+                          : 'text-green-700 dark:text-green-500'
+                      }`}>
+                        {formatPrice(totalPrice)} / {formatPrice(minimumOrder)}
+                      </span>
+                    </div>
+                    
+                    {/* Progress bar */}
+                    <div className="relative">
+                      <div className={`h-3 rounded-full overflow-hidden ${
+                        isBelowMinimum 
+                          ? 'bg-amber-200 dark:bg-amber-900/50' 
+                          : 'bg-green-200 dark:bg-green-900/50'
+                      }`}>
+                        <div 
+                          className={`h-full rounded-full transition-all duration-500 ease-out ${
+                            isBelowMinimum 
+                              ? 'bg-gradient-to-r from-amber-500 to-amber-400' 
+                              : 'bg-gradient-to-r from-green-500 to-green-400'
+                          }`}
+                          style={{ width: `${Math.min((totalPrice / minimumOrder) * 100, 100)}%` }}
+                        />
+                      </div>
+                      {/* Percentage label */}
+                      <div className="flex justify-end mt-1">
+                        <span className={`text-xs font-medium ${
+                          isBelowMinimum 
+                            ? 'text-amber-600 dark:text-amber-500' 
+                            : 'text-green-600 dark:text-green-500'
+                        }`}>
+                          {Math.min(Math.round((totalPrice / minimumOrder) * 100), 100)}%
+                        </span>
                       </div>
                     </div>
                     
-                    <div className="border-t border-amber-200 dark:border-amber-800 pt-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Store className="w-4 h-4 text-amber-600 dark:text-amber-500" />
-                        <p className="text-xs font-medium text-amber-800 dark:text-amber-400">
-                          Prefere comprar em menor quantidade?
+                    {/* Remaining amount or success message */}
+                    {isBelowMinimum ? (
+                      <>
+                        <p className="text-xs text-amber-700 dark:text-amber-500 text-center">
+                          Faltam <strong>{formatPrice(remainingForMinimum)}</strong> para liberar o checkout
                         </p>
-                      </div>
-                      <Link 
-                        to="/varejo" 
-                        onClick={() => setIsOpen(false)}
-                        className="inline-flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/50 hover:bg-amber-200 dark:hover:bg-amber-900 rounded-lg transition-colors"
-                      >
-                        <Store className="w-4 h-4" />
-                        Ir para loja Varejo
-                      </Link>
-                    </div>
+                        
+                        <div className="border-t border-amber-200 dark:border-amber-800 pt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Store className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                            <p className="text-xs font-medium text-amber-800 dark:text-amber-400">
+                              Prefere comprar em menor quantidade?
+                            </p>
+                          </div>
+                          <Link 
+                            to="/varejo" 
+                            onClick={() => setIsOpen(false)}
+                            className="inline-flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/50 hover:bg-amber-200 dark:hover:bg-amber-900 rounded-lg transition-colors"
+                          >
+                            <Store className="w-4 h-4" />
+                            Ir para loja Varejo
+                          </Link>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-xs text-green-700 dark:text-green-500 text-center font-medium">
+                        🎉 Você pode finalizar sua compra!
+                      </p>
+                    )}
                   </div>
                 )}
 
