@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, User, Menu, X, ChevronDown } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
-
+import SearchModal from "@/components/search/SearchModal";
 const navLinks = [
   { name: "Início", href: "/" },
   { 
@@ -25,6 +25,7 @@ const navLinks = [
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
 
   return (
@@ -84,13 +85,20 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+            <button 
+              onClick={() => setSearchOpen(true)}
+              className="p-2 hover:bg-secondary rounded-full transition-colors"
+              aria-label="Buscar produtos"
+            >
               <Search className="w-4 h-4" />
             </button>
             <button className="p-2 hover:bg-secondary rounded-full transition-colors">
               <User className="w-4 h-4" />
             </button>
             <CartDrawer />
+            
+            {/* Search Modal */}
+            <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />
             
             {/* Mobile Menu Button */}
             <button 
