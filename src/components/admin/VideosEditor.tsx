@@ -92,13 +92,6 @@ const VideosEditor = ({ settings, onChange }: VideosEditorProps) => {
   };
 
   const handleVideoUpload = async (file: File, index: number) => {
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024;
-    if (file.size > maxSize) {
-      toast.error("Vídeo muito grande. Máximo: 50MB");
-      return;
-    }
-
     // Validate file type
     if (!file.type.startsWith('video/')) {
       toast.error("Arquivo inválido. Envie um vídeo.");
@@ -365,7 +358,6 @@ const VideosEditor = ({ settings, onChange }: VideosEditorProps) => {
         </p>
         <ul className="text-xs text-blue-700 dark:text-blue-400 mt-1 space-y-1 list-disc list-inside">
           <li>Vídeos em formato vertical (9:16) ficam melhores</li>
-          <li>Tamanho máximo: 50MB por vídeo</li>
           <li>A capa (thumbnail) é exibida antes do hover</li>
           <li>No site, o vídeo toca automaticamente ao passar o mouse</li>
         </ul>
