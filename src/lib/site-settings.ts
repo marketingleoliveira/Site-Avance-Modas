@@ -100,6 +100,15 @@ export interface VideosSettings {
   videos: VideoItem[];
 }
 
+export interface PromoBannerSettings {
+  enabled: boolean;
+  tag: string;
+  title: string;
+  description: string;
+  button_text: string;
+  button_link: string;
+}
+
 // Cache for settings to reduce DB calls
 const settingsCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30000; // 30 seconds

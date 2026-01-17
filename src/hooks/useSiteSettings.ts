@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, invalidateSettingsCache } from "@/lib/site-settings";
+import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, invalidateSettingsCache } from "@/lib/site-settings";
 
 export function useHeroSettings(type: 'ATACADO' | 'VAREJO') {
   const [settings, setSettings] = useState<HeroSettings | null>(null);
@@ -139,6 +139,32 @@ export function useVideosSettings() {
     invalidateSettingsCache('videos_settings');
     const data = await getSiteSetting<VideosSettings>('videos_settings');
     setSettings(data || { videos: [] });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { settings, loading, refetch };
+}
+
+export function usePromoBannerSettings() {
+  const [settings, setSettings] = useState<PromoBannerSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    invalidateSettingsCache('promo_banner_settings');
+    const data = await getSiteSetting<PromoBannerSettings>('promo_banner_settings');
+    setSettings(data || {
+      enabled: true,
+      tag: "Oferta Especial",
+      title: "COMPRE 3 E GANHE 20% OFF",
+      description: "Promoção por tempo limitado. Não perca!",
+      button_text: "Aproveitar",
+      button_link: "/#produtos"
+    });
     setLoading(false);
   }, []);
 
