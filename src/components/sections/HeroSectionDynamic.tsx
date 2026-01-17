@@ -57,14 +57,14 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
 
   if (loading) {
     return (
-      <section className="relative h-[60vh] lg:h-[75vh] bg-secondary animate-pulse" />
+      <section className="relative h-[300px] bg-secondary animate-pulse" />
     );
   }
 
   const currentSlideData = slides[currentSlide];
 
   return (
-    <section className="relative h-[60vh] lg:h-[75vh] overflow-hidden group">
+    <section className="relative h-[300px] overflow-hidden group">
       {/* Slides Container */}
       <div className="absolute inset-0">
         {slides.map((slide, index) => (
