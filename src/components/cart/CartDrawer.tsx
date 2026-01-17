@@ -12,14 +12,14 @@ import {
 } from "@/components/ui/sheet";
 import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { toast } from "sonner";
-
-const MINIMUM_ORDER_ATACADO = 200;
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isAtacado = location.pathname.includes('atacado');
+  const { settings: atacadoSettings } = useAtacadoSettings();
   
   const { 
     items, 
@@ -32,13 +32,14 @@ export const CartDrawer = () => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
   
-  const isBelowMinimum = isAtacado && totalPrice < MINIMUM_ORDER_ATACADO;
-  const remainingForMinimum = MINIMUM_ORDER_ATACADO - totalPrice;
+  const minimumOrder = atacadoSettings.minimum_order;
+  const isBelowMinimum = isAtacado && totalPrice < minimumOrder;
+  const remainingForMinimum = minimumOrder - totalPrice;
 
   const handleCheckout = async () => {
     if (isBelowMinimum) {
       toast.error("Pedido mínimo não atingido", {
-        description: `No atacado, o pedido mínimo é de R$ ${MINIMUM_ORDER_ATACADO.toFixed(2)}. Faltam R$ ${remainingForMinimum.toFixed(2)} para finalizar.`,
+        description: `No atacado, o pedido mínimo é de R$ ${minimumOrder.toFixed(2)}. Faltam R$ ${remainingForMinimum.toFixed(2)} para finalizar.`,
       });
       return;
     }
@@ -158,7 +159,7 @@ export const CartDrawer = () => {
                       <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                          Pedido mínimo: R$ {MINIMUM_ORDER_ATACADO.toFixed(2)}
+                          Pedido mínimo: R$ {minimumOrder.toFixed(2)}
                         </p>
                         <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
                           Faltam <strong>R$ {remainingForMinimum.toFixed(2)}</strong> para finalizar
