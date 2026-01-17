@@ -123,9 +123,18 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     loadProducts();
   }, [type]);
 
-  // When filter changes, fetch products by tag directly from Shopify API
+  // When filter changes, filter products locally based on title keywords
   const [filteredProducts, setFilteredProducts] = useState<ShopifyProduct[]>([]);
   const [filterLoading, setFilterLoading] = useState(false);
+
+  // Mapping of filter categories to title keywords
+  const categoryKeywords: Record<string, string[]> = {
+    leggings: ['legging', 'leggings', 'calça'],
+    tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped'],
+    shorts: ['short', 'shorts'],
+    bermudas: ['bermuda', 'bermudas'],
+    conjuntos: ['conjunto', 'conjuntos'],
+  };
 
   useEffect(() => {
     const loadFilteredProducts = async () => {
@@ -135,31 +144,17 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
       }
       
       setFilterLoading(true);
-      try {
-        // Fetch products by tag directly from Shopify to ensure we get all products with that tag
-        const productsByTag = await fetchProductsByTag(activeFilter, 50);
-        
-        // Filter to only show products that belong to the current type (ATACADO/VAREJO)
-        const typeFilteredProducts = productsByTag.filter(product =>
-          (product.node.tags || []).some(tag => 
-            tag.toUpperCase().includes(type)
-          )
-        );
-        
-        setFilteredProducts(typeFilteredProducts);
-      } catch (error) {
-        console.error('Error fetching products by tag:', error);
-        // Fallback to local filtering
-        setFilteredProducts(
-          allProducts.filter(product => 
-            (product.node.tags || []).some(tag =>
-              tag.toLowerCase() === activeFilter.toLowerCase()
-            )
-          )
-        );
-      } finally {
-        setFilterLoading(false);
-      }
+      
+      // Filter products locally by title keywords
+      const keywords = categoryKeywords[activeFilter] || [activeFilter];
+      const filtered = allProducts.filter(product => {
+        const title = product.node.title.toLowerCase();
+        // Check if the title contains any of the category keywords
+        return keywords.some(keyword => title.includes(keyword.toLowerCase()));
+      });
+      
+      setFilteredProducts(filtered);
+      setFilterLoading(false);
     };
 
     loadFilteredProducts();
