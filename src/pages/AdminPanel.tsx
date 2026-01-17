@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -722,6 +722,44 @@ const AdminPanel = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Preview */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Preview</Label>
+                  <div className="bg-primary text-primary-foreground rounded-lg overflow-hidden" style={{ height: '60px' }}>
+                    <div className="h-full flex items-center justify-between px-4 gap-4 overflow-x-auto">
+                      {features?.items.map((item, index) => {
+                        const iconMap: Record<string, React.ReactNode> = {
+                          truck: <Truck className="w-4 h-4 opacity-80" />,
+                          percent: <Percent className="w-4 h-4 opacity-80" />,
+                          tag: <Tag className="w-4 h-4 opacity-80" />,
+                          'credit-card': <CreditCard className="w-4 h-4 opacity-80" />,
+                          refresh: <RefreshCw className="w-4 h-4 opacity-80" />,
+                          shield: <Shield className="w-4 h-4 opacity-80" />,
+                          star: <Star className="w-4 h-4 opacity-80" />,
+                          gift: <Gift className="w-4 h-4 opacity-80" />,
+                          clock: <Clock className="w-4 h-4 opacity-80" />,
+                          check: <Check className="w-4 h-4 opacity-80" />,
+                          heart: <Heart className="w-4 h-4 opacity-80" />,
+                          package: <Package className="w-4 h-4 opacity-80" />,
+                          zap: <Zap className="w-4 h-4 opacity-80" />,
+                          award: <Award className="w-4 h-4 opacity-80" />,
+                          'thumbs-up': <ThumbsUp className="w-4 h-4 opacity-80" />,
+                        };
+                        return (
+                          <div key={index} className="flex items-center gap-2 flex-shrink-0">
+                            {iconMap[item.icon] || <Truck className="w-4 h-4 opacity-80" />}
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-semibold whitespace-nowrap">{item.title}</span>
+                              <span className="text-xs opacity-70 whitespace-nowrap">{item.description}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Editor */}
                 {features?.items.map((item, index) => (
                   <div key={index} className="grid md:grid-cols-4 gap-4 p-4 bg-secondary rounded-lg items-end">
                     <div className="space-y-2">
