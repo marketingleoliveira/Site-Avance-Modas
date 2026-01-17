@@ -128,7 +128,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
       return allProducts;
     }
     return allProducts.filter(product => 
-      product.node.tags.some(tag => 
+      (product.node.tags || []).some(tag =>
         tag.toLowerCase() === activeFilter.toLowerCase()
       )
     );
@@ -307,7 +307,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
                       {/* Tags/Badges */}
                       <div className="absolute left-2 top-2 flex flex-col gap-1">
-                        {product.node.tags.slice(0, 2).map((tag, idx) => {
+                        {(product.node.tags || []).slice(0, 2).map((tag, idx) => {
                           if (tag.toLowerCase().includes('lycra')) {
                             return (
                               <span key={idx} className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">
