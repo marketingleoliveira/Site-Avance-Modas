@@ -4,7 +4,7 @@ const features = [
   {
     icon: Truck,
     title: "Frete Grátis",
-    description: "Para compras acima de R$299",
+    description: "Para compras acima de R$1.500",
   },
   {
     icon: CreditCard,
@@ -13,8 +13,8 @@ const features = [
   },
   {
     icon: RefreshCcw,
-    title: "Troca Fácil",
-    description: "Primeira troca grátis",
+    title: "Trocas",
+    description: "Apenas em caso de defeito",
   },
   {
     icon: Shield,

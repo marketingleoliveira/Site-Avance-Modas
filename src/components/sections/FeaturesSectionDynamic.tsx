@@ -14,11 +14,11 @@ const FeaturesSectionDynamic = () => {
   const { settings: layoutSettings } = useLayoutSettings();
 
   const defaultItems = [
-    { icon: "truck", title: "Frete Grátis", description: "acima de R$279" },
+    { icon: "truck", title: "Frete Grátis", description: "acima de R$1.500" },
     { icon: "percent", title: "5% Desconto", description: "no Pix" },
     { icon: "tag", title: "Cupom", description: "PRIMEIRACOMPRA" },
     { icon: "credit-card", title: "6x s/ juros", description: "no cartão" },
-    { icon: "refresh", title: "Troca Grátis", description: "primeira troca" },
+    { icon: "refresh", title: "Trocas", description: "apenas em caso de defeito" },
   ];
 
   const items = settings?.items || defaultItems;
