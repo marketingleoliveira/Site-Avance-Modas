@@ -300,12 +300,16 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
             <div className="grid products-grid gap-4 md:gap-6">
               {filteredProducts.slice(0, 8).map((product) => {
                 const colors = getProductColors(product);
+                const tags = product.node.tags || [];
+                const isNew = tags.some(tag => tag.toLowerCase() === 'novo');
                 
                 return (
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className="group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${
+                      isNew ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background' : ''
+                    }`}
                   >
                     {/* Product Image with Color Swatches */}
                     <div className="relative">
@@ -333,7 +337,12 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
                       {/* Tags/Badges */}
                       <div className="absolute left-2 top-2 flex flex-col gap-1">
-                        {(product.node.tags || []).slice(0, 2).map((tag, idx) => {
+                        {isNew && (
+                          <span className="bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                            NOVO
+                          </span>
+                        )}
+                        {tags.slice(0, 2).map((tag, idx) => {
                           if (tag.toLowerCase().includes('lycra')) {
                             return (
                               <span key={idx} className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">
