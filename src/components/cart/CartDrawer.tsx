@@ -20,7 +20,7 @@ export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isAtacado = location.pathname.includes('atacado');
-  const { settings: atacadoSettings } = useAtacadoSettings();
+  const { settings: atacadoSettings, loading: settingsLoading } = useAtacadoSettings();
   
   const { 
     items, 
@@ -37,9 +37,10 @@ export const CartDrawer = () => {
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
   
+  // Only apply minimum order validation for atacado when settings are loaded
   const minimumOrder = atacadoSettings.minimum_order;
-  const isBelowMinimum = isAtacado && totalPrice < minimumOrder;
-  const remainingForMinimum = minimumOrder - totalPrice;
+  const isBelowMinimum = isAtacado && !settingsLoading && totalPrice < minimumOrder;
+  const remainingForMinimum = Math.max(0, minimumOrder - totalPrice);
 
   // Sync cart with Shopify when drawer opens
   useEffect(() => {
@@ -49,7 +50,8 @@ export const CartDrawer = () => {
   }, [isOpen, syncCart]);
 
   const handleCheckout = () => {
-    if (isBelowMinimum) {
+    // Block checkout if atacado and below minimum order (only if settings loaded)
+    if (isAtacado && !settingsLoading && totalPrice < minimumOrder) {
       toast.error("Pedido mínimo não atingido", {
         description: `No atacado, o pedido mínimo é de ${formatPrice(minimumOrder)}. Faltam ${formatPrice(remainingForMinimum)} para finalizar. Considere nossa loja Varejo para compras menores.`,
       });
@@ -190,8 +192,8 @@ export const CartDrawer = () => {
               </div>
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
-                {/* Minimum order progress indicator for atacado */}
-                {isAtacado && items.length > 0 && (
+                {/* Minimum order progress indicator for atacado - only show when settings loaded */}
+                {isAtacado && items.length > 0 && !settingsLoading && (
                   <div className={`rounded-xl p-4 space-y-3 ${
                     isBelowMinimum 
                       ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800' 
