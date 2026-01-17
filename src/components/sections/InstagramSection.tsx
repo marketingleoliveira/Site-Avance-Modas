@@ -1,47 +1,30 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Instagram, ExternalLink } from "lucide-react";
 
 const INSTAGRAM_USERNAME = "avancemodasoficial";
-
-// Curator.io Feed ID - Get this from your Curator.io dashboard
-// Create a free account at https://curator.io and add your Instagram feed
-const CURATOR_FEED_ID = "YOUR_CURATOR_FEED_ID"; // Replace with your actual Feed ID
+const CURATOR_FEED_ID = "abf84bdb-32da-4a02-b55e-4116eef0cf19";
 
 const InstagramSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    // Load Curator.io script if not already loaded
-    if (!document.getElementById('curator-script')) {
-      const script = document.createElement('script');
-      script.id = 'curator-script';
-      script.src = 'https://cdn.curator.io/published/a8e8f8e8-YOUR-FEED-ID.js'; // This will be auto-loaded by Curator
-      script.async = true;
-      document.body.appendChild(script);
+    // Load Curator.io embed script
+    const existingScript = document.getElementById('curator-script');
+    if (existingScript) {
+      existingScript.remove();
     }
 
-    // Initialize Curator feed
-    const initCurator = () => {
-      if (window.Curator && containerRef.current) {
-        // Curator will auto-initialize based on the data attributes
+    const script = document.createElement('script');
+    script.id = 'curator-script';
+    script.src = `https://cdn.curator.io/published/${CURATOR_FEED_ID}.js`;
+    script.async = true;
+    script.charset = 'UTF-8';
+    document.body.appendChild(script);
+
+    return () => {
+      const scriptToRemove = document.getElementById('curator-script');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
       }
     };
-
-    // Check if Curator is already loaded
-    if (window.Curator) {
-      initCurator();
-    } else {
-      // Wait for script to load
-      const checkCurator = setInterval(() => {
-        if (window.Curator) {
-          initCurator();
-          clearInterval(checkCurator);
-        }
-      }, 100);
-
-      // Cleanup interval after 10 seconds
-      setTimeout(() => clearInterval(checkCurator), 10000);
-    }
   }, []);
 
   return (
@@ -64,50 +47,16 @@ const InstagramSection = () => {
           </p>
         </div>
 
-        {/* Curator.io Instagram Feed Container */}
-        <div 
-          ref={containerRef}
-          id="curator-feed"
-          data-feed-id={CURATOR_FEED_ID}
-          className="min-h-[200px]"
-        >
-          {/* Fallback while feed loads or if Feed ID not configured */}
-          {CURATOR_FEED_ID === "YOUR_CURATOR_FEED_ID" ? (
-            <div className="text-center py-8">
-              <a 
-                href={`https://instagram.com/${INSTAGRAM_USERNAME}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-1 group max-w-4xl mx-auto">
-                  {[...Array(6)].map((_, index) => (
-                    <div 
-                      key={index}
-                      className="relative aspect-square overflow-hidden bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-sm"
-                    >
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Instagram className="w-8 h-8 text-white/30" />
-                      </div>
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <Instagram className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </a>
-              <p className="text-xs text-muted-foreground mt-4">
-                Configure o Feed ID do Curator.io para exibir fotos reais
-              </p>
-            </div>
-          ) : (
-            <div 
-              className="curator-feed" 
-              dangerouslySetInnerHTML={{
-                __html: `<div data-crt-feed="${CURATOR_FEED_ID}"></div>`
-              }}
-            />
-          )}
+        {/* Curator.io Instagram Feed */}
+        <div id={`curator-feed-${CURATOR_FEED_ID}`} className="min-h-[300px]">
+          <a 
+            href="https://curator.io" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="crt-logo crt-tag hidden"
+          >
+            Powered by Curator.io
+          </a>
         </div>
 
         {/* Call to action */}
@@ -126,14 +75,5 @@ const InstagramSection = () => {
     </section>
   );
 };
-
-// Extend Window interface for Curator
-declare global {
-  interface Window {
-    Curator?: {
-      Feed: new (options: Record<string, unknown>) => unknown;
-    };
-  }
-}
 
 export default InstagramSection;
