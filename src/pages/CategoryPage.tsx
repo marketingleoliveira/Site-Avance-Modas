@@ -3,68 +3,100 @@ import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
-import { fetchProductsByTag, ShopifyProduct } from "@/lib/shopify-api";
+import { fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
+import { ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { ShoppingBag, ChevronRight } from "lucide-react";
 
-const categoryConfig: Record<string, { title: string; description: string; tag: string }> = {
+const categoryConfig: Record<string, { title: string; description: string; keywords: string[] }> = {
   shorts: {
     title: "Shorts",
     description: "Os melhores shorts fitness para seu treino",
-    tag: "shorts"
+    keywords: ["short", "shorts"]
   },
   bermudas: {
     title: "Bermudas",
     description: "Bermudas confortáveis para todas as atividades",
-    tag: "bermudas"
+    keywords: ["bermuda", "bermudas"]
   },
   leggings: {
     title: "Leggings",
     description: "Leggings de alta qualidade e compressão",
-    tag: "leggings"
+    keywords: ["legging", "leggings", "calça"]
+  },
+  tops: {
+    title: "Tops",
+    description: "Tops e blusas para seu look fitness",
+    keywords: ["top", "tops", "blusa", "camiseta", "regata", "cropped"]
   },
   blusas: {
     title: "Blusas",
     description: "Blusas e tops para seu look fitness",
-    tag: "blusas"
+    keywords: ["blusa", "blusas", "camiseta", "regata", "top", "cropped"]
   },
   conjuntos: {
     title: "Conjuntos",
     description: "Conjuntos completos para arrasar no treino",
-    tag: "conjuntos"
+    keywords: ["conjunto", "conjuntos"]
   },
   lancamentos: {
     title: "Lançamentos",
     description: "As novidades mais recentes da Avance Modas",
-    tag: "lancamentos"
+    keywords: ["lançamento", "lancamento", "novo", "novidade"]
   },
   promocoes: {
     title: "Promoções",
     description: "Ofertas imperdíveis para você",
-    tag: "promocoes"
+    keywords: ["promoção", "promocao", "oferta", "desconto"]
+  },
+  todos: {
+    title: "Todos os Produtos",
+    description: "Veja todos os nossos produtos",
+    keywords: []
   }
 };
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
+  const [allProducts, setAllProducts] = useState<ShopifyProduct[]>([]);
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
 
   const config = category ? categoryConfig[category] : null;
 
+  // Detect current store type from URL
+  const isAtacado = window.location.pathname.includes('/atacado') || 
+                    sessionStorage.getItem('store_type') === 'atacado';
+  const storeType: 'ATACADO' | 'VAREJO' = isAtacado ? 'ATACADO' : 'VAREJO';
+
   useEffect(() => {
     const loadProducts = async () => {
       if (!config) return;
       setLoading(true);
-      const fetchedProducts = await fetchProductsByTag(config.tag);
-      setProducts(fetchedProducts);
+      
+      // Fetch all products from collections by type
+      const collections = await fetchCollectionsByType(storeType);
+      const fetchedProducts = getProductsFromCollections(collections);
+      setAllProducts(fetchedProducts);
+      
+      // Filter by category keywords (or show all if category is 'todos')
+      if (category === 'todos' || config.keywords.length === 0) {
+        setProducts(fetchedProducts);
+      } else {
+        const filtered = fetchedProducts.filter(product => {
+          const title = product.node.title.toLowerCase();
+          return config.keywords.some(keyword => title.includes(keyword.toLowerCase()));
+        });
+        setProducts(filtered);
+      }
+      
       setLoading(false);
     };
 
     loadProducts();
-  }, [category, config]);
+  }, [category, config, storeType]);
 
   const handleAddToCart = (product: ShopifyProduct, e: React.MouseEvent) => {
     e.preventDefault();
@@ -149,9 +181,6 @@ const CategoryPage = () => {
           ) : products.length === 0 ? (
             <div className="text-center py-16 bg-secondary/30 rounded-lg">
               <p className="text-muted-foreground text-sm">Nenhum produto encontrado nesta categoria.</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Adicione a tag "{config.tag}" aos produtos no Shopify.
-              </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
