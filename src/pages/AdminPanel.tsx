@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useAuth } from "@/hooks/useAuth";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2 } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 
 interface NewsletterSubscriber {
@@ -28,8 +27,11 @@ interface AdminUser {
 }
 
 const AdminPanel = () => {
-  const { user, isAdmin, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
+  
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   
   const [heroAtacado, setHeroAtacado] = useState<HeroSettings | null>(null);
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
@@ -52,11 +54,49 @@ const AdminPanel = () => {
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [creatingAdmin, setCreatingAdmin] = useState(false);
 
+  // Check auth on mount
   useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      navigate("/admin/login");
-    }
-  }, [user, isAdmin, authLoading, navigate]);
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session?.user) {
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+        
+        // Check admin role
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        
+        if (!roleData) {
+          console.log('User is not admin, redirecting...');
+          await supabase.auth.signOut();
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+        
+        setUser({ id: session.user.id, email: session.user.email });
+        setIsAdmin(true);
+        setAuthLoading(false);
+        
+      } catch (error) {
+        console.error('Auth check error:', error);
+        navigate("/admin/login", { replace: true });
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin/login", { replace: true });
+  };
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -265,15 +305,10 @@ const AdminPanel = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/admin/login");
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
