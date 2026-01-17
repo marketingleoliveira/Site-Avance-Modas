@@ -16,19 +16,21 @@ const instagramPosts = [
 
 const InstagramSection = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-12 bg-background">
       <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-            <Instagram className="w-8 h-8" />
+        <div className="text-center mb-8">
+          <a 
+            href="https://instagram.com/avancemodas" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-accent transition-colors"
+          >
+            <Instagram className="w-4 h-4" />
             @avancemodas
-          </h2>
-          <p className="text-muted-foreground">
-            Siga-nos no Instagram e faça parte da nossa comunidade fitness.
-          </p>
+          </a>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-1">
           {instagramPosts.map((post, index) => (
             <a 
               key={index}
@@ -38,10 +40,10 @@ const InstagramSection = () => {
               <img 
                 src={post.image} 
                 alt={`Instagram post ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <Instagram className="w-8 h-8 text-primary-foreground" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <Instagram className="w-5 h-5 text-white" />
               </div>
             </a>
           ))}
