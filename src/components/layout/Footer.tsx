@@ -1,5 +1,8 @@
-import { Mail, Phone, MapPin, CreditCard, Barcode } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
+import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
+import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
 
 // Payment method icons as simple SVG components
 const VisaIcon = () => (
@@ -55,7 +58,11 @@ const BoletoIcon = () => (
 );
 
 const Footer = () => {
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+
   return (
+    <>
     <footer className="bg-primary text-primary-foreground">
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -165,12 +172,26 @@ const Footer = () => {
             © 2026 Avance. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/60">
-            <a href="/" className="hover:text-primary-foreground transition-colors">Política de Privacidade</a>
-            <a href="/" className="hover:text-primary-foreground transition-colors">Termos de Uso</a>
+            <button 
+              onClick={() => setShowPrivacy(true)} 
+              className="hover:text-primary-foreground transition-colors"
+            >
+              Política de Privacidade
+            </button>
+            <button 
+              onClick={() => setShowTerms(true)} 
+              className="hover:text-primary-foreground transition-colors"
+            >
+              Termos de Uso
+            </button>
           </div>
         </div>
       </div>
     </footer>
+
+    <PrivacyPolicyModal open={showPrivacy} onOpenChange={setShowPrivacy} />
+    <TermsOfUseModal open={showTerms} onOpenChange={setShowTerms} />
+    </>
   );
 };
 
