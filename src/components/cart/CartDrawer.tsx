@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -9,11 +10,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
+import { toast } from "sonner";
+
+const MINIMUM_ORDER_ATACADO = 200;
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const isAtacado = location.pathname.includes('atacado');
+  
   const { 
     items, 
     isLoading, 
@@ -24,8 +31,18 @@ export const CartDrawer = () => {
   
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
+  
+  const isBelowMinimum = isAtacado && totalPrice < MINIMUM_ORDER_ATACADO;
+  const remainingForMinimum = MINIMUM_ORDER_ATACADO - totalPrice;
 
   const handleCheckout = async () => {
+    if (isBelowMinimum) {
+      toast.error("Pedido mínimo não atingido", {
+        description: `No atacado, o pedido mínimo é de R$ ${MINIMUM_ORDER_ATACADO.toFixed(2)}. Faltam R$ ${remainingForMinimum.toFixed(2)} para finalizar.`,
+      });
+      return;
+    }
+    
     try {
       await createCheckout();
       const checkoutUrl = useCartStore.getState().checkoutUrl;
@@ -134,6 +151,23 @@ export const CartDrawer = () => {
               </div>
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background">
+                {/* Minimum order warning for atacado */}
+                {isAtacado && isBelowMinimum && (
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
+                          Pedido mínimo: R$ {MINIMUM_ORDER_ATACADO.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
+                          Faltam <strong>R$ {remainingForMinimum.toFixed(2)}</strong> para finalizar
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">
@@ -145,13 +179,18 @@ export const CartDrawer = () => {
                   onClick={handleCheckout}
                   className="w-full" 
                   size="lg"
-                  variant="hero"
+                  variant={isBelowMinimum ? "outline" : "hero"}
                   disabled={items.length === 0 || isLoading}
                 >
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Criando checkout...
+                    </>
+                  ) : isBelowMinimum ? (
+                    <>
+                      <AlertTriangle className="w-4 h-4 mr-2" />
+                      Adicione mais itens
                     </>
                   ) : (
                     <>
