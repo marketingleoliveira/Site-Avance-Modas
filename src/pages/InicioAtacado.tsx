@@ -17,10 +17,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingBag, Store } from "lucide-react";
+import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
 
 const InicioAtacado = () => {
   const [showNotice, setShowNotice] = useState(false);
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
   const navigate = useNavigate();
   const { settings: atacadoSettings, loading } = useAtacadoSettings();
 
@@ -82,11 +86,37 @@ const InicioAtacado = () => {
               </p>
             </div>
             
+            <div className="flex items-start space-x-3 p-3 bg-muted/50 rounded-lg">
+              <Checkbox 
+                id="accept-policies" 
+                checked={acceptedPolicies}
+                onCheckedChange={(checked) => setAcceptedPolicies(checked === true)}
+              />
+              <label 
+                htmlFor="accept-policies" 
+                className="text-xs text-muted-foreground leading-relaxed cursor-pointer"
+              >
+                Li e aceito as{" "}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPolicyModal(true);
+                  }}
+                  className="text-primary font-medium hover:underline"
+                >
+                  Políticas de Atacado
+                </button>
+                {" "}e declaro que minha compra é destinada à revenda comercial.
+              </label>
+            </div>
+            
             <div className="flex flex-col gap-2 pt-2">
               <Button 
                 onClick={handleContinueAtacado} 
                 className="w-full gap-2"
                 size="lg"
+                disabled={!acceptedPolicies}
               >
                 <ShoppingBag className="w-4 h-4" />
                 Continuar no Atacado
@@ -104,6 +134,8 @@ const InicioAtacado = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      <WholesalePolicyModal open={showPolicyModal} onOpenChange={setShowPolicyModal} />
       
       <main className="flex-1">
         <HeroSectionDynamic type="ATACADO" />
