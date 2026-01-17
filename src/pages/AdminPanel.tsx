@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 
 interface NewsletterSubscriber {
@@ -18,6 +19,12 @@ interface NewsletterSubscriber {
   subscribed_at: string;
   source: string;
   is_active: boolean;
+}
+
+interface AdminUser {
+  user_id: string;
+  created_at: string;
+  email?: string;
 }
 
 const AdminPanel = () => {
@@ -32,9 +39,17 @@ const AdminPanel = () => {
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings | null>(null);
   const [sectionsAtacado, setSectionsAtacado] = useState<ProductSectionsSettings | null>(null);
   const [sectionsVarejo, setSectionsVarejo] = useState<ProductSectionsSettings | null>(null);
+  const [instagramSettings, setInstagramSettings] = useState<InstagramSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
+  const [loadingAdmins, setLoadingAdmins] = useState(false);
   const [saving, setSaving] = useState(false);
+  
+  // New admin form
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
+  const [creatingAdmin, setCreatingAdmin] = useState(false);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -44,7 +59,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -53,6 +68,7 @@ const AdminPanel = () => {
         getSiteSetting<LayoutSettings>('layout_settings'),
         getSiteSetting<ProductSectionsSettings>('product_sections_atacado'),
         getSiteSetting<ProductSectionsSettings>('product_sections_varejo'),
+        getSiteSetting<InstagramSettings>('instagram_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -78,11 +94,19 @@ const AdminPanel = () => {
       setSectionsVarejo(secVarejo || {
         sections: [{ id: "main", title: "Produtos Varejo", subtitle: "", tag_filter: "", limit: 8, order: 1 }]
       });
+      setInstagramSettings(instagram || {
+        username: "avancemodasoficial",
+        curator_feed_id: "abf84bdb-32da-4a02-b55e-4116eef0cf19",
+        show_section: true,
+        button_text: "Ver nosso Instagram",
+        subtitle_text: "Siga-nos no Instagram"
+      });
     };
     
     if (isAdmin) {
       loadSettings();
       loadSubscribers();
+      loadAdminUsers();
     }
   }, [isAdmin]);
 
@@ -100,6 +124,48 @@ const AdminPanel = () => {
       console.error('Error loading subscribers:', error);
     } finally {
       setLoadingSubscribers(false);
+    }
+  };
+
+  const loadAdminUsers = async () => {
+    setLoadingAdmins(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('user_id, created_at')
+        .eq('role', 'admin');
+      
+      if (error) throw error;
+      setAdminUsers(data || []);
+    } catch (error) {
+      console.error('Error loading admins:', error);
+    } finally {
+      setLoadingAdmins(false);
+    }
+  };
+
+  const handleCreateAdmin = async () => {
+    if (!newAdminEmail || !newAdminPassword) {
+      toast.error("Preencha e-mail e senha");
+      return;
+    }
+
+    if (newAdminPassword.length < 6) {
+      toast.error("Senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+
+    setCreatingAdmin(true);
+    const result = await createAdminUser(newAdminEmail, newAdminPassword);
+    setCreatingAdmin(false);
+
+    if (result.success) {
+      toast.success("Administrador criado com sucesso!");
+      setNewAdminEmail("");
+      setNewAdminPassword("");
+      loadAdminUsers();
+    } else {
+      toast.error(result.error || "Erro ao criar administrador");
     }
   };
 
@@ -237,7 +303,7 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 max-w-5xl gap-1">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 max-w-6xl gap-1">
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
               Entrada
@@ -256,6 +322,10 @@ const AdminPanel = () => {
               <Grid className="w-3 h-3 mr-1" />
               Seções
             </TabsTrigger>
+            <TabsTrigger value="instagram" className="text-xs">
+              <Instagram className="w-3 h-3 mr-1" />
+              Instagram
+            </TabsTrigger>
             <TabsTrigger value="contact" className="text-xs">
               <Phone className="w-3 h-3 mr-1" />
               Contato
@@ -263,6 +333,10 @@ const AdminPanel = () => {
             <TabsTrigger value="newsletter" className="text-xs">
               <Mail className="w-3 h-3 mr-1" />
               Newsletter
+            </TabsTrigger>
+            <TabsTrigger value="admins" className="text-xs">
+              <Shield className="w-3 h-3 mr-1" />
+              Admins
             </TabsTrigger>
           </TabsList>
 
@@ -1054,6 +1128,183 @@ const AdminPanel = () => {
                     </div>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Instagram Settings */}
+          <TabsContent value="instagram">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Instagram className="w-5 h-5" />
+                  Configurações do Instagram
+                </CardTitle>
+                <CardDescription>
+                  Configure o feed do Instagram exibido no site
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
+                  <div>
+                    <Label className="text-base">Exibir seção do Instagram</Label>
+                    <p className="text-sm text-muted-foreground">Mostrar o feed do Instagram no rodapé do site</p>
+                  </div>
+                  <Switch
+                    checked={instagramSettings?.show_section ?? true}
+                    onCheckedChange={(checked) => 
+                      setInstagramSettings(prev => prev ? {...prev, show_section: checked} : null)
+                    }
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nome de usuário do Instagram</Label>
+                    <Input
+                      value={instagramSettings?.username || ''}
+                      onChange={(e) => setInstagramSettings(prev => prev ? {...prev, username: e.target.value} : null)}
+                      placeholder="avancemodasoficial"
+                    />
+                    <p className="text-xs text-muted-foreground">Sem o @</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Feed ID do Curator.io</Label>
+                    <Input
+                      value={instagramSettings?.curator_feed_id || ''}
+                      onChange={(e) => setInstagramSettings(prev => prev ? {...prev, curator_feed_id: e.target.value} : null)}
+                      placeholder="abf84bdb-32da-4a02-b55e-4116eef0cf19"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Obtenha em <a href="https://curator.io" target="_blank" rel="noopener noreferrer" className="text-primary underline">curator.io</a>
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Texto do botão</Label>
+                    <Input
+                      value={instagramSettings?.button_text || ''}
+                      onChange={(e) => setInstagramSettings(prev => prev ? {...prev, button_text: e.target.value} : null)}
+                      placeholder="Ver nosso Instagram"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subtítulo</Label>
+                    <Input
+                      value={instagramSettings?.subtitle_text || ''}
+                      onChange={(e) => setInstagramSettings(prev => prev ? {...prev, subtitle_text: e.target.value} : null)}
+                      placeholder="Siga-nos no Instagram"
+                    />
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => saveSettings('instagram_settings', instagramSettings)}
+                  disabled={saving}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Admin Users Management */}
+          <TabsContent value="admins">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Gerenciamento de Administradores
+                </CardTitle>
+                <CardDescription>
+                  Crie novas contas de administrador para gerenciar o painel
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Create new admin form */}
+                <div className="p-4 bg-secondary rounded-lg space-y-4">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <UserPlus className="w-4 h-4" />
+                    Criar novo administrador
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>E-mail</Label>
+                      <Input
+                        type="email"
+                        value={newAdminEmail}
+                        onChange={(e) => setNewAdminEmail(e.target.value)}
+                        placeholder="novo@admin.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Senha</Label>
+                      <Input
+                        type="password"
+                        value={newAdminPassword}
+                        onChange={(e) => setNewAdminPassword(e.target.value)}
+                        placeholder="Mínimo 6 caracteres"
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleCreateAdmin} disabled={creatingAdmin}>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    {creatingAdmin ? "Criando..." : "Criar Administrador"}
+                  </Button>
+                </div>
+
+                {/* Existing admins list */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Administradores existentes</h3>
+                    <Button variant="outline" size="sm" onClick={loadAdminUsers} disabled={loadingAdmins}>
+                      {loadingAdmins ? "Atualizando..." : "Atualizar"}
+                    </Button>
+                  </div>
+                  
+                  {loadingAdmins ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  ) : adminUsers.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhum administrador encontrado</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {adminUsers.map((admin) => (
+                        <div 
+                          key={admin.user_id} 
+                          className="flex items-center justify-between p-3 rounded-lg border bg-background"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Shield className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">
+                                {admin.user_id === user?.id ? `${user.email} (você)` : `Admin ID: ${admin.user_id.slice(0, 8)}...`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Criado em {new Date(admin.created_at).toLocaleDateString('pt-BR')}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                            Admin
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    <strong>Nota:</strong> Novos administradores receberão um e-mail de confirmação antes de poderem acessar o painel.
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
