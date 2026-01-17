@@ -1,5 +1,58 @@
-import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, CreditCard, Barcode } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
+
+// Payment method icons as simple SVG components
+const VisaIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <text x="24" y="20" textAnchor="middle" fontSize="10" fontWeight="bold" fontStyle="italic">VISA</text>
+  </svg>
+);
+
+const MastercardIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="18" cy="16" r="7" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="30" cy="16" r="7" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
+const EloIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <text x="24" y="20" textAnchor="middle" fontSize="10" fontWeight="bold">elo</text>
+  </svg>
+);
+
+const HipercardIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <text x="24" y="18" textAnchor="middle" fontSize="7" fontWeight="bold">hipercard</text>
+  </svg>
+);
+
+const PixIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M24 8 L30 14 L24 20 L18 14 Z" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M24 12 L30 18 L24 24 L18 18 Z" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
+const BoletoIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
+    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="8" y="10" width="2" height="12" fill="currentColor"/>
+    <rect x="12" y="10" width="1" height="12" fill="currentColor"/>
+    <rect x="15" y="10" width="3" height="12" fill="currentColor"/>
+    <rect x="20" y="10" width="1" height="12" fill="currentColor"/>
+    <rect x="23" y="10" width="2" height="12" fill="currentColor"/>
+    <rect x="27" y="10" width="1" height="12" fill="currentColor"/>
+    <rect x="30" y="10" width="3" height="12" fill="currentColor"/>
+    <rect x="35" y="10" width="1" height="12" fill="currentColor"/>
+    <rect x="38" y="10" width="2" height="12" fill="currentColor"/>
+  </svg>
+);
 
 const Footer = () => {
   return (
@@ -12,13 +65,14 @@ const Footer = () => {
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
               Moda fitness de qualidade para quem busca estilo e performance nos treinos.
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20 transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 bg-primary-foreground/10 rounded-full hover:bg-primary-foreground/20 transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
+            {/* Payment Methods */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <VisaIcon />
+              <MastercardIcon />
+              <HipercardIcon />
+              <EloIcon />
+              <PixIcon />
+              <BoletoIcon />
             </div>
           </div>
 
