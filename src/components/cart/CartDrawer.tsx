@@ -10,7 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useCartStore } from "@/stores/cartStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { toast } from "sonner";
@@ -50,7 +51,7 @@ export const CartDrawer = () => {
   const handleCheckout = () => {
     if (isBelowMinimum) {
       toast.error("Pedido mínimo não atingido", {
-        description: `No atacado, o pedido mínimo é de R$ ${minimumOrder.toFixed(2)}. Faltam R$ ${remainingForMinimum.toFixed(2)} para finalizar.`,
+        description: `No atacado, o pedido mínimo é de ${formatPrice(minimumOrder)}. Faltam ${formatPrice(remainingForMinimum)} para finalizar. Considere nossa loja Varejo para compras menores.`,
       });
       return;
     }
@@ -189,19 +190,37 @@ export const CartDrawer = () => {
               </div>
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
-                {/* Minimum order warning for atacado */}
+                {/* Minimum order warning for atacado with varejo recommendation */}
                 {isAtacado && isBelowMinimum && (
-                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-3">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                          Pedido mínimo: {formatPrice(minimumOrder)}
+                          Pedido mínimo não atingido
                         </p>
-                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
-                          Faltam <strong>{formatPrice(remainingForMinimum)}</strong> para finalizar
+                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
+                          Para compras no atacado, o valor mínimo é de <strong>{formatPrice(minimumOrder)}</strong>.
+                          Faltam <strong>{formatPrice(remainingForMinimum)}</strong> para finalizar.
                         </p>
                       </div>
+                    </div>
+                    
+                    <div className="border-t border-amber-200 dark:border-amber-800 pt-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Store className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                        <p className="text-xs font-medium text-amber-800 dark:text-amber-400">
+                          Prefere comprar em menor quantidade?
+                        </p>
+                      </div>
+                      <Link 
+                        to="/varejo" 
+                        onClick={() => setIsOpen(false)}
+                        className="inline-flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/50 hover:bg-amber-200 dark:hover:bg-amber-900 rounded-lg transition-colors"
+                      >
+                        <Store className="w-4 h-4" />
+                        Ir para loja Varejo
+                      </Link>
                     </div>
                   </div>
                 )}
