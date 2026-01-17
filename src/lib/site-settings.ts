@@ -8,14 +8,14 @@ export interface HeroSettings {
   promo_text: string;
   promo_subtitle: string;
   button_text: string;
-  [key: string]: string; // Index signature
+  [key: string]: string;
 }
 
 export interface StoreSelectorSettings {
   atacado_image: string;
   varejo_image: string;
   background_image: string;
-  [key: string]: string; // Index signature
+  [key: string]: string;
 }
 
 export interface FeatureItem {
@@ -26,7 +26,7 @@ export interface FeatureItem {
 
 export interface FeaturesSettings {
   items: FeatureItem[];
-  [key: string]: FeatureItem[] | string; // Index signature
+  [key: string]: FeatureItem[] | string;
 }
 
 export interface ContactSettings {
@@ -60,7 +60,25 @@ export interface ProductSectionsSettings {
   sections: ProductSection[];
 }
 
+export interface InstagramSettings {
+  username: string;
+  curator_feed_id: string;
+  show_section: boolean;
+  button_text: string;
+  subtitle_text: string;
+}
+
+// Cache for settings to reduce DB calls
+const settingsCache = new Map<string, { data: unknown; timestamp: number }>();
+const CACHE_TTL = 30000; // 30 seconds
+
 export async function getSiteSetting<T>(key: string): Promise<T | null> {
+  // Check cache first
+  const cached = settingsCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data as T;
+  }
+
   const { data, error } = await supabase
     .from('site_settings')
     .select('setting_value')
@@ -72,21 +90,46 @@ export async function getSiteSetting<T>(key: string): Promise<T | null> {
     return null;
   }
 
-  return data?.setting_value as T | null;
+  const result = data?.setting_value as T | null;
+  
+  // Update cache
+  if (result !== null) {
+    settingsCache.set(key, { data: result, timestamp: Date.now() });
+  }
+
+  return result;
 }
 
 export async function updateSiteSetting<T>(key: string, value: T): Promise<boolean> {
+  // Use upsert for better reliability
   const { error } = await supabase
     .from('site_settings')
-    .update({ setting_value: value as unknown as Json })
-    .eq('setting_key', key);
+    .upsert(
+      { 
+        setting_key: key, 
+        setting_value: value as unknown as Json,
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: 'setting_key' }
+    );
 
   if (error) {
     console.error('Error updating setting:', error);
     return false;
   }
 
+  // Invalidate cache
+  settingsCache.delete(key);
+
   return true;
+}
+
+export function invalidateSettingsCache(key?: string) {
+  if (key) {
+    settingsCache.delete(key);
+  } else {
+    settingsCache.clear();
+  }
 }
 
 export async function uploadSiteImage(file: File, path: string): Promise<string | null> {
@@ -104,4 +147,65 @@ export async function uploadSiteImage(file: File, path: string): Promise<string 
     .getPublicUrl(data.path);
 
   return urlData.publicUrl;
+}
+
+// Admin user management
+export async function createAdminUser(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Create user via Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/admin/login`
+      }
+    });
+
+    if (authError) {
+      return { success: false, error: authError.message };
+    }
+
+    if (!authData.user) {
+      return { success: false, error: 'Erro ao criar usuário' };
+    }
+
+    // Add admin role - this will be handled by the trigger or edge function
+    const { error: roleError } = await supabase
+      .from('user_roles')
+      .insert({
+        user_id: authData.user.id,
+        role: 'admin' as const
+      });
+
+    if (roleError) {
+      console.error('Error adding role:', roleError);
+      // User was created but role wasn't added - still return success
+      return { success: true, error: 'Usuário criado, mas role pode precisar ser adicionada manualmente' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error creating admin:', error);
+    return { success: false, error: 'Erro inesperado ao criar administrador' };
+  }
+}
+
+export async function listAdminUsers(): Promise<{ id: string; email: string; created_at: string }[]> {
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('user_id, created_at')
+    .eq('role', 'admin');
+
+  if (error || !data) {
+    console.error('Error listing admins:', error);
+    return [];
+  }
+
+  // Get user emails from auth - we need to do this via edge function or store emails
+  // For now, return what we have
+  return data.map(row => ({
+    id: row.user_id,
+    email: '', // Will be filled by auth context
+    created_at: row.created_at
+  }));
 }
