@@ -761,7 +761,7 @@ const AdminPanel = () => {
                 
                 {/* Editor */}
                 {features?.items.map((item, index) => (
-                  <div key={index} className="grid md:grid-cols-4 gap-4 p-4 bg-secondary rounded-lg items-end">
+                  <div key={index} className="grid md:grid-cols-5 gap-4 p-4 bg-secondary rounded-lg items-end">
                     <div className="space-y-2">
                       <Label>Ícone</Label>
                       <select
@@ -812,6 +812,38 @@ const AdminPanel = () => {
                         }}
                       />
                     </div>
+                    {/* Reorder Buttons */}
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          if (index === 0) return;
+                          const newItems = [...(features?.items || [])];
+                          [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+                          setFeatures({ items: newItems });
+                        }}
+                        disabled={index === 0}
+                        title="Mover para cima"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          if (index === (features?.items.length || 0) - 1) return;
+                          const newItems = [...(features?.items || [])];
+                          [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+                          setFeatures({ items: newItems });
+                        }}
+                        disabled={index === (features?.items.length || 0) - 1}
+                        title="Mover para baixo"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    {/* Delete Button */}
                     <Button
                       variant="ghost"
                       size="icon"
