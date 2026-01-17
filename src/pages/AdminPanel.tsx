@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, createAdminUser } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2 } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
+import VideosEditor from "@/components/admin/VideosEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -44,6 +45,7 @@ const AdminPanel = () => {
   const [sectionsVarejo, setSectionsVarejo] = useState<ProductSectionsSettings | null>(null);
   const [instagramSettings, setInstagramSettings] = useState<InstagramSettings | null>(null);
   const [atacadoSettings, setAtacadoSettings] = useState<AtacadoSettings | null>(null);
+  const [videosSettings, setVideosSettings] = useState<VideosSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
@@ -101,7 +103,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -112,6 +114,7 @@ const AdminPanel = () => {
         getSiteSetting<ProductSectionsSettings>('product_sections_varejo'),
         getSiteSetting<InstagramSettings>('instagram_settings'),
         getSiteSetting<AtacadoSettings>('atacado_settings'),
+        getSiteSetting<VideosSettings>('videos_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -149,6 +152,7 @@ const AdminPanel = () => {
         show_minimum_order_notice: true,
         minimum_order_message: "O pedido mínimo é de R$ 200,00"
       });
+      setVideosSettings(videos || { videos: [] });
     };
     
     if (isAdmin) {
@@ -346,13 +350,17 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 max-w-6xl gap-1">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 max-w-6xl gap-1">
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
               Entrada
             </TabsTrigger>
             <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
             <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
+            <TabsTrigger value="videos" className="text-xs">
+              <Play className="w-3 h-3 mr-1" />
+              Vídeos
+            </TabsTrigger>
             <TabsTrigger value="atacado-config" className="text-xs">
               <ShoppingBag className="w-3 h-3 mr-1" />
               Atacado
@@ -472,6 +480,36 @@ const AdminPanel = () => {
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Salvando..." : "Salvar Configurações do Hero Atacado"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Videos Settings */}
+          <TabsContent value="videos">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Play className="w-5 h-5" />
+                  Vídeos das Modelos
+                </CardTitle>
+                <CardDescription>
+                  Gerencie os vídeos exibidos na seção "Veja Nossos Looks" das páginas iniciais
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <VideosEditor
+                  settings={videosSettings}
+                  onChange={setVideosSettings}
+                />
+                <Button 
+                  onClick={() => saveSettings('videos_settings', videosSettings)}
+                  disabled={saving}
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Vídeos"}
                 </Button>
               </CardContent>
             </Card>

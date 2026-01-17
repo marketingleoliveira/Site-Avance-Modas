@@ -89,6 +89,17 @@ export interface AtacadoSettings {
   minimum_order_message: string;
 }
 
+export interface VideoItem {
+  id: string;
+  video_url: string;
+  thumbnail_url: string;
+  title: string;
+}
+
+export interface VideosSettings {
+  videos: VideoItem[];
+}
+
 // Cache for settings to reduce DB calls
 const settingsCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30000; // 30 seconds
