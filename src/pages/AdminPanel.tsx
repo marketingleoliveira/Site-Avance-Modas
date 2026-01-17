@@ -9,8 +9,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
+
+interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  subscribed_at: string;
+  source: string;
+  is_active: boolean;
+}
 
 const AdminPanel = () => {
   const { user, isAdmin, loading: authLoading, signOut } = useAuth();
@@ -24,6 +32,8 @@ const AdminPanel = () => {
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings | null>(null);
   const [sectionsAtacado, setSectionsAtacado] = useState<ProductSectionsSettings | null>(null);
   const [sectionsVarejo, setSectionsVarejo] = useState<ProductSectionsSettings | null>(null);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [loadingSubscribers, setLoadingSubscribers] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -72,8 +82,71 @@ const AdminPanel = () => {
     
     if (isAdmin) {
       loadSettings();
+      loadSubscribers();
     }
   }, [isAdmin]);
+
+  const loadSubscribers = async () => {
+    setLoadingSubscribers(true);
+    try {
+      const { data, error } = await supabase
+        .from('newsletter_subscribers')
+        .select('*')
+        .order('subscribed_at', { ascending: false });
+      
+      if (error) throw error;
+      setSubscribers(data || []);
+    } catch (error) {
+      console.error('Error loading subscribers:', error);
+    } finally {
+      setLoadingSubscribers(false);
+    }
+  };
+
+  const exportSubscribers = () => {
+    if (subscribers.length === 0) {
+      toast.error("Nenhum inscrito para exportar");
+      return;
+    }
+
+    const csvContent = [
+      ['Email', 'Data de Inscrição', 'Fonte', 'Ativo'],
+      ...subscribers.map(s => [
+        s.email,
+        new Date(s.subscribed_at).toLocaleDateString('pt-BR'),
+        s.source,
+        s.is_active ? 'Sim' : 'Não'
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `newsletter_subscribers_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Lista exportada com sucesso!");
+  };
+
+  const toggleSubscriberStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .update({ is_active: !currentStatus })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setSubscribers(prev => 
+        prev.map(s => s.id === id ? { ...s, is_active: !currentStatus } : s)
+      );
+      toast.success(currentStatus ? "Inscrito desativado" : "Inscrito ativado");
+    } catch (error) {
+      console.error('Error updating subscriber:', error);
+      toast.error("Erro ao atualizar inscrito");
+    }
+  };
 
   const handleStoreSelectorImageUpload = async (file: File, imageKey: keyof StoreSelectorSettings) => {
     if (!storeSelector) return;
@@ -186,6 +259,10 @@ const AdminPanel = () => {
             <TabsTrigger value="contact" className="text-xs">
               <Phone className="w-3 h-3 mr-1" />
               Contato
+            </TabsTrigger>
+            <TabsTrigger value="newsletter" className="text-xs">
+              <Mail className="w-3 h-3 mr-1" />
+              Newsletter
             </TabsTrigger>
           </TabsList>
 
@@ -892,6 +969,93 @@ const AdminPanel = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Newsletter Subscribers */}
+          <TabsContent value="newsletter">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      Inscritos na Newsletter
+                    </CardTitle>
+                    <CardDescription>
+                      Gerencie os e-mails cadastrados na newsletter
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={loadSubscribers} disabled={loadingSubscribers}>
+                      {loadingSubscribers ? "Atualizando..." : "Atualizar"}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={exportSubscribers}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Exportar CSV
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loadingSubscribers ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+                  </div>
+                ) : subscribers.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Mail className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Nenhum inscrito ainda</p>
+                    <p className="text-sm mt-1">Os e-mails cadastrados aparecerão aqui</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground border-b pb-2">
+                      <span>Total: <strong className="text-foreground">{subscribers.length}</strong> inscritos</span>
+                      <span>Ativos: <strong className="text-green-600">{subscribers.filter(s => s.is_active).length}</strong></span>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto space-y-2">
+                      {subscribers.map((subscriber) => (
+                        <div 
+                          key={subscriber.id} 
+                          className={`flex items-center justify-between p-3 rounded-lg border ${
+                            subscriber.is_active ? 'bg-background' : 'bg-secondary/50 opacity-60'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{subscriber.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Inscrito em {new Date(subscriber.subscribed_at).toLocaleDateString('pt-BR', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              subscriber.is_active 
+                                ? 'bg-green-100 text-green-700' 
+                                : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              {subscriber.is_active ? 'Ativo' : 'Inativo'}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleSubscriberStatus(subscriber.id, subscriber.is_active)}
+                            >
+                              {subscriber.is_active ? 'Desativar' : 'Ativar'}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
