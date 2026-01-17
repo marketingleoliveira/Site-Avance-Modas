@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useProductSections, useLayoutSettings } from "@/hooks/useSiteSettings";
 import { fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
@@ -123,16 +123,47 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     loadProducts();
   }, [type]);
 
-  const filteredProducts = useMemo(() => {
-    if (activeFilter === 'todos') {
-      return allProducts;
-    }
-    return allProducts.filter(product => 
-      (product.node.tags || []).some(tag =>
-        tag.toLowerCase() === activeFilter.toLowerCase()
-      )
-    );
-  }, [allProducts, activeFilter]);
+  // When filter changes, fetch products by tag directly from Shopify API
+  const [filteredProducts, setFilteredProducts] = useState<ShopifyProduct[]>([]);
+  const [filterLoading, setFilterLoading] = useState(false);
+
+  useEffect(() => {
+    const loadFilteredProducts = async () => {
+      if (activeFilter === 'todos') {
+        setFilteredProducts(allProducts);
+        return;
+      }
+      
+      setFilterLoading(true);
+      try {
+        // Fetch products by tag directly from Shopify to ensure we get all products with that tag
+        const productsByTag = await fetchProductsByTag(activeFilter, 50);
+        
+        // Filter to only show products that belong to the current type (ATACADO/VAREJO)
+        const typeFilteredProducts = productsByTag.filter(product =>
+          (product.node.tags || []).some(tag => 
+            tag.toUpperCase().includes(type)
+          )
+        );
+        
+        setFilteredProducts(typeFilteredProducts);
+      } catch (error) {
+        console.error('Error fetching products by tag:', error);
+        // Fallback to local filtering
+        setFilteredProducts(
+          allProducts.filter(product => 
+            (product.node.tags || []).some(tag =>
+              tag.toLowerCase() === activeFilter.toLowerCase()
+            )
+          )
+        );
+      } finally {
+        setFilterLoading(false);
+      }
+    };
+
+    loadFilteredProducts();
+  }, [activeFilter, allProducts, type]);
 
   const handleAddToCart = (product: ShopifyProduct, e: React.MouseEvent) => {
     e.preventDefault();
@@ -178,7 +209,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   const colsDesktop = layoutSettings?.products_columns_desktop || "5";
   const colsMobile = layoutSettings?.products_columns_mobile || "2";
 
-  if (sectionsLoading || loading) {
+  if (sectionsLoading || loading || filterLoading) {
     return (
       <section className="py-12">
         <div className="container">
