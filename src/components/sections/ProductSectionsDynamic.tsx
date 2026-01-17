@@ -208,12 +208,6 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
             <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight uppercase">
               {sectionTitle}
             </h2>
-            <Link 
-              to={`/categoria/todos`}
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
-            >
-              Ver Todos →
-            </Link>
           </div>
 
           {/* Category Filters */}
@@ -272,7 +266,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
               }
             `}</style>
             <div className="grid products-grid gap-4 md:gap-6">
-              {filteredProducts.slice(0, 10).map((product) => {
+              {filteredProducts.slice(0, 8).map((product) => {
                 const colors = getProductColors(product);
                 
                 return (
@@ -343,6 +337,21 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                 );
               })}
             </div>
+
+            {/* Ver Todos Button - Prominent */}
+            {filteredProducts.length > 8 && (
+              <div className="flex justify-center mt-10">
+                <Link
+                  to={activeFilter === 'todos' ? '/categoria/todos' : `/categoria/${activeFilter}`}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-wider rounded-full hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <span>Ver Todos os Produtos</span>
+                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Link>
+              </div>
+            )}
           </>
         )}
       </div>
