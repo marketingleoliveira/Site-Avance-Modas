@@ -236,8 +236,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
         {/* Section Header with Category Filters */}
         <div className="mb-10">
           {/* Title Row */}
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight uppercase">
+          <div className="flex items-center justify-center mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight uppercase text-center">
               {sectionTitle}
             </h2>
           </div>
