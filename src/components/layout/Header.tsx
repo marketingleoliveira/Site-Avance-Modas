@@ -34,7 +34,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Avance" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="Avance" className="h-14 w-auto object-contain" />
           </Link>
 
           {/* Desktop Navigation */}
