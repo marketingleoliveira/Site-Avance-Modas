@@ -8,12 +8,12 @@ import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
+import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Store } from "lucide-react";
@@ -21,14 +21,15 @@ import { ShoppingBag, Store } from "lucide-react";
 const InicioAtacado = () => {
   const [showNotice, setShowNotice] = useState(false);
   const navigate = useNavigate();
+  const { settings: atacadoSettings, loading } = useAtacadoSettings();
 
   useEffect(() => {
     // Check if user has already seen the notice in this session
     const hasSeenNotice = sessionStorage.getItem("atacado_notice_seen");
-    if (!hasSeenNotice) {
+    if (!hasSeenNotice && !loading && atacadoSettings.show_minimum_order_notice) {
       setShowNotice(true);
     }
-  }, []);
+  }, [loading, atacadoSettings.show_minimum_order_notice]);
 
   const handleContinueAtacado = () => {
     sessionStorage.setItem("atacado_notice_seen", "true");
@@ -68,7 +69,7 @@ const InicioAtacado = () => {
                   Pedido Mínimo
                 </p>
                 <p className="text-2xl font-bold text-amber-900 dark:text-amber-300 mt-1">
-                  R$ 200,00
+                  R$ {atacadoSettings.minimum_order.toFixed(2)}
                 </p>
               </div>
               

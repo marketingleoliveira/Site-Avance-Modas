@@ -7,10 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, createAdminUser } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 
 interface NewsletterSubscriber {
@@ -40,6 +40,7 @@ const AdminPanel = () => {
   const [sectionsAtacado, setSectionsAtacado] = useState<ProductSectionsSettings | null>(null);
   const [sectionsVarejo, setSectionsVarejo] = useState<ProductSectionsSettings | null>(null);
   const [instagramSettings, setInstagramSettings] = useState<InstagramSettings | null>(null);
+  const [atacadoSettings, setAtacadoSettings] = useState<AtacadoSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
@@ -59,7 +60,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -69,6 +70,7 @@ const AdminPanel = () => {
         getSiteSetting<ProductSectionsSettings>('product_sections_atacado'),
         getSiteSetting<ProductSectionsSettings>('product_sections_varejo'),
         getSiteSetting<InstagramSettings>('instagram_settings'),
+        getSiteSetting<AtacadoSettings>('atacado_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -100,6 +102,11 @@ const AdminPanel = () => {
         show_section: true,
         button_text: "Ver nosso Instagram",
         subtitle_text: "Siga-nos no Instagram"
+      });
+      setAtacadoSettings(atacadoConfig || {
+        minimum_order: 200,
+        show_minimum_order_notice: true,
+        minimum_order_message: "O pedido mínimo é de R$ 200,00"
       });
     };
     
@@ -303,13 +310,17 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 max-w-6xl gap-1">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-11 max-w-6xl gap-1">
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
               Entrada
             </TabsTrigger>
             <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
             <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
+            <TabsTrigger value="atacado-config" className="text-xs">
+              <ShoppingBag className="w-3 h-3 mr-1" />
+              Atacado
+            </TabsTrigger>
             <TabsTrigger value="features" className="text-xs">
               <Settings className="w-3 h-3 mr-1" />
               Benefícios
@@ -455,6 +466,81 @@ const AdminPanel = () => {
                 </div>
                 <Button 
                   onClick={() => saveSettings('hero_atacado', heroAtacado)}
+                  disabled={saving}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Atacado Config Settings */}
+          <TabsContent value="atacado-config">
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações do Atacado</CardTitle>
+                <CardDescription>
+                  Configure o pedido mínimo e regras para vendas no atacado
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Pedido Mínimo (R$)</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="10"
+                        value={atacadoSettings?.minimum_order || 200}
+                        onChange={(e) => setAtacadoSettings(prev => prev ? {...prev, minimum_order: parseFloat(e.target.value) || 0} : null)}
+                        placeholder="200"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Valor mínimo para finalizar compra no atacado
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
+                      <div>
+                        <Label className="text-sm font-medium">Mostrar Aviso de Pedido Mínimo</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Exibe popup ao entrar na página de atacado
+                        </p>
+                      </div>
+                      <Switch
+                        checked={atacadoSettings?.show_minimum_order_notice ?? true}
+                        onCheckedChange={(checked) => setAtacadoSettings(prev => prev ? {...prev, show_minimum_order_notice: checked} : null)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Mensagem do Aviso</Label>
+                    <Input
+                      value={atacadoSettings?.minimum_order_message || ''}
+                      onChange={(e) => setAtacadoSettings(prev => prev ? {...prev, minimum_order_message: e.target.value} : null)}
+                      placeholder="O pedido mínimo é de R$ 200,00"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Mensagem exibida no popup e no carrinho
+                    </p>
+                    
+                    {/* Preview */}
+                    <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
+                        Preview do Aviso:
+                      </p>
+                      <p className="text-lg font-bold text-amber-900 dark:text-amber-300 mt-1">
+                        Pedido Mínimo: R$ {(atacadoSettings?.minimum_order || 200).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={() => saveSettings('atacado_settings', atacadoSettings)}
                   disabled={saving}
                 >
                   <Save className="w-4 h-4 mr-2" />
