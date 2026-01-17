@@ -53,7 +53,7 @@ const NewsletterSection = () => {
       <div className="container">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-            Receba 10% OFF na primeira compra
+            Receba lançamentos em primeira mão
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
             Cadastre-se para novidades e promoções exclusivas.
