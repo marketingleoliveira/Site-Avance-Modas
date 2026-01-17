@@ -25,6 +25,9 @@ const InicioAtacado = () => {
   const { settings: atacadoSettings, loading } = useAtacadoSettings();
 
   useEffect(() => {
+    // Set store type for category pages
+    sessionStorage.setItem("store_type", "atacado");
+    
     // Check if user has already seen the notice in this session
     const hasSeenNotice = sessionStorage.getItem("atacado_notice_seen");
     if (!hasSeenNotice && !loading && atacadoSettings.show_minimum_order_notice) {
