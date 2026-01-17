@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { 
   ImagePlus, 
   Type, 
@@ -12,10 +13,17 @@ import {
   Eye, 
   Upload,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  GripVertical,
+  Copy,
+  Clock
 } from "lucide-react";
-import { HeroSettings, uploadSiteImage } from "@/lib/site-settings";
+import { HeroSettings, HeroSlide, uploadSiteImage } from "@/lib/site-settings";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface HeroEditorProps {
   settings: HeroSettings | null;
@@ -23,29 +31,109 @@ interface HeroEditorProps {
   type: 'atacado' | 'varejo';
 }
 
+const createEmptySlide = (): HeroSlide => ({
+  id: `slide-${Date.now()}`,
+  image_url: '',
+  title: '',
+  subtitle: '',
+  promo_text: '',
+  promo_subtitle: '',
+  button_text: 'VER COLEÇÃO',
+  button_link: '#',
+});
+
 const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
   const [uploading, setUploading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  // Convert legacy settings to slides array
+  const getSlides = (): HeroSlide[] => {
+    if (settings?.slides?.length) {
+      return settings.slides;
+    }
+    // Convert single slide to array
+    return [{
+      id: 'default',
+      image_url: settings?.image_url || '',
+      title: settings?.title || '',
+      subtitle: settings?.subtitle || '',
+      promo_text: settings?.promo_text || '',
+      promo_subtitle: settings?.promo_subtitle || '',
+      button_text: settings?.button_text || 'VER COLEÇÃO',
+      button_link: settings?.button_link || '#',
+    }];
+  };
+
+  const slides = getSlides();
+  const currentSlide = slides[currentSlideIndex] || slides[0];
+
+  const updateSlides = (newSlides: HeroSlide[]) => {
+    onChange({
+      ...settings,
+      slides: newSlides,
+      autoplay: settings?.autoplay ?? true,
+      autoplay_interval: settings?.autoplay_interval ?? 5000,
+    });
+  };
+
+  const updateCurrentSlide = (field: keyof HeroSlide, value: string) => {
+    const newSlides = [...slides];
+    newSlides[currentSlideIndex] = { ...currentSlide, [field]: value };
+    updateSlides(newSlides);
+  };
 
   const handleImageUpload = async (file: File) => {
-    if (!settings) return;
-    
     setUploading(true);
-    const path = `hero_${type}/image_url-${Date.now()}.${file.name.split('.').pop()}`;
+    const path = `hero_${type}/slide-${currentSlideIndex}-${Date.now()}.${file.name.split('.').pop()}`;
     const url = await uploadSiteImage(file, path);
     setUploading(false);
     
     if (url) {
-      onChange({ ...settings, image_url: url });
+      updateCurrentSlide('image_url', url);
       toast.success("Imagem enviada com sucesso!");
     } else {
       toast.error("Erro ao enviar imagem");
     }
   };
 
-  const updateField = (field: keyof HeroSettings, value: string) => {
-    if (!settings) return;
-    onChange({ ...settings, [field]: value });
+  const addSlide = () => {
+    const newSlides = [...slides, createEmptySlide()];
+    updateSlides(newSlides);
+    setCurrentSlideIndex(newSlides.length - 1);
+    toast.success("Novo slide adicionado!");
+  };
+
+  const duplicateSlide = () => {
+    const newSlide = { ...currentSlide, id: `slide-${Date.now()}` };
+    const newSlides = [...slides, newSlide];
+    updateSlides(newSlides);
+    setCurrentSlideIndex(newSlides.length - 1);
+    toast.success("Slide duplicado!");
+  };
+
+  const deleteSlide = () => {
+    if (slides.length <= 1) {
+      toast.error("Você precisa ter pelo menos um slide");
+      return;
+    }
+    const newSlides = slides.filter((_, i) => i !== currentSlideIndex);
+    updateSlides(newSlides);
+    setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1));
+    toast.success("Slide removido!");
+  };
+
+  const moveSlide = (direction: 'left' | 'right') => {
+    const newIndex = direction === 'left' 
+      ? Math.max(0, currentSlideIndex - 1)
+      : Math.min(slides.length - 1, currentSlideIndex + 1);
+    
+    if (newIndex === currentSlideIndex) return;
+
+    const newSlides = [...slides];
+    [newSlides[currentSlideIndex], newSlides[newIndex]] = [newSlides[newIndex], newSlides[currentSlideIndex]];
+    updateSlides(newSlides);
+    setCurrentSlideIndex(newIndex);
   };
 
   if (!settings) {
@@ -61,27 +149,72 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Preview Toggle */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold capitalize">
           Hero {type === 'atacado' ? 'Atacado' : 'Varejo'}
         </h3>
-        <Button 
-          variant={previewMode ? "default" : "outline"} 
-          size="sm"
-          onClick={() => setPreviewMode(!previewMode)}
-        >
-          <Eye className="w-4 h-4 mr-2" />
-          {previewMode ? 'Editando' : 'Preview'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={addSlide}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Novo Slide
+          </Button>
+          <Button 
+            variant={previewMode ? "default" : "outline"} 
+            size="sm"
+            onClick={() => setPreviewMode(!previewMode)}
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            {previewMode ? 'Editando' : 'Preview'}
+          </Button>
+        </div>
       </div>
+
+      {/* Slides Thumbnails */}
+      {slides.length > 1 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              onClick={() => setCurrentSlideIndex(index)}
+              className={cn(
+                "relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition-all",
+                index === currentSlideIndex 
+                  ? "border-primary ring-2 ring-primary/20" 
+                  : "border-border hover:border-primary/50"
+              )}
+            >
+              {slide.image_url ? (
+                <img 
+                  src={slide.image_url} 
+                  alt={`Slide ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-secondary flex items-center justify-center">
+                  <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                </div>
+              )}
+              <span className="absolute bottom-1 right-1 text-[10px] font-bold bg-black/60 text-white px-1.5 rounded">
+                {index + 1}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Live Preview */}
       <Card className="overflow-hidden">
         <div 
-          className="relative h-[400px] bg-cover bg-center transition-all duration-500"
+          className="relative h-[350px] bg-cover bg-center transition-all duration-500"
           style={{ 
-            backgroundImage: settings.image_url ? `url(${settings.image_url})` : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.8) 100%)'
+            backgroundImage: currentSlide.image_url 
+              ? `url(${currentSlide.image_url})` 
+              : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.8) 100%)'
           }}
         >
           {/* Overlay */}
@@ -91,39 +224,81 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
           <div className="absolute inset-0 flex items-center">
             <div className="container">
               <div className="max-w-lg space-y-4 text-white">
-                {settings.promo_text && (
+                {currentSlide.promo_text && (
                   <div className="inline-block">
                     <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold tracking-wider uppercase">
-                      {settings.promo_text}
-                      {settings.promo_subtitle && (
-                        <span className="ml-2 text-white/80">{settings.promo_subtitle}</span>
+                      {currentSlide.promo_text}
+                      {currentSlide.promo_subtitle && (
+                        <span className="ml-2 text-white/80">{currentSlide.promo_subtitle}</span>
                       )}
                     </span>
                   </div>
                 )}
                 
-                {settings.title && (
-                  <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-                    {settings.title}
+                {currentSlide.title && (
+                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+                    {currentSlide.title}
                   </h1>
                 )}
                 
-                {settings.subtitle && (
-                  <p className="text-lg text-white/90">
-                    {settings.subtitle}
+                {currentSlide.subtitle && (
+                  <p className="text-base text-white/90">
+                    {currentSlide.subtitle}
                   </p>
                 )}
                 
-                {settings.button_text && (
+                {currentSlide.button_text && (
                   <Button size="lg" className="bg-white text-black hover:bg-white/90">
-                    {settings.button_text}
+                    {currentSlide.button_text}
                   </Button>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Edit Overlay */}
+          {/* Slide Actions Overlay */}
+          {!previewMode && (
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              {slides.length > 1 && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => moveSlide('left')}
+                    disabled={currentSlideIndex === 0}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => moveSlide('right')}
+                    disabled={currentSlideIndex === slides.length - 1}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </>
+              )}
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={duplicateSlide}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+              {slides.length > 1 && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={deleteSlide}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Upload Overlay */}
           {!previewMode && (
             <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
               <label className="cursor-pointer">
@@ -137,7 +312,7 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                     {uploading ? 'Enviando...' : 'Clique para trocar a imagem'}
                   </span>
                   <span className="text-white/60 text-sm">
-                    Recomendado: 1920x800px
+                    Slide {currentSlideIndex + 1} de {slides.length}
                   </span>
                 </div>
                 <input
@@ -153,8 +328,60 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
               </label>
             </div>
           )}
+
+          {/* Dots indicator */}
+          {slides.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlideIndex(index)}
+                  className={cn(
+                    "transition-all duration-300 rounded-full",
+                    index === currentSlideIndex 
+                      ? "w-6 h-2 bg-white" 
+                      : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                  )}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </Card>
+
+      {/* Autoplay Settings */}
+      {slides.length > 1 && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-primary" />
+                <div>
+                  <h4 className="font-semibold">Autoplay</h4>
+                  <p className="text-sm text-muted-foreground">Trocar slides automaticamente</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm text-muted-foreground">Intervalo (ms)</Label>
+                  <Input
+                    type="number"
+                    min="1000"
+                    step="500"
+                    value={settings.autoplay_interval || 5000}
+                    onChange={(e) => onChange({ ...settings, autoplay_interval: parseInt(e.target.value) || 5000 })}
+                    className="w-24"
+                  />
+                </div>
+                <Switch
+                  checked={settings.autoplay !== false}
+                  onCheckedChange={(checked) => onChange({ ...settings, autoplay: checked })}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Editor Fields */}
       {!previewMode && (
@@ -170,8 +397,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Texto Principal</Label>
                   <Input
-                    value={settings.promo_text || ''}
-                    onChange={(e) => updateField('promo_text', e.target.value)}
+                    value={currentSlide.promo_text || ''}
+                    onChange={(e) => updateCurrentSlide('promo_text', e.target.value)}
                     placeholder="ATÉ 30% OFF"
                     className="font-medium"
                   />
@@ -179,8 +406,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Subtítulo</Label>
                   <Input
-                    value={settings.promo_subtitle || ''}
-                    onChange={(e) => updateField('promo_subtitle', e.target.value)}
+                    value={currentSlide.promo_subtitle || ''}
+                    onChange={(e) => updateCurrentSlide('promo_subtitle', e.target.value)}
                     placeholder="ATACADO"
                   />
                 </div>
@@ -199,8 +426,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Título Principal</Label>
                   <Input
-                    value={settings.title || ''}
-                    onChange={(e) => updateField('title', e.target.value)}
+                    value={currentSlide.title || ''}
+                    onChange={(e) => updateCurrentSlide('title', e.target.value)}
                     placeholder="Coleção Verão 2026"
                     className="text-lg font-bold"
                   />
@@ -208,8 +435,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Subtítulo</Label>
                   <Textarea
-                    value={settings.subtitle || ''}
-                    onChange={(e) => updateField('subtitle', e.target.value)}
+                    value={currentSlide.subtitle || ''}
+                    onChange={(e) => updateCurrentSlide('subtitle', e.target.value)}
                     placeholder="Descubra as últimas tendências em moda fitness"
                     rows={2}
                   />
@@ -229,16 +456,16 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Texto do Botão</Label>
                   <Input
-                    value={settings.button_text || ''}
-                    onChange={(e) => updateField('button_text', e.target.value)}
+                    value={currentSlide.button_text || ''}
+                    onChange={(e) => updateCurrentSlide('button_text', e.target.value)}
                     placeholder="COMPRE AGORA"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm text-muted-foreground">Link do Botão</Label>
                   <Input
-                    value={settings.button_link || ''}
-                    onChange={(e) => updateField('button_link', e.target.value)}
+                    value={currentSlide.button_link || ''}
+                    onChange={(e) => updateCurrentSlide('button_link', e.target.value)}
                     placeholder="/categoria/lancamentos"
                   />
                 </div>
@@ -255,8 +482,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
               </div>
               <div className="space-y-2">
                 <Input
-                  value={settings.image_url || ''}
-                  onChange={(e) => updateField('image_url', e.target.value)}
+                  value={currentSlide.image_url || ''}
+                  onChange={(e) => updateCurrentSlide('image_url', e.target.value)}
                   placeholder="https://..."
                   className="font-mono text-sm"
                 />
