@@ -18,24 +18,11 @@ const AdminLogin = () => {
 
   // If already logged in as admin, redirect to admin panel
   useEffect(() => {
-    if (!authLoading && user) {
-      if (isAdmin) {
-        navigate("/admin");
-      } else if (!loading) {
-        // User is logged in but not admin - show error after auth check completes
-        // Give a small delay to allow role check to complete
-        const timer = setTimeout(() => {
-          if (!isAdmin) {
-            toast.error("Acesso negado", {
-              description: "Você não tem permissão de administrador.",
-            });
-            supabase.auth.signOut();
-          }
-        }, 2000);
-        return () => clearTimeout(timer);
-      }
+    if (!authLoading && user && isAdmin) {
+      console.log('Admin detected, redirecting to /admin');
+      navigate("/admin", { replace: true });
     }
-  }, [user, isAdmin, authLoading, loading, navigate]);
+  }, [user, isAdmin, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,11 +66,12 @@ const AdminLogin = () => {
       return;
     }
 
-    // Wait a moment for auth state to propagate, then check admin status
-    toast.success("Login realizado! Verificando permissões...");
+    toast.success("Login realizado! Redirecionando...");
     
-    // Keep loading state while we verify admin status
-    // The useEffect above will handle the redirect once isAdmin is set
+    // Give time for auth state to update, then redirect
+    setTimeout(() => {
+      navigate("/admin", { replace: true });
+    }, 500);
   };
 
   return (

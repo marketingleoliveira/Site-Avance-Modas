@@ -162,7 +162,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-primary-foreground/60">
-            © 2025 Avance. Todos os direitos reservados.
+            © 2026 Avance. Todos os direitos reservados.
           </p>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/60">
             <a href="/" className="hover:text-primary-foreground transition-colors">Política de Privacidade</a>
