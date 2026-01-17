@@ -37,6 +37,29 @@ export interface ContactSettings {
   [key: string]: string;
 }
 
+export interface LayoutSettings {
+  features_gap: string;
+  features_columns_mobile: string;
+  features_columns_desktop: string;
+  products_gap: string;
+  products_columns_mobile: string;
+  products_columns_desktop: string;
+  [key: string]: string;
+}
+
+export interface ProductSection {
+  id: string;
+  title: string;
+  subtitle: string;
+  tag_filter: string;
+  limit: number;
+  order: number;
+}
+
+export interface ProductSectionsSettings {
+  sections: ProductSection[];
+}
+
 export async function getSiteSetting<T>(key: string): Promise<T | null> {
   const { data, error } = await supabase
     .from('site_settings')

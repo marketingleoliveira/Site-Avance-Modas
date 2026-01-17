@@ -6,10 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 
 const AdminPanel = () => {
@@ -21,6 +21,9 @@ const AdminPanel = () => {
   const [storeSelector, setStoreSelector] = useState<StoreSelectorSettings | null>(null);
   const [features, setFeatures] = useState<FeaturesSettings | null>(null);
   const [contactSettings, setContactSettings] = useState<ContactSettings | null>(null);
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings | null>(null);
+  const [sectionsAtacado, setSectionsAtacado] = useState<ProductSectionsSettings | null>(null);
+  const [sectionsVarejo, setSectionsVarejo] = useState<ProductSectionsSettings | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -31,12 +34,15 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
         getSiteSetting<FeaturesSettings>('features'),
         getSiteSetting<ContactSettings>('contact_settings'),
+        getSiteSetting<LayoutSettings>('layout_settings'),
+        getSiteSetting<ProductSectionsSettings>('product_sections_atacado'),
+        getSiteSetting<ProductSectionsSettings>('product_sections_varejo'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -47,6 +53,20 @@ const AdminPanel = () => {
         email: "contato@avancemodas.com.br",
         address: "Endereço da loja",
         instagram: "@avancemodas"
+      });
+      setLayoutSettings(layout || {
+        features_gap: "6",
+        features_columns_mobile: "2",
+        features_columns_desktop: "5",
+        products_gap: "6",
+        products_columns_mobile: "2",
+        products_columns_desktop: "4"
+      });
+      setSectionsAtacado(secAtacado || {
+        sections: [{ id: "main", title: "Produtos Atacado", subtitle: "", tag_filter: "", limit: 8, order: 1 }]
+      });
+      setSectionsVarejo(secVarejo || {
+        sections: [{ id: "main", title: "Produtos Varejo", subtitle: "", tag_filter: "", limit: 8, order: 1 }]
       });
     };
     
@@ -144,19 +164,27 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-3xl">
-            <TabsTrigger value="selector">
-              <Image className="w-4 h-4 mr-2" />
-              Página Inicial
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 max-w-5xl gap-1">
+            <TabsTrigger value="selector" className="text-xs">
+              <Image className="w-3 h-3 mr-1" />
+              Entrada
             </TabsTrigger>
-            <TabsTrigger value="atacado">Hero Atacado</TabsTrigger>
-            <TabsTrigger value="varejo">Hero Varejo</TabsTrigger>
-            <TabsTrigger value="features">
-              <Settings className="w-4 h-4 mr-2" />
+            <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
+            <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
+            <TabsTrigger value="features" className="text-xs">
+              <Settings className="w-3 h-3 mr-1" />
               Benefícios
             </TabsTrigger>
-            <TabsTrigger value="contact">
-              <Phone className="w-4 h-4 mr-2" />
+            <TabsTrigger value="layout" className="text-xs">
+              <Layout className="w-3 h-3 mr-1" />
+              Layout
+            </TabsTrigger>
+            <TabsTrigger value="sections" className="text-xs">
+              <Grid className="w-3 h-3 mr-1" />
+              Seções
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="text-xs">
+              <Phone className="w-3 h-3 mr-1" />
               Contato
             </TabsTrigger>
           </TabsList>
@@ -469,6 +497,401 @@ const AdminPanel = () => {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Layout Settings */}
+          <TabsContent value="layout">
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações de Layout</CardTitle>
+                <CardDescription>
+                  Configure espaçamentos e número de colunas nas grades
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-foreground">Barra de Benefícios</h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Espaçamento (gap)</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.features_gap || '6'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, features_gap: e.target.value} : null)}
+                      >
+                        <option value="2">Pequeno (2)</option>
+                        <option value="4">Médio (4)</option>
+                        <option value="6">Grande (6)</option>
+                        <option value="8">Extra Grande (8)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Colunas Mobile</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.features_columns_mobile || '2'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, features_columns_mobile: e.target.value} : null)}
+                      >
+                        <option value="1">1 Coluna</option>
+                        <option value="2">2 Colunas</option>
+                        <option value="3">3 Colunas</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Colunas Desktop</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.features_columns_desktop || '5'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, features_columns_desktop: e.target.value} : null)}
+                      >
+                        <option value="3">3 Colunas</option>
+                        <option value="4">4 Colunas</option>
+                        <option value="5">5 Colunas</option>
+                        <option value="6">6 Colunas</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-foreground">Grade de Produtos</h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Espaçamento (gap)</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.products_gap || '6'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, products_gap: e.target.value} : null)}
+                      >
+                        <option value="2">Pequeno (2)</option>
+                        <option value="4">Médio (4)</option>
+                        <option value="6">Grande (6)</option>
+                        <option value="8">Extra Grande (8)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Colunas Mobile</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.products_columns_mobile || '2'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, products_columns_mobile: e.target.value} : null)}
+                      >
+                        <option value="1">1 Coluna</option>
+                        <option value="2">2 Colunas</option>
+                        <option value="3">3 Colunas</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Colunas Desktop</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={layoutSettings?.products_columns_desktop || '4'}
+                        onChange={(e) => setLayoutSettings(prev => prev ? {...prev, products_columns_desktop: e.target.value} : null)}
+                      >
+                        <option value="2">2 Colunas</option>
+                        <option value="3">3 Colunas</option>
+                        <option value="4">4 Colunas</option>
+                        <option value="5">5 Colunas</option>
+                        <option value="6">6 Colunas</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => saveSettings('layout_settings', layoutSettings)}
+                  disabled={saving}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Product Sections */}
+          <TabsContent value="sections">
+            <div className="space-y-6">
+              {/* Atacado Sections */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Seções de Produtos - Atacado</CardTitle>
+                  <CardDescription>
+                    Organize os produtos em seções com títulos e filtros por tag
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {sectionsAtacado?.sections.map((section, index) => (
+                    <div key={section.id} className="p-4 bg-secondary rounded-lg space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Seção {index + 1}</span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = [...sectionsAtacado.sections];
+                              if (index > 0) {
+                                [newSections[index - 1], newSections[index]] = [newSections[index], newSections[index - 1]];
+                                newSections.forEach((s, i) => s.order = i + 1);
+                                setSectionsAtacado({ sections: newSections });
+                              }
+                            }}
+                            disabled={index === 0}
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = [...sectionsAtacado.sections];
+                              if (index < newSections.length - 1) {
+                                [newSections[index], newSections[index + 1]] = [newSections[index + 1], newSections[index]];
+                                newSections.forEach((s, i) => s.order = i + 1);
+                                setSectionsAtacado({ sections: newSections });
+                              }
+                            }}
+                            disabled={index === sectionsAtacado.sections.length - 1}
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = sectionsAtacado.sections.filter((_, i) => i !== index);
+                              setSectionsAtacado({ sections: newSections });
+                            }}
+                            disabled={sectionsAtacado.sections.length === 1}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label>Título</Label>
+                          <Input
+                            value={section.title}
+                            onChange={(e) => {
+                              const newSections = [...sectionsAtacado.sections];
+                              newSections[index] = { ...newSections[index], title: e.target.value };
+                              setSectionsAtacado({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Subtítulo</Label>
+                          <Input
+                            value={section.subtitle}
+                            onChange={(e) => {
+                              const newSections = [...sectionsAtacado.sections];
+                              newSections[index] = { ...newSections[index], subtitle: e.target.value };
+                              setSectionsAtacado({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Filtro por Tag</Label>
+                          <Input
+                            value={section.tag_filter}
+                            onChange={(e) => {
+                              const newSections = [...sectionsAtacado.sections];
+                              newSections[index] = { ...newSections[index], tag_filter: e.target.value };
+                              setSectionsAtacado({ sections: newSections });
+                            }}
+                            placeholder="Deixe vazio para todos"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Limite de Produtos</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={section.limit}
+                            onChange={(e) => {
+                              const newSections = [...sectionsAtacado.sections];
+                              newSections[index] = { ...newSections[index], limit: parseInt(e.target.value) || 8 };
+                              setSectionsAtacado({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const newSection: ProductSection = {
+                          id: `section-${Date.now()}`,
+                          title: "Nova Seção",
+                          subtitle: "",
+                          tag_filter: "",
+                          limit: 8,
+                          order: (sectionsAtacado?.sections.length || 0) + 1
+                        };
+                        setSectionsAtacado({
+                          sections: [...(sectionsAtacado?.sections || []), newSection]
+                        });
+                      }}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Adicionar Seção
+                    </Button>
+                    <Button 
+                      onClick={() => saveSettings('product_sections_atacado', sectionsAtacado)}
+                      disabled={saving}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {saving ? "Salvando..." : "Salvar Seções Atacado"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Varejo Sections */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Seções de Produtos - Varejo</CardTitle>
+                  <CardDescription>
+                    Organize os produtos em seções com títulos e filtros por tag
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {sectionsVarejo?.sections.map((section, index) => (
+                    <div key={section.id} className="p-4 bg-secondary rounded-lg space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Seção {index + 1}</span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = [...sectionsVarejo.sections];
+                              if (index > 0) {
+                                [newSections[index - 1], newSections[index]] = [newSections[index], newSections[index - 1]];
+                                newSections.forEach((s, i) => s.order = i + 1);
+                                setSectionsVarejo({ sections: newSections });
+                              }
+                            }}
+                            disabled={index === 0}
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = [...sectionsVarejo.sections];
+                              if (index < newSections.length - 1) {
+                                [newSections[index], newSections[index + 1]] = [newSections[index + 1], newSections[index]];
+                                newSections.forEach((s, i) => s.order = i + 1);
+                                setSectionsVarejo({ sections: newSections });
+                              }
+                            }}
+                            disabled={index === sectionsVarejo.sections.length - 1}
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              const newSections = sectionsVarejo.sections.filter((_, i) => i !== index);
+                              setSectionsVarejo({ sections: newSections });
+                            }}
+                            disabled={sectionsVarejo.sections.length === 1}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label>Título</Label>
+                          <Input
+                            value={section.title}
+                            onChange={(e) => {
+                              const newSections = [...sectionsVarejo.sections];
+                              newSections[index] = { ...newSections[index], title: e.target.value };
+                              setSectionsVarejo({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Subtítulo</Label>
+                          <Input
+                            value={section.subtitle}
+                            onChange={(e) => {
+                              const newSections = [...sectionsVarejo.sections];
+                              newSections[index] = { ...newSections[index], subtitle: e.target.value };
+                              setSectionsVarejo({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Filtro por Tag</Label>
+                          <Input
+                            value={section.tag_filter}
+                            onChange={(e) => {
+                              const newSections = [...sectionsVarejo.sections];
+                              newSections[index] = { ...newSections[index], tag_filter: e.target.value };
+                              setSectionsVarejo({ sections: newSections });
+                            }}
+                            placeholder="Deixe vazio para todos"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Limite de Produtos</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={section.limit}
+                            onChange={(e) => {
+                              const newSections = [...sectionsVarejo.sections];
+                              newSections[index] = { ...newSections[index], limit: parseInt(e.target.value) || 8 };
+                              setSectionsVarejo({ sections: newSections });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const newSection: ProductSection = {
+                          id: `section-${Date.now()}`,
+                          title: "Nova Seção",
+                          subtitle: "",
+                          tag_filter: "",
+                          limit: 8,
+                          order: (sectionsVarejo?.sections.length || 0) + 1
+                        };
+                        setSectionsVarejo({
+                          sections: [...(sectionsVarejo?.sections || []), newSection]
+                        });
+                      }}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Adicionar Seção
+                    </Button>
+                    <Button 
+                      onClick={() => saveSettings('product_sections_varejo', sectionsVarejo)}
+                      disabled={saving}
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {saving ? "Salvando..." : "Salvar Seções Varejo"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </main>
