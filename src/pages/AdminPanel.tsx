@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2 } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
+import HeroEditor from "@/components/admin/HeroEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -449,62 +450,28 @@ const AdminPanel = () => {
           <TabsContent value="atacado">
             <Card>
               <CardHeader>
-                <CardTitle>Hero Section - Atacado</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Image className="w-5 h-5" />
+                  Hero Section - Atacado
+                </CardTitle>
                 <CardDescription>
-                  Configure o banner principal da página de Atacado
+                  Configure o banner principal da página de Atacado com preview em tempo real
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label>Imagem Principal</Label>
-                  {heroAtacado?.image_url && (
-                    <img 
-                      src={heroAtacado.image_url} 
-                      alt="Hero Atacado" 
-                      className="w-full max-w-md h-60 object-cover rounded-lg"
-                    />
-                  )}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleHeroImageUpload(file, 'atacado');
-                      }}
-                  />
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Texto Promocional</Label>
-                    <Input
-                      value={heroAtacado?.promo_text || ''}
-                      onChange={(e) => setHeroAtacado(prev => prev ? {...prev, promo_text: e.target.value} : null)}
-                      placeholder="ATÉ 30% OFF"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Subtítulo Promo</Label>
-                    <Input
-                      value={heroAtacado?.promo_subtitle || ''}
-                      onChange={(e) => setHeroAtacado(prev => prev ? {...prev, promo_subtitle: e.target.value} : null)}
-                      placeholder="ATACADO"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Texto do Botão</Label>
-                    <Input
-                      value={heroAtacado?.button_text || ''}
-                      onChange={(e) => setHeroAtacado(prev => prev ? {...prev, button_text: e.target.value} : null)}
-                      placeholder="COMPRE AGORA"
-                    />
-                  </div>
-                </div>
+                <HeroEditor
+                  settings={heroAtacado}
+                  onChange={setHeroAtacado}
+                  type="atacado"
+                />
                 <Button 
                   onClick={() => saveSettings('hero_atacado', heroAtacado)}
                   disabled={saving}
+                  size="lg"
+                  className="w-full sm:w-auto"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  {saving ? "Salvando..." : "Salvar Configurações"}
+                  {saving ? "Salvando..." : "Salvar Configurações do Hero Atacado"}
                 </Button>
               </CardContent>
             </Card>
@@ -589,62 +556,28 @@ const AdminPanel = () => {
           <TabsContent value="varejo">
             <Card>
               <CardHeader>
-                <CardTitle>Hero Section - Varejo</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Image className="w-5 h-5" />
+                  Hero Section - Varejo
+                </CardTitle>
                 <CardDescription>
-                  Configure o banner principal da página de Varejo
+                  Configure o banner principal da página de Varejo com preview em tempo real
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label>Imagem Principal</Label>
-                  {heroVarejo?.image_url && (
-                    <img 
-                      src={heroVarejo.image_url} 
-                      alt="Hero Varejo" 
-                      className="w-full max-w-md h-60 object-cover rounded-lg"
-                    />
-                  )}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleHeroImageUpload(file, 'varejo');
-                      }}
-                  />
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Texto Promocional</Label>
-                    <Input
-                      value={heroVarejo?.promo_text || ''}
-                      onChange={(e) => setHeroVarejo(prev => prev ? {...prev, promo_text: e.target.value} : null)}
-                      placeholder="ATÉ 20% OFF"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Subtítulo Promo</Label>
-                    <Input
-                      value={heroVarejo?.promo_subtitle || ''}
-                      onChange={(e) => setHeroVarejo(prev => prev ? {...prev, promo_subtitle: e.target.value} : null)}
-                      placeholder="NOVIDADES"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Texto do Botão</Label>
-                    <Input
-                      value={heroVarejo?.button_text || ''}
-                      onChange={(e) => setHeroVarejo(prev => prev ? {...prev, button_text: e.target.value} : null)}
-                      placeholder="COMPRE AGORA"
-                    />
-                  </div>
-                </div>
+                <HeroEditor
+                  settings={heroVarejo}
+                  onChange={setHeroVarejo}
+                  type="varejo"
+                />
                 <Button 
                   onClick={() => saveSettings('hero_varejo', heroVarejo)}
                   disabled={saving}
+                  size="lg"
+                  className="w-full sm:w-auto"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  {saving ? "Salvando..." : "Salvar Configurações"}
+                  {saving ? "Salvando..." : "Salvar Configurações do Hero Varejo"}
                 </Button>
               </CardContent>
             </Card>
