@@ -11,7 +11,8 @@ import { ShoppingBag, ChevronRight } from "lucide-react";
 // Mapping of filter categories to title keywords
 const categoryKeywords: Record<string, string[]> = {
   leggings: ['legging', 'leggings', 'calça'],
-  tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped', 'baby look', 'tapa bumbum'],
+  tops: ['top', 'tops', 'regata', 'cropped', 'nadador'],
+  camisetas: ['camiseta', 'camisetas', 'baby look', 'tapa bumbum', 'blusa'],
   shorts: ['short', 'shorts'],
   bermudas: ['bermuda', 'bermudas'],
   conjuntos: ['conjunto', 'conjuntos'],
@@ -34,6 +35,10 @@ const categoryConfig: Record<string, { title: string; description: string }> = {
   tops: {
     title: "Tops",
     description: "Tops e blusas para seu look fitness",
+  },
+  camisetas: {
+    title: "Camisetas",
+    description: "Camisetas confortáveis para seu treino",
   },
   blusas: {
     title: "Blusas",

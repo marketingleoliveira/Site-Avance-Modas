@@ -21,6 +21,11 @@ const categoryIcons: Record<string, React.ReactNode> = {
       <path d="M14 10c0-2 2-4 6-4s6 2 6 4v2c2 0 4 2 4 4v8h-6v-6h-8v6h-6v-8c0-2 2-4 4-4v-2z" />
     </svg>
   ),
+  camisetas: (
+    <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M14 8l-6 4v6l4-2v16h16V16l4 2V12l-6-4c0 2-2 4-6 4s-6-2-6-4z" />
+    </svg>
+  ),
   shorts: (
     <svg viewBox="0 0 40 40" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M10 10h20v4l-3 12h-6l-1-8-1 8h-6l-3-12v-4z" />
@@ -52,6 +57,7 @@ const categoryFilters = [
   { id: 'todos', label: 'TODOS', tag: null },
   { id: 'leggings', label: 'LEGGINGS', tag: 'leggings' },
   { id: 'tops', label: 'TOPS', tag: 'tops' },
+  { id: 'camisetas', label: 'CAMISETAS', tag: 'camisetas' },
   { id: 'shorts', label: 'SHORTS', tag: 'shorts' },
   { id: 'bermudas', label: 'BERMUDAS', tag: 'bermudas' },
   { id: 'conjuntos', label: 'CONJUNTOS', tag: 'conjuntos' },
@@ -129,7 +135,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   // Mapping of filter categories to title keywords
   const categoryKeywords: Record<string, string[]> = {
     leggings: ['legging', 'leggings', 'calça'],
-    tops: ['top', 'tops', 'blusa', 'camiseta', 'regata', 'cropped', 'baby look', 'tapa bumbum'],
+    tops: ['top', 'tops', 'regata', 'cropped', 'nadador'],
+    camisetas: ['camiseta', 'camisetas', 'baby look', 'tapa bumbum', 'blusa'],
     shorts: ['short', 'shorts'],
     bermudas: ['bermuda', 'bermudas'],
     conjuntos: ['conjunto', 'conjuntos'],
