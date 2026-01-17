@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
+import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
 
 // Payment method icons as simple SVG components
 const VisaIcon = () => (
@@ -60,6 +61,7 @@ const BoletoIcon = () => (
 const Footer = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [showWholesale, setShowWholesale] = useState(false);
 
   return (
     <>
@@ -171,7 +173,7 @@ const Footer = () => {
           <p className="text-sm text-primary-foreground/60">
             © 2026 Avance. Todos os direitos reservados.
           </p>
-          <div className="flex items-center gap-6 text-sm text-primary-foreground/60">
+          <div className="flex items-center gap-4 md:gap-6 text-sm text-primary-foreground/60 flex-wrap justify-center">
             <button 
               onClick={() => setShowPrivacy(true)} 
               className="hover:text-primary-foreground transition-colors"
@@ -184,6 +186,12 @@ const Footer = () => {
             >
               Termos de Uso
             </button>
+            <button 
+              onClick={() => setShowWholesale(true)} 
+              className="hover:text-primary-foreground transition-colors"
+            >
+              Políticas de Atacado
+            </button>
           </div>
         </div>
       </div>
@@ -191,6 +199,7 @@ const Footer = () => {
 
     <PrivacyPolicyModal open={showPrivacy} onOpenChange={setShowPrivacy} />
     <TermsOfUseModal open={showTerms} onOpenChange={setShowTerms} />
+    <WholesalePolicyModal open={showWholesale} onOpenChange={setShowWholesale} />
     </>
   );
 };
