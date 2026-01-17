@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, ContactSettings, invalidateSettingsCache } from "@/lib/site-settings";
+import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, ContactSettings, AnnouncementSettings, invalidateSettingsCache } from "@/lib/site-settings";
 
 export function useHeroSettings(type: 'ATACADO' | 'VAREJO') {
   const [settings, setSettings] = useState<HeroSettings | null>(null);
@@ -188,6 +188,33 @@ export function useContactSettings() {
       email: '',
       address: '',
       instagram: ''
+    });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { settings, loading, refetch };
+}
+
+export function useAnnouncementSettings() {
+  const [settings, setSettings] = useState<AnnouncementSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    invalidateSettingsCache('announcement_settings');
+    const data = await getSiteSetting<AnnouncementSettings>('announcement_settings');
+    setSettings(data || {
+      enabled: true,
+      messages: [
+        "FRETE GRÁTIS ACIMA DE R$299",
+        "GRADE ABERTA - QUALQUER QUANTIDADE",
+        "ATÉ 6X SEM JUROS"
+      ],
+      interval: 4000
     });
     setLoading(false);
   }, []);

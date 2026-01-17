@@ -109,6 +109,12 @@ export interface PromoBannerSettings {
   button_link: string;
 }
 
+export interface AnnouncementSettings {
+  enabled: boolean;
+  messages: string[];
+  interval: number;
+}
+
 // Cache for settings to reduce DB calls
 const settingsCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30000; // 30 seconds

@@ -6,14 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, createAdminUser } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
 import PromoBannerEditor from "@/components/admin/PromoBannerEditor";
+import AnnouncementEditor from "@/components/admin/AnnouncementEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -48,6 +49,7 @@ const AdminPanel = () => {
   const [atacadoSettings, setAtacadoSettings] = useState<AtacadoSettings | null>(null);
   const [videosSettings, setVideosSettings] = useState<VideosSettings | null>(null);
   const [promoBannerSettings, setPromoBannerSettings] = useState<PromoBannerSettings | null>(null);
+  const [announcementSettings, setAnnouncementSettings] = useState<AnnouncementSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
@@ -105,7 +107,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -118,6 +120,7 @@ const AdminPanel = () => {
         getSiteSetting<AtacadoSettings>('atacado_settings'),
         getSiteSetting<VideosSettings>('videos_settings'),
         getSiteSetting<PromoBannerSettings>('promo_banner_settings'),
+        getSiteSetting<AnnouncementSettings>('announcement_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -163,6 +166,15 @@ const AdminPanel = () => {
         description: "Promoção por tempo limitado. Não perca!",
         button_text: "Aproveitar",
         button_link: "/#produtos"
+      });
+      setAnnouncementSettings(announcement || {
+        enabled: true,
+        messages: [
+          "FRETE GRÁTIS ACIMA DE R$299",
+          "GRADE ABERTA - QUALQUER QUANTIDADE",
+          "ATÉ 6X SEM JUROS"
+        ],
+        interval: 4000
       });
     };
     
@@ -361,10 +373,14 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 max-w-6xl gap-1">
+          <TabsList className="grid w-full grid-cols-7 lg:grid-cols-14 max-w-7xl gap-1">
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
               Entrada
+            </TabsTrigger>
+            <TabsTrigger value="announcement" className="text-xs">
+              <Megaphone className="w-3 h-3 mr-1" />
+              Anúncios
             </TabsTrigger>
             <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
             <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
@@ -464,6 +480,36 @@ const AdminPanel = () => {
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Announcement Bar Settings */}
+          <TabsContent value="announcement">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Megaphone className="w-5 h-5" />
+                  Barra de Anúncios
+                </CardTitle>
+                <CardDescription>
+                  Configure as mensagens rotativas exibidas no topo do site
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <AnnouncementEditor
+                  settings={announcementSettings}
+                  onChange={setAnnouncementSettings}
+                />
+                <Button 
+                  onClick={() => saveSettings('announcement_settings', announcementSettings)}
+                  disabled={saving}
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Anúncios"}
                 </Button>
               </CardContent>
             </Card>
