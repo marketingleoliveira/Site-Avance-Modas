@@ -726,7 +726,7 @@ const AdminPanel = () => {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Preview</Label>
                   <div className="bg-primary text-primary-foreground rounded-lg overflow-hidden" style={{ height: '60px' }}>
-                    <div className="h-full flex items-center justify-between px-4 gap-4 overflow-x-auto">
+                    <div className="h-full flex items-center justify-center px-4 gap-6 overflow-x-auto">
                       {features?.items.map((item, index) => {
                         const iconMap: Record<string, React.ReactNode> = {
                           truck: <Truck className="w-4 h-4 opacity-80" />,

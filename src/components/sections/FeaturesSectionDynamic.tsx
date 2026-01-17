@@ -54,9 +54,9 @@ const FeaturesSectionDynamic = () => {
 
   return (
     <section className="bg-primary text-primary-foreground" style={{ height: '60px' }}>
-      <div className="container h-full flex items-center">
+      <div className="container h-full flex items-center justify-center">
         <div 
-          className="flex items-center justify-between overflow-x-auto scrollbar-hide gap-4 md:gap-0"
+          className="flex items-center justify-center overflow-x-auto scrollbar-hide gap-6 md:gap-8 w-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {items.slice(0, parseInt(colsDesktop)).map((item, index) => {
