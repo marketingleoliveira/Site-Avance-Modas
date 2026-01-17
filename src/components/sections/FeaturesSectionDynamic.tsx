@@ -1,12 +1,23 @@
-import { Truck, Percent, Tag, CreditCard, RefreshCw } from "lucide-react";
+import { Truck, Percent, Tag, CreditCard, RefreshCw, Shield, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp } from "lucide-react";
 import { useFeaturesSettings, useLayoutSettings } from "@/hooks/useSiteSettings";
+import type { LucideIcon } from "lucide-react";
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, LucideIcon> = {
   truck: Truck,
   percent: Percent,
   tag: Tag,
   'credit-card': CreditCard,
   refresh: RefreshCw,
+  shield: Shield,
+  star: Star,
+  gift: Gift,
+  clock: Clock,
+  check: Check,
+  heart: Heart,
+  package: Package,
+  zap: Zap,
+  award: Award,
+  'thumbs-up': ThumbsUp,
 };
 
 const FeaturesSectionDynamic = () => {
