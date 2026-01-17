@@ -6,6 +6,7 @@ import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
+import ModelVideosSection from "@/components/sections/ModelVideosSection";
 
 const InicioVarejo = () => {
   return (
@@ -18,6 +19,7 @@ const InicioVarejo = () => {
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="VAREJO" />
         <PromoBanner />
+        <ModelVideosSection />
         <NewsletterSection />
       </main>
       

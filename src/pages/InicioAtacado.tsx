@@ -8,6 +8,7 @@ import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
+import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import {
   Dialog,
@@ -106,6 +107,7 @@ const InicioAtacado = () => {
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="ATACADO" />
         <PromoBanner />
+        <ModelVideosSection />
         <NewsletterSection />
       </main>
       
