@@ -7,6 +7,8 @@ import StoreSelector from "./pages/StoreSelector";
 import InicioAtacado from "./pages/InicioAtacado";
 import InicioVarejo from "./pages/InicioVarejo";
 import ShopifyProductPage from "./pages/ShopifyProductPage";
+import CategoryPage from "./pages/CategoryPage";
+import ContactPage from "./pages/ContactPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/atacado" element={<InicioAtacado />} />
           <Route path="/varejo" element={<InicioVarejo />} />
           <Route path="/produto/:handle" element={<ShopifyProductPage />} />
+          <Route path="/categoria/:category" element={<CategoryPage />} />
+          <Route path="/contato" element={<ContactPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="*" element={<NotFound />} />

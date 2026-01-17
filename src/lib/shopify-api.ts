@@ -10,6 +10,7 @@ export interface ShopifyProduct {
     title: string;
     description: string;
     handle: string;
+    tags: string[];
     priceRange: {
       minVariantPrice: {
         amount: string;
@@ -91,6 +92,7 @@ const STOREFRONT_QUERY = `
           title
           description
           handle
+          tags
           priceRange {
             minVariantPrice {
               amount
@@ -139,6 +141,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
       title
       description
       handle
+      tags
       priceRange {
         minVariantPrice {
           amount
@@ -185,6 +188,18 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
     return data.data.products.edges;
   } catch (error) {
     console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
+export async function fetchProductsByTag(tag: string, first: number = 50): Promise<ShopifyProduct[]> {
+  try {
+    const query = `tag:${tag}`;
+    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
+    if (!data) return [];
+    return data.data.products.edges;
+  } catch (error) {
+    console.error('Error fetching products by tag:', error);
     return [];
   }
 }
