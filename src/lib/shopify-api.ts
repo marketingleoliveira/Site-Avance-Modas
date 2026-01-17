@@ -234,30 +234,94 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
   }
 }
 
+// Query to fetch products from a specific collection by handle
+const COLLECTION_PRODUCTS_QUERY = `
+  query GetCollectionProducts($handle: String!, $first: Int!) {
+    collectionByHandle(handle: $handle) {
+      id
+      title
+      products(first: $first) {
+        edges {
+          node {
+            id
+            title
+            description
+            handle
+            tags
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  url
+                  altText
+                }
+              }
+            }
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  title
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  availableForSale
+                  selectedOptions {
+                    name
+                    value
+                  }
+                }
+              }
+            }
+            options {
+              name
+              values
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Map store types to collection handles
+const COLLECTION_HANDLES: Record<'ATACADO' | 'VAREJO', string> = {
+  ATACADO: 'atacado',
+  VAREJO: 'varejo',
+};
+
 export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: number = 100): Promise<ShopifyProduct[]> {
   try {
-    // Fetch all products and filter by title containing the type
-    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: null });
-    if (!data) return [];
-    
-    const allProducts: ShopifyProduct[] = data.data.products.edges;
-    
-    // Filter products that have the type in title OR don't have either type (shared products)
-    return allProducts.filter(product => {
-      const title = product.node.title.toUpperCase();
-      const hasAtacado = title.includes('ATACADO');
-      const hasVarejo = title.includes('VAREJO');
-      
-      // If product has neither type, show in both stores
-      if (!hasAtacado && !hasVarejo) {
-        return true;
-      }
-      
-      // Otherwise, only show if matches the requested type
-      return title.includes(type);
+    const collectionHandle = COLLECTION_HANDLES[type];
+    const data = await storefrontApiRequest(COLLECTION_PRODUCTS_QUERY, { 
+      handle: collectionHandle, 
+      first 
     });
+    
+    if (!data || !data.data.collectionByHandle) {
+      console.warn(`Collection "${collectionHandle}" not found in Shopify`);
+      return [];
+    }
+    
+    return data.data.collectionByHandle.products.edges;
   } catch (error) {
-    console.error(`Error fetching ${type} products:`, error);
+    console.error(`Error fetching ${type} products from collection:`, error);
     return [];
   }
 }
