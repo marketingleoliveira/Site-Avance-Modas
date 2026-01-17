@@ -302,14 +302,29 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                 const colors = getProductColors(product);
                 const tags = product.node.tags || [];
                 const isNew = tags.some(tag => tag.toLowerCase() === 'novo');
+                const isPromo = tags.some(tag => tag.toLowerCase() === 'promoção' || tag.toLowerCase() === 'promocao');
+                
+                // Check if product has compare at price (on sale)
+                const compareAtPrice = product.node.compareAtPriceRange?.minVariantPrice?.amount;
+                const currentPrice = product.node.priceRange.minVariantPrice.amount;
+                const hasDiscount = compareAtPrice && parseFloat(compareAtPrice) > parseFloat(currentPrice);
+                const discountPercent = hasDiscount 
+                  ? Math.round((1 - parseFloat(currentPrice) / parseFloat(compareAtPrice)) * 100)
+                  : 0;
+                
+                // Determine highlight style
+                const hasHighlight = isNew || isPromo || hasDiscount;
+                const highlightClass = isPromo || hasDiscount 
+                  ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-background' 
+                  : isNew 
+                    ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background' 
+                    : '';
                 
                 return (
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${
-                      isNew ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background' : ''
-                    }`}
+                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${highlightClass}`}
                   >
                     {/* Product Image with Color Swatches */}
                     <div className="relative">
@@ -337,7 +352,12 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
                       {/* Tags/Badges */}
                       <div className="absolute left-2 top-2 flex flex-col gap-1">
-                        {isNew && (
+                        {(isPromo || hasDiscount) && (
+                          <span className="bg-red-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                            {hasDiscount ? `-${discountPercent}%` : 'PROMOÇÃO'}
+                          </span>
+                        )}
+                        {isNew && !isPromo && !hasDiscount && (
                           <span className="bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
                             NOVO
                           </span>
@@ -367,12 +387,16 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       <h3 className="text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight mb-2">
                         {product.node.title}
                       </h3>
-                      <p className="text-base font-bold text-foreground">
-                        {formatPrice(
-                          product.node.priceRange.minVariantPrice.amount,
-                          product.node.priceRange.minVariantPrice.currencyCode
+                      <div className="flex items-center gap-2">
+                        {hasDiscount && (
+                          <span className="text-sm text-muted-foreground line-through">
+                            {formatPrice(compareAtPrice, product.node.priceRange.minVariantPrice.currencyCode)}
+                          </span>
                         )}
-                      </p>
+                        <p className={`text-base font-bold ${hasDiscount || isPromo ? 'text-red-600' : 'text-foreground'}`}>
+                          {formatPrice(currentPrice, product.node.priceRange.minVariantPrice.currencyCode)}
+                        </p>
+                      </div>
                     </div>
                   </Link>
                 );
