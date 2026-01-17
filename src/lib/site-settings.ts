@@ -29,6 +29,14 @@ export interface FeaturesSettings {
   [key: string]: FeatureItem[] | string; // Index signature
 }
 
+export interface ContactSettings {
+  whatsapp_number: string;
+  email: string;
+  address: string;
+  instagram: string;
+  [key: string]: string;
+}
+
 export async function getSiteSetting<T>(key: string): Promise<T | null> {
   const { data, error } = await supabase
     .from('site_settings')

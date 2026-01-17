@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings } from "@/lib/site-settings";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Upload, Save, Image, Home, Settings } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 
 const AdminPanel = () => {
@@ -19,6 +20,7 @@ const AdminPanel = () => {
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
   const [storeSelector, setStoreSelector] = useState<StoreSelectorSettings | null>(null);
   const [features, setFeatures] = useState<FeaturesSettings | null>(null);
+  const [contactSettings, setContactSettings] = useState<ContactSettings | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -29,16 +31,23 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
         getSiteSetting<FeaturesSettings>('features'),
+        getSiteSetting<ContactSettings>('contact_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
       setStoreSelector(selector);
       setFeatures(feat);
+      setContactSettings(contact || {
+        whatsapp_number: "5511999999999",
+        email: "contato@avancemodas.com.br",
+        address: "Endereço da loja",
+        instagram: "@avancemodas"
+      });
     };
     
     if (isAdmin) {
@@ -135,7 +144,7 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+          <TabsList className="grid w-full grid-cols-5 max-w-3xl">
             <TabsTrigger value="selector">
               <Image className="w-4 h-4 mr-2" />
               Página Inicial
@@ -145,6 +154,10 @@ const AdminPanel = () => {
             <TabsTrigger value="features">
               <Settings className="w-4 h-4 mr-2" />
               Benefícios
+            </TabsTrigger>
+            <TabsTrigger value="contact">
+              <Phone className="w-4 h-4 mr-2" />
+              Contato
             </TabsTrigger>
           </TabsList>
 
@@ -393,6 +406,62 @@ const AdminPanel = () => {
                 ))}
                 <Button 
                   onClick={() => saveSettings('features', features)}
+                  disabled={saving}
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Configurações"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Contact Settings */}
+          <TabsContent value="contact">
+            <Card>
+              <CardHeader>
+                <CardTitle>Configurações de Contato</CardTitle>
+                <CardDescription>
+                  Configure as informações de contato exibidas na página de contato
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Número do WhatsApp (com código do país)</Label>
+                    <Input
+                      value={contactSettings?.whatsapp_number || ''}
+                      onChange={(e) => setContactSettings(prev => prev ? {...prev, whatsapp_number: e.target.value} : null)}
+                      placeholder="5511999999999"
+                    />
+                    <p className="text-xs text-muted-foreground">Ex: 5511999999999 (sem + ou espaços)</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>E-mail</Label>
+                    <Input
+                      value={contactSettings?.email || ''}
+                      onChange={(e) => setContactSettings(prev => prev ? {...prev, email: e.target.value} : null)}
+                      placeholder="contato@avancemodas.com.br"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Endereço</Label>
+                    <Input
+                      value={contactSettings?.address || ''}
+                      onChange={(e) => setContactSettings(prev => prev ? {...prev, address: e.target.value} : null)}
+                      placeholder="Endereço da loja"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Instagram</Label>
+                    <Input
+                      value={contactSettings?.instagram || ''}
+                      onChange={(e) => setContactSettings(prev => prev ? {...prev, instagram: e.target.value} : null)}
+                      placeholder="@avancemodas"
+                    />
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => saveSettings('contact_settings', contactSettings)}
                   disabled={saving}
                 >
                   <Save className="w-4 h-4 mr-2" />
