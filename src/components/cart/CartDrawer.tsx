@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { toast } from "sonner";
@@ -23,20 +23,31 @@ export const CartDrawer = () => {
   
   const { 
     items, 
-    isLoading, 
+    isLoading,
+    isSyncing,
     updateQuantity, 
     removeItem, 
-    createCheckout 
+    getCheckoutUrl,
+    syncCart,
+    getTotalItems,
+    getTotalPrice
   } = useCartStore();
   
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
+  const totalItems = getTotalItems();
+  const totalPrice = getTotalPrice();
   
   const minimumOrder = atacadoSettings.minimum_order;
   const isBelowMinimum = isAtacado && totalPrice < minimumOrder;
   const remainingForMinimum = minimumOrder - totalPrice;
 
-  const handleCheckout = async () => {
+  // Sync cart with Shopify when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      syncCart();
+    }
+  }, [isOpen, syncCart]);
+
+  const handleCheckout = () => {
     if (isBelowMinimum) {
       toast.error("Pedido mínimo não atingido", {
         description: `No atacado, o pedido mínimo é de R$ ${minimumOrder.toFixed(2)}. Faltam R$ ${remainingForMinimum.toFixed(2)} para finalizar.`,
@@ -44,15 +55,17 @@ export const CartDrawer = () => {
       return;
     }
     
-    try {
-      await createCheckout();
-      const checkoutUrl = useCartStore.getState().checkoutUrl;
-      if (checkoutUrl) {
-        window.open(checkoutUrl, '_blank');
-        setIsOpen(false);
-      }
-    } catch (error) {
-      console.error('Checkout failed:', error);
+    const checkoutUrl = getCheckoutUrl();
+    if (checkoutUrl) {
+      window.open(checkoutUrl, '_blank');
+      setIsOpen(false);
+      toast.success("Checkout aberto!", {
+        description: "Complete seu pedido na nova aba.",
+      });
+    } else {
+      toast.error("Erro ao abrir checkout", {
+        description: "Tente adicionar um produto novamente.",
+      });
     }
   };
 
@@ -68,138 +81,189 @@ export const CartDrawer = () => {
       <SheetTrigger asChild>
         <button className="p-2 hover:bg-secondary rounded-full transition-colors relative">
           <ShoppingBag className="w-5 h-5" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-accent text-accent-foreground border-0">
-            {totalItems}
-          </Badge>
+          {totalItems > 0 && (
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-accent text-accent-foreground border-0">
+              {totalItems}
+            </Badge>
+          )}
         </button>
       </SheetTrigger>
       
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
-        <SheetHeader className="flex-shrink-0">
-          <SheetTitle>Carrinho de Compras</SheetTitle>
+        <SheetHeader className="flex-shrink-0 pb-4 border-b">
+          <div className="flex items-center justify-between">
+            <SheetTitle className="flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5" />
+              Carrinho de Compras
+            </SheetTitle>
+            {isSyncing && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Sincronizando...
+              </div>
+            )}
+          </div>
           <SheetDescription>
             {totalItems === 0 ? "Seu carrinho está vazio" : `${totalItems} ${totalItems !== 1 ? 'itens' : 'item'} no carrinho`}
           </SheetDescription>
         </SheetHeader>
         
-        <div className="flex flex-col flex-1 pt-6 min-h-0">
+        <div className="flex flex-col flex-1 pt-4 min-h-0">
           {items.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <ShoppingBag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Seu carrinho está vazio</p>
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-secondary/50 flex items-center justify-center">
+                  <Package className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <p className="text-lg font-medium text-foreground mb-1">Carrinho vazio</p>
+                <p className="text-sm text-muted-foreground">Adicione produtos para continuar</p>
               </div>
             </div>
           ) : (
             <>
-              <div className="flex-1 overflow-y-auto pr-2 min-h-0">
-                <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.variantId} className="flex gap-4 p-2 bg-secondary/30 rounded-lg">
-                      <div className="w-16 h-16 bg-card rounded-md overflow-hidden flex-shrink-0">
-                        {item.product.node.images?.edges?.[0]?.node && (
-                          <img
-                            src={item.product.node.images.edges[0].node.url}
-                            alt={item.product.node.title}
-                            className="w-full h-full object-cover"
-                          />
+              <div className="flex-1 overflow-y-auto pr-2 min-h-0 space-y-3">
+                {items.map((item) => (
+                  <div 
+                    key={item.variantId} 
+                    className="flex gap-3 p-3 bg-secondary/30 rounded-xl border border-border/50 hover:border-border transition-colors"
+                  >
+                    <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50">
+                      {item.product.node.images?.edges?.[0]?.node && (
+                        <img
+                          src={item.product.node.images.edges[0].node.url}
+                          alt={item.product.node.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-medium truncate text-sm leading-tight">{item.product.node.title}</h4>
+                        {item.selectedOptions.length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {item.selectedOptions.map(option => option.value).join(' • ')}
+                          </p>
                         )}
                       </div>
                       
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium truncate text-sm">{item.product.node.title}</h4>
-                        <p className="text-xs text-muted-foreground">
-                          {item.selectedOptions.map(option => option.value).join(' • ')}
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="font-bold text-primary">
+                          {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
                         </p>
-                        <p className="font-semibold text-sm mt-1">
-                          {formatPrice(parseFloat(item.price.amount), item.price.currencyCode)}
-                        </p>
-                      </div>
-                      
-                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => removeItem(item.variantId)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
                         
                         <div className="flex items-center gap-1">
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
+                            disabled={isLoading}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="w-8 text-center text-sm">{item.quantity}</span>
+                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
+                            disabled={isLoading}
                           >
                             <Plus className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-1"
+                            onClick={() => removeItem(item.variantId)}
+                            disabled={isLoading}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
               
-              <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background">
+              <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
                 {/* Minimum order warning for atacado */}
                 {isAtacado && isBelowMinimum && (
-                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-400">
-                          Pedido mínimo: R$ {minimumOrder.toFixed(2)}
+                          Pedido mínimo: {formatPrice(minimumOrder)}
                         </p>
                         <p className="text-xs text-amber-700 dark:text-amber-500 mt-0.5">
-                          Faltam <strong>R$ {remainingForMinimum.toFixed(2)}</strong> para finalizar
+                          Faltam <strong>{formatPrice(remainingForMinimum)}</strong> para finalizar
                         </p>
                       </div>
                     </div>
                   </div>
                 )}
+
+                {/* Free shipping indicator */}
+                {totalPrice >= 1500 && (
+                  <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500 flex-shrink-0" />
+                      <p className="text-sm font-medium text-green-800 dark:text-green-400">
+                        Parabéns! Você ganhou frete grátis 🎉
+                      </p>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total</span>
-                  <span className="text-xl font-bold">
-                    {formatPrice(totalPrice, items[0]?.price.currencyCode || 'BRL')}
-                  </span>
+                {/* Summary */}
+                <div className="space-y-2 py-2">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Subtotal ({totalItems} {totalItems !== 1 ? 'itens' : 'item'})</span>
+                    <span>{formatPrice(totalPrice, items[0]?.price.currencyCode || 'BRL')}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Frete</span>
+                    <span>{totalPrice >= 1500 ? 'Grátis' : 'Calculado no checkout'}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="text-lg font-semibold">Total</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {formatPrice(totalPrice, items[0]?.price.currencyCode || 'BRL')}
+                    </span>
+                  </div>
                 </div>
                 
                 <Button 
                   onClick={handleCheckout}
-                  className="w-full" 
+                  className="w-full h-12 text-base font-semibold" 
                   size="lg"
-                  variant={isBelowMinimum ? "outline" : "hero"}
-                  disabled={items.length === 0 || isLoading}
+                  variant={isBelowMinimum ? "outline" : "default"}
+                  disabled={items.length === 0 || isLoading || isSyncing}
                 >
-                  {isLoading ? (
+                  {isLoading || isSyncing ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Criando checkout...
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Processando...
                     </>
                   ) : isBelowMinimum ? (
                     <>
-                      <AlertTriangle className="w-4 h-4 mr-2" />
+                      <AlertTriangle className="w-5 h-5 mr-2" />
                       Adicione mais itens
                     </>
                   ) : (
                     <>
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                      <ExternalLink className="w-5 h-5 mr-2" />
                       Finalizar Compra
                     </>
                   )}
                 </Button>
+                
+                <p className="text-xs text-center text-muted-foreground">
+                  Pagamento seguro via Shopify 🔒
+                </p>
               </div>
             </>
           )}
