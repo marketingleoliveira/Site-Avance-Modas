@@ -1,14 +1,29 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Json } from "@/integrations/supabase/types";
 
-export interface HeroSettings {
+export interface HeroSlide {
+  id: string;
   image_url: string;
   title: string;
   subtitle: string;
   promo_text: string;
   promo_subtitle: string;
   button_text: string;
-  [key: string]: string;
+  button_link: string;
+}
+
+export interface HeroSettings {
+  image_url?: string;
+  title?: string;
+  subtitle?: string;
+  promo_text?: string;
+  promo_subtitle?: string;
+  button_text?: string;
+  button_link?: string;
+  slides?: HeroSlide[];
+  autoplay?: boolean;
+  autoplay_interval?: number;
+  [key: string]: string | boolean | number | HeroSlide[] | undefined;
 }
 
 export interface StoreSelectorSettings {
