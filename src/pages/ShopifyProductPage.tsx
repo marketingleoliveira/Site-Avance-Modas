@@ -706,24 +706,6 @@ const ShopifyProductPage = () => {
                 </Button>
               </div>
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-3 pt-4">
-                <div className="flex flex-col items-center text-center gap-2 p-3 bg-secondary/50 rounded-xl">
-                  <Truck className="w-5 h-5 text-primary" />
-                  <span className="text-xs font-medium text-foreground">Frete Grátis</span>
-                  <span className="text-[10px] text-muted-foreground">Acima de R$299</span>
-                </div>
-                <div className="flex flex-col items-center text-center gap-2 p-3 bg-secondary/50 rounded-xl">
-                  <RefreshCcw className="w-5 h-5 text-primary" />
-                  <span className="text-xs font-medium text-foreground">Troca Grátis</span>
-                  <span className="text-[10px] text-muted-foreground">Primeira troca</span>
-                </div>
-                <div className="flex flex-col items-center text-center gap-2 p-3 bg-secondary/50 rounded-xl">
-                  <Shield className="w-5 h-5 text-primary" />
-                  <span className="text-xs font-medium text-foreground">Compra Segura</span>
-                  <span className="text-[10px] text-muted-foreground">100% protegida</span>
-                </div>
-              </div>
 
               {/* Product Details Accordion */}
               <div className="pt-4">
