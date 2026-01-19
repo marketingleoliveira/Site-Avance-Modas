@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, RefreshCcw, Shield, ArrowLeft, Ruler, Check, Package, Sparkles, User } from "lucide-react";
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, ArrowLeft, Ruler, Check, Package, Sparkles, User, Lock, CreditCard, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -706,6 +706,49 @@ const ShopifyProductPage = () => {
                 </Button>
               </div>
 
+              {/* Payment & Security Badges */}
+              <div className="pt-4 space-y-4">
+                {/* Security Badge */}
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <Lock className="w-5 h-5 text-green-600" />
+                  <div>
+                    <span className="text-sm font-medium text-green-700">Compra 100% Segura</span>
+                    <span className="text-xs text-green-600 ml-2">Dados criptografados</span>
+                  </div>
+                </div>
+                
+                {/* Payment Methods */}
+                <div className="p-3 bg-secondary/30 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CreditCard className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Formas de Pagamento</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-blue-800">VISA</div>
+                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-red-600">Mastercard</div>
+                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-orange-500">Elo</div>
+                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-yellow-600">Hipercard</div>
+                    <div className="bg-[#32BCAD] px-2 py-1.5 rounded text-[10px] font-bold text-white">PIX</div>
+                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-gray-700">Boleto</div>
+                  </div>
+                </div>
+
+                {/* Certifications */}
+                <div className="flex items-center justify-between gap-3 py-2">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <BadgeCheck className="w-4 h-4 text-primary" />
+                    <span>Loja Verificada</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Lock className="w-4 h-4 text-primary" />
+                    <span>SSL Seguro</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <BadgeCheck className="w-4 h-4 text-primary" />
+                    <span>CNPJ Ativo</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Product Details Accordion */}
               <div className="pt-4">
