@@ -22,7 +22,7 @@ serve(async (req) => {
     }
 
     const shopifyAccessToken = Deno.env.get("SHOPIFY_ACCESS_TOKEN");
-    const shopifyStoreDomain = "avance-modas.myshopify.com";
+    const shopifyStoreDomain = "avancemodas-xzj71.myshopify.com";
 
     if (!shopifyAccessToken) {
       console.error("SHOPIFY_ACCESS_TOKEN not configured");
@@ -34,7 +34,7 @@ serve(async (req) => {
 
     // Search for orders using the Admin API
     const searchQuery = orderNumber.replace(/^#/, ""); // Remove # if present
-    const ordersUrl = `https://${shopifyStoreDomain}/admin/api/2024-01/orders.json?name=${encodeURIComponent(searchQuery)}&status=any`;
+    const ordersUrl = `https://${shopifyStoreDomain}/admin/api/2025-07/orders.json?name=${encodeURIComponent(searchQuery)}&status=any`;
 
     console.log("Searching for order:", searchQuery);
 
