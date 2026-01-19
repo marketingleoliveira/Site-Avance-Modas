@@ -9,12 +9,13 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
 import PromoBannerEditor from "@/components/admin/PromoBannerEditor";
 import AnnouncementEditor from "@/components/admin/AnnouncementEditor";
+import StoreConfigEditor, { ShopifyConfigSettings, BrandSettings, ShippingSettings, SocialSettings, LegalSettings } from "@/components/admin/StoreConfigEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -50,6 +51,11 @@ const AdminPanel = () => {
   const [videosSettings, setVideosSettings] = useState<VideosSettings | null>(null);
   const [promoBannerSettings, setPromoBannerSettings] = useState<PromoBannerSettings | null>(null);
   const [announcementSettings, setAnnouncementSettings] = useState<AnnouncementSettings | null>(null);
+  const [shopifyConfig, setShopifyConfig] = useState<ShopifyConfigSettings | null>(null);
+  const [brandSettings, setBrandSettings] = useState<BrandSettings | null>(null);
+  const [shippingSettings, setShippingSettings] = useState<ShippingSettings | null>(null);
+  const [socialSettings, setSocialSettings] = useState<SocialSettings | null>(null);
+  const [legalSettings, setLegalSettings] = useState<LegalSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
@@ -107,7 +113,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement, shopify, brand, shipping, social, legal] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -121,6 +127,11 @@ const AdminPanel = () => {
         getSiteSetting<VideosSettings>('videos_settings'),
         getSiteSetting<PromoBannerSettings>('promo_banner_settings'),
         getSiteSetting<AnnouncementSettings>('announcement_settings'),
+        getSiteSetting<ShopifyConfigSettings>('shopify_config'),
+        getSiteSetting<BrandSettings>('brand_settings'),
+        getSiteSetting<ShippingSettings>('shipping_settings'),
+        getSiteSetting<SocialSettings>('social_settings'),
+        getSiteSetting<LegalSettings>('legal_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -176,6 +187,11 @@ const AdminPanel = () => {
         ],
         interval: 4000
       });
+      setShopifyConfig(shopify);
+      setBrandSettings(brand);
+      setShippingSettings(shipping);
+      setSocialSettings(social);
+      setLegalSettings(legal);
     };
     
     if (isAdmin) {
@@ -372,8 +388,12 @@ const AdminPanel = () => {
 
       {/* Main Content */}
       <main className="container py-8">
-        <Tabs defaultValue="selector" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 lg:grid-cols-14 max-w-7xl gap-1">
+        <Tabs defaultValue="store-config" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-8 lg:grid-cols-15 max-w-7xl gap-1">
+            <TabsTrigger value="store-config" className="text-xs bg-primary/10">
+              <Store className="w-3 h-3 mr-1" />
+              Loja
+            </TabsTrigger>
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
               Entrada
@@ -425,6 +445,25 @@ const AdminPanel = () => {
               Admins
             </TabsTrigger>
           </TabsList>
+
+          {/* Store Configuration - NEW */}
+          <TabsContent value="store-config">
+            <StoreConfigEditor
+              shopifyConfig={shopifyConfig}
+              brandSettings={brandSettings}
+              shippingSettings={shippingSettings}
+              socialSettings={socialSettings}
+              legalSettings={legalSettings}
+              onUpdate={() => {
+                // Reload settings after update
+                getSiteSetting<ShopifyConfigSettings>('shopify_config').then(setShopifyConfig);
+                getSiteSetting<BrandSettings>('brand_settings').then(setBrandSettings);
+                getSiteSetting<ShippingSettings>('shipping_settings').then(setShippingSettings);
+                getSiteSetting<SocialSettings>('social_settings').then(setSocialSettings);
+                getSiteSetting<LegalSettings>('legal_settings').then(setLegalSettings);
+              }}
+            />
+          </TabsContent>
 
           {/* Store Selector Settings */}
           <TabsContent value="selector">

@@ -1,8 +1,40 @@
 import { toast } from "sonner";
-import { 
-  SHOPIFY_STOREFRONT_URL, 
-  SHOPIFY_STOREFRONT_TOKEN 
-} from "./shopify-config";
+import { getSiteSetting } from "./site-settings";
+
+// Default config (fallback)
+const DEFAULT_CONFIG = {
+  store_domain: 'avancemodas-xzj71.myshopify.com',
+  storefront_token: '1678fc304859b1e97883d02841c7bedf',
+  api_version: '2025-07'
+};
+
+// Cache for the config
+let cachedConfig: typeof DEFAULT_CONFIG | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 60000; // 1 minute
+
+async function getShopifyConfig() {
+  if (cachedConfig && Date.now() - cacheTimestamp < CACHE_TTL) {
+    return cachedConfig;
+  }
+  
+  try {
+    const config = await getSiteSetting<typeof DEFAULT_CONFIG>('shopify_config');
+    if (config && config.store_domain && config.storefront_token) {
+      cachedConfig = config;
+      cacheTimestamp = Date.now();
+      return config;
+    }
+  } catch (error) {
+    console.error('Error loading Shopify config:', error);
+  }
+  
+  return DEFAULT_CONFIG;
+}
+
+function getStorefrontUrl(config: typeof DEFAULT_CONFIG): string {
+  return `https://${config.store_domain}/api/${config.api_version}/graphql.json`;
+}
 
 export interface ShopifyProduct {
   node: {
@@ -59,13 +91,16 @@ export interface ShopifyProduct {
   };
 }
 
-// Storefront API helper function
+// Storefront API helper function - now async to get config
 export async function storefrontApiRequest(query: string, variables: Record<string, unknown> = {}) {
-  const response = await fetch(SHOPIFY_STOREFRONT_URL, {
+  const config = await getShopifyConfig();
+  const url = getStorefrontUrl(config);
+  
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_STOREFRONT_TOKEN
+      'X-Shopify-Storefront-Access-Token': config.storefront_token
     },
     body: JSON.stringify({
       query,
@@ -264,3 +299,6 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
     return null;
   }
 }
+
+// Export for cart store to use
+export { getShopifyConfig, getStorefrontUrl };
