@@ -2,12 +2,8 @@ import { useEffect, useState } from "react";
 import { Instagram, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSiteSetting } from "@/lib/site-settings";
+import { useMaintenanceMode } from "@/hooks/useMaintenanceMode";
 import logoAvance from "@/assets/logo-avance.png";
-
-interface MaintenanceSettings {
-  enabled: boolean;
-  message?: string;
-}
 
 interface SocialSettings {
   whatsapp_number?: string;
@@ -16,8 +12,17 @@ interface SocialSettings {
   tiktok_url?: string;
 }
 
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 export default function MaintenancePage() {
   const [socialSettings, setSocialSettings] = useState<SocialSettings | null>(null);
+  const { scheduledEnd, refetch } = useMaintenanceMode();
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -26,6 +31,39 @@ export default function MaintenancePage() {
     };
     loadSettings();
   }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!scheduledEnd) {
+      setTimeLeft(null);
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = scheduledEnd.getTime() - now.getTime();
+
+      if (difference <= 0) {
+        // Time's up - refetch to update maintenance status
+        refetch(true);
+        return null;
+      }
+
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60)
+      };
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [scheduledEnd, refetch]);
 
   const whatsappNumber = socialSettings?.whatsapp_number || "5511999999999";
   const whatsappMessage = encodeURIComponent(socialSettings?.whatsapp_message || "Olá! Gostaria de saber quando o site volta ao ar.");
@@ -82,6 +120,33 @@ export default function MaintenancePage() {
             Voltamos em breve!
           </p>
         </div>
+
+        {/* Countdown Timer */}
+        {timeLeft && (
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-3">Tempo restante:</p>
+            <div className="flex justify-center gap-3">
+              {timeLeft.days > 0 && (
+                <div className="bg-primary/10 rounded-lg p-3 min-w-[70px]">
+                  <div className="text-2xl font-bold text-primary">{timeLeft.days}</div>
+                  <div className="text-xs text-muted-foreground">dias</div>
+                </div>
+              )}
+              <div className="bg-primary/10 rounded-lg p-3 min-w-[70px]">
+                <div className="text-2xl font-bold text-primary">{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div className="text-xs text-muted-foreground">horas</div>
+              </div>
+              <div className="bg-primary/10 rounded-lg p-3 min-w-[70px]">
+                <div className="text-2xl font-bold text-primary">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div className="text-xs text-muted-foreground">min</div>
+              </div>
+              <div className="bg-primary/10 rounded-lg p-3 min-w-[70px]">
+                <div className="text-2xl font-bold text-primary">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="text-xs text-muted-foreground">seg</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Social Links */}
         <div className="space-y-4 pt-4">
