@@ -9,13 +9,14 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
 import PromoBannerEditor from "@/components/admin/PromoBannerEditor";
 import AnnouncementEditor from "@/components/admin/AnnouncementEditor";
 import StoreConfigEditor, { ShopifyConfigSettings, BrandSettings, ShippingSettings, SocialSettings, LegalSettings } from "@/components/admin/StoreConfigEditor";
+import MaintenanceEditor, { MaintenanceSettings } from "@/components/admin/MaintenanceEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -56,6 +57,7 @@ const AdminPanel = () => {
   const [shippingSettings, setShippingSettings] = useState<ShippingSettings | null>(null);
   const [socialSettings, setSocialSettings] = useState<SocialSettings | null>(null);
   const [legalSettings, setLegalSettings] = useState<LegalSettings | null>(null);
+  const [maintenanceSettings, setMaintenanceSettings] = useState<MaintenanceSettings | null>(null);
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loadingSubscribers, setLoadingSubscribers] = useState(false);
@@ -113,7 +115,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement, shopify, brand, shipping, social, legal] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement, shopify, brand, shipping, social, legal, maintenance] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -132,6 +134,7 @@ const AdminPanel = () => {
         getSiteSetting<ShippingSettings>('shipping_settings'),
         getSiteSetting<SocialSettings>('social_settings'),
         getSiteSetting<LegalSettings>('legal_settings'),
+        getSiteSetting<MaintenanceSettings>('maintenance_settings'),
       ]);
       setHeroAtacado(atacado);
       setHeroVarejo(varejo);
@@ -192,6 +195,7 @@ const AdminPanel = () => {
       setShippingSettings(shipping);
       setSocialSettings(social);
       setLegalSettings(legal);
+      setMaintenanceSettings(maintenance);
     };
     
     if (isAdmin) {
@@ -389,10 +393,14 @@ const AdminPanel = () => {
       {/* Main Content */}
       <main className="container py-8">
         <Tabs defaultValue="store-config" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 lg:grid-cols-15 max-w-7xl gap-1">
+          <TabsList className="grid w-full grid-cols-8 lg:grid-cols-16 max-w-7xl gap-1">
             <TabsTrigger value="store-config" className="text-xs bg-primary/10">
               <Store className="w-3 h-3 mr-1" />
               Loja
+            </TabsTrigger>
+            <TabsTrigger value="maintenance" className={`text-xs ${maintenanceSettings?.enabled ? 'bg-amber-100 text-amber-800' : ''}`}>
+              <Wrench className="w-3 h-3 mr-1" />
+              Manutenção
             </TabsTrigger>
             <TabsTrigger value="selector" className="text-xs">
               <Image className="w-3 h-3 mr-1" />
@@ -446,7 +454,7 @@ const AdminPanel = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Store Configuration - NEW */}
+          {/* Store Configuration */}
           <TabsContent value="store-config">
             <StoreConfigEditor
               shopifyConfig={shopifyConfig}
@@ -461,6 +469,16 @@ const AdminPanel = () => {
                 getSiteSetting<ShippingSettings>('shipping_settings').then(setShippingSettings);
                 getSiteSetting<SocialSettings>('social_settings').then(setSocialSettings);
                 getSiteSetting<LegalSettings>('legal_settings').then(setLegalSettings);
+              }}
+            />
+          </TabsContent>
+
+          {/* Maintenance Mode */}
+          <TabsContent value="maintenance">
+            <MaintenanceEditor
+              settings={maintenanceSettings}
+              onUpdate={() => {
+                getSiteSetting<MaintenanceSettings>('maintenance_settings').then(setMaintenanceSettings);
               }}
             />
           </TabsContent>

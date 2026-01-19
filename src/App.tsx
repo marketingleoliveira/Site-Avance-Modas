@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useCartSync } from "@/hooks/useCartSync";
+import { useMaintenanceMode } from "@/hooks/useMaintenanceMode";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import StoreSelector from "./pages/StoreSelector";
 import InicioAtacado from "./pages/InicioAtacado";
@@ -14,13 +15,34 @@ import ContactPage from "./pages/ContactPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import TrackingPage from "./pages/TrackingPage";
+import MaintenancePage from "./pages/MaintenancePage";
 import NotFound from "./pages/NotFound";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
-// Component that uses the cart sync hook
+// Component that uses the cart sync hook and checks maintenance mode
 const AppContent = () => {
   useCartSync();
+  const location = useLocation();
+  const { isMaintenanceMode, isLoading } = useMaintenanceMode();
+  
+  // Allow admin routes even in maintenance mode
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
+  // Show loading state while checking maintenance
+  if (isLoading && !isAdminRoute) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  // Show maintenance page if enabled (except for admin routes)
+  if (isMaintenanceMode && !isAdminRoute) {
+    return <MaintenancePage />;
+  }
   
   return (
     <>
