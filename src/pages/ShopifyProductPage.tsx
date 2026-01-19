@@ -20,6 +20,8 @@ const ShopifyProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedTopSize, setSelectedTopSize] = useState<string | null>(null);
+  const [selectedBottomSize, setSelectedBottomSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [sizeTableOpen, setSizeTableOpen] = useState(false);
@@ -31,6 +33,8 @@ const ShopifyProductPage = () => {
       if (!handle) return;
       setLoading(true);
       setSelectedSize(null);
+      setSelectedTopSize(null);
+      setSelectedBottomSize(null);
       setSelectedColor(null);
       setCurrentImage(0);
       const data = await fetchProductByHandle(handle);
@@ -40,19 +44,50 @@ const ShopifyProductPage = () => {
     loadProduct();
   }, [handle]);
 
-  // Extract unique sizes and colors from variants
-  const { sizes, colors, getVariantByOptions } = useMemo(() => {
-    if (!product) return { sizes: [], colors: [], getVariantByOptions: () => null };
+  // Standard size order: P, M, G, GG
+  const SIZE_ORDER = ['PP', 'P', 'M', 'G', 'GG', 'XGG', 'EXGG'];
+
+  const sortSizes = (sizesArray: string[]) => {
+    return sizesArray.sort((a, b) => {
+      const aIndex = SIZE_ORDER.indexOf(a.toUpperCase());
+      const bIndex = SIZE_ORDER.indexOf(b.toUpperCase());
+      if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  };
+
+  // Check if product is a "conjunto" (set with top + bottom)
+  const isConjunto = useMemo(() => {
+    if (!product) return false;
+    const titleLower = product.title.toLowerCase();
+    return titleLower.includes('conjunto');
+  }, [product]);
+
+  // Extract unique sizes and colors from variants, separating top/bottom for conjuntos
+  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions } = useMemo(() => {
+    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null };
     
     const sizesSet = new Set<string>();
+    const topSizesSet = new Set<string>();
+    const bottomSizesSet = new Set<string>();
     const colorsSet = new Set<string>();
     
     product.variants.edges.forEach(({ node }) => {
       node.selectedOptions?.forEach(opt => {
         const nameLower = opt.name.toLowerCase();
-        if (nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') {
+        
+        // Check for top/bottom specific size options
+        if (nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) {
+          topSizesSet.add(opt.value);
+        } else if (nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging')) {
+          bottomSizesSet.add(opt.value);
+        } else if (nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') {
           sizesSet.add(opt.value);
-        } else if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
+        }
+        
+        if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
           colorsSet.add(opt.value);
         }
       });
@@ -67,7 +102,12 @@ const ShopifyProductPage = () => {
         
         node.selectedOptions?.forEach(opt => {
           const nameLower = opt.name.toLowerCase();
-          if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === size) {
+          if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam' || 
+               nameLower.includes('superior') || nameLower.includes('inferior') ||
+               nameLower.includes('top') || nameLower.includes('bottom') ||
+               nameLower.includes('blusa') || nameLower.includes('shorts') ||
+               nameLower.includes('bermuda') || nameLower.includes('legging') ||
+               nameLower.includes('camiseta') || nameLower.includes('calça')) && opt.value === size) {
             sizeMatch = true;
           }
           if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color) {
@@ -80,15 +120,25 @@ const ShopifyProductPage = () => {
     };
 
     return { 
-      sizes: Array.from(sizesSet), 
+      sizes: sortSizes(Array.from(sizesSet)), 
+      topSizes: sortSizes(Array.from(topSizesSet)),
+      bottomSizes: sortSizes(Array.from(bottomSizesSet)),
       colors: Array.from(colorsSet),
       getVariantByOptions: getVariant
     };
   }, [product]);
 
-  // Get available colors for selected size
+  // Get available colors for selected size (handles both regular and conjunto products)
   const availableColorsForSize = useMemo(() => {
-    if (!product || !selectedSize) return [];
+    if (!product) return [];
+    
+    // For conjunto products with separate top/bottom sizes
+    const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
+    if (hasConjuntoSizes) {
+      if (!selectedTopSize || !selectedBottomSize) return [];
+    } else if (!selectedSize) {
+      return [];
+    }
     
     const colorsSet = new Set<string>();
     product.variants.edges.forEach(({ node }) => {
@@ -97,9 +147,21 @@ const ShopifyProductPage = () => {
       
       node.selectedOptions?.forEach(opt => {
         const nameLower = opt.name.toLowerCase();
-        if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === selectedSize) {
-          hasSize = true;
+        
+        if (hasConjuntoSizes) {
+          // For conjunto: check if variant matches selected top AND bottom sizes
+          const isTopOption = nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta');
+          const isBottomOption = nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging');
+          
+          if ((isTopOption && opt.value === selectedTopSize) || (isBottomOption && opt.value === selectedBottomSize)) {
+            hasSize = true;
+          }
+        } else {
+          if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === selectedSize) {
+            hasSize = true;
+          }
         }
+        
         if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
           colorValue = opt.value;
         }
@@ -111,10 +173,47 @@ const ShopifyProductPage = () => {
     });
     
     return Array.from(colorsSet);
-  }, [product, selectedSize]);
+  }, [product, selectedSize, selectedTopSize, selectedBottomSize, topSizes, bottomSizes]);
+
+  // Get variant for conjunto products with separate top/bottom sizes
+  const getConjuntoVariant = useMemo(() => {
+    if (!product || topSizes.length === 0 || bottomSizes.length === 0) return null;
+    if (!selectedTopSize || !selectedBottomSize) return null;
+    
+    return product.variants.edges.find(({ node }) => {
+      let topMatch = false;
+      let bottomMatch = false;
+      let colorMatch = selectedColor ? false : true;
+      
+      node.selectedOptions?.forEach(opt => {
+        const nameLower = opt.name.toLowerCase();
+        
+        const isTopOption = nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta');
+        const isBottomOption = nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging');
+        
+        if (isTopOption && opt.value === selectedTopSize) {
+          topMatch = true;
+        }
+        if (isBottomOption && opt.value === selectedBottomSize) {
+          bottomMatch = true;
+        }
+        if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === selectedColor) {
+          colorMatch = true;
+        }
+      });
+      
+      return topMatch && bottomMatch && colorMatch;
+    })?.node || null;
+  }, [product, selectedTopSize, selectedBottomSize, selectedColor, topSizes, bottomSizes]);
 
   const currentVariant = useMemo(() => {
     if (!product) return null;
+    
+    // For conjunto products with separate sizes
+    const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
+    if (hasConjuntoSizes) {
+      return getConjuntoVariant;
+    }
     
     // If product has size/color options
     if (sizes.length > 0 || colors.length > 0) {
@@ -123,7 +222,7 @@ const ShopifyProductPage = () => {
     
     // Fallback to first variant if no options
     return product.variants.edges[0]?.node || null;
-  }, [product, selectedSize, selectedColor, sizes, colors, getVariantByOptions]);
+  }, [product, selectedSize, selectedColor, sizes, colors, getVariantByOptions, topSizes, bottomSizes, getConjuntoVariant]);
 
   if (loading) {
     return (
@@ -182,8 +281,19 @@ const ShopifyProductPage = () => {
   };
 
   const handleAddToCart = () => {
+    const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
+    
     if (!currentVariant) {
-      if (sizes.length > 0 && !selectedSize) {
+      if (hasConjuntoSizes) {
+        if (!selectedTopSize) {
+          toast.error("Selecione o tamanho da peça superior");
+          return;
+        }
+        if (!selectedBottomSize) {
+          toast.error("Selecione o tamanho da peça inferior");
+          return;
+        }
+      } else if (sizes.length > 0 && !selectedSize) {
         toast.error("Selecione um tamanho");
         return;
       }
@@ -214,8 +324,13 @@ const ShopifyProductPage = () => {
     });
   };
 
+  const hasConjuntoSizesGlobal = topSizes.length > 0 && bottomSizes.length > 0;
+  
   const canAddToCart = currentVariant?.availableForSale && 
-    (sizes.length === 0 || selectedSize) && 
+    (hasConjuntoSizesGlobal 
+      ? (selectedTopSize && selectedBottomSize)
+      : (sizes.length === 0 || selectedSize)
+    ) && 
     (colors.length === 0 || selectedColor || availableColorsForSize.length === 0);
 
   return (
@@ -318,8 +433,126 @@ const ShopifyProductPage = () => {
                 </p>
               </div>
 
-              {/* Size Selection - FIRST */}
-              {sizes.length > 0 && (
+              {/* Conjunto Size Selection - Separate Top/Bottom */}
+              {topSizes.length > 0 && bottomSizes.length > 0 && (
+                <div className="space-y-6">
+                  {/* Top/Superior Size Selection */}
+                  <div className="space-y-3">
+                    <p className="font-semibold text-foreground flex items-center gap-2">
+                      <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">Peça Superior</span>
+                      Tamanho: {selectedTopSize && <span className="text-primary">{selectedTopSize}</span>}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {topSizes.map((size) => (
+                        <button
+                          key={`top-${size}`}
+                          onClick={() => {
+                            setSelectedTopSize(size);
+                            setSelectedColor(null);
+                          }}
+                          className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
+                            selectedTopSize === size
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card hover:border-primary/50"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bottom/Inferior Size Selection */}
+                  <div className="space-y-3">
+                    <p className="font-semibold text-foreground flex items-center gap-2">
+                      <span className="bg-secondary/50 text-secondary-foreground text-xs px-2 py-1 rounded-full">Peça Inferior</span>
+                      Tamanho: {selectedBottomSize && <span className="text-primary">{selectedBottomSize}</span>}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {bottomSizes.map((size) => (
+                        <button
+                          key={`bottom-${size}`}
+                          onClick={() => {
+                            setSelectedBottomSize(size);
+                            setSelectedColor(null);
+                          }}
+                          className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
+                            selectedBottomSize === size
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-card hover:border-primary/50"
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size Help Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                    <Dialog open={sizeTableOpen} onOpenChange={setSizeTableOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 gap-2 h-11 border-2 hover:border-primary hover:bg-primary/5 transition-all"
+                        >
+                          <Ruler className="w-4 h-4" />
+                          Tabela de Medidas
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl flex items-center gap-2">
+                            <Ruler className="w-5 h-5 text-primary" />
+                            Tabela de Medidas
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="mt-4">
+                          <img 
+                            src={tabelaMedidas} 
+                            alt="Tabela de Medidas Avance" 
+                            className="w-full rounded-lg"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground text-center mt-4">
+                          Para medir o seu corpo é necessário ter uma fita métrica.
+                        </p>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 gap-2 h-11 border-2 border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 hover:border-primary transition-all group"
+                      onClick={() => setVirtualFittingOpen(true)}
+                    >
+                      <User className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      <span className="font-medium">Descubra seu Tamanho</span>
+                      <Sparkles className="w-3 h-3 text-primary" />
+                    </Button>
+                  </div>
+
+                  {/* Virtual Fitting Room Modal */}
+                  <VirtualFittingRoom 
+                    open={virtualFittingOpen}
+                    onOpenChange={setVirtualFittingOpen}
+                    sizes={[...new Set([...topSizes, ...bottomSizes])]}
+                    onSizeRecommendation={(size) => {
+                      setSelectedTopSize(size);
+                      setSelectedBottomSize(size);
+                      setSelectedColor(null);
+                      toast.success(`Tamanho ${size} selecionado!`, {
+                        description: "Aplicado para peça superior e inferior",
+                        position: "top-center"
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Regular Size Selection (non-conjunto products) */}
+              {sizes.length > 0 && topSizes.length === 0 && bottomSizes.length === 0 && (
                 <div className="space-y-4">
                   <p className="font-semibold text-foreground">
                     Tamanho: {selectedSize && <span className="text-primary">{selectedSize}</span>}
@@ -331,7 +564,7 @@ const ShopifyProductPage = () => {
                         key={size}
                         onClick={() => {
                           setSelectedSize(size);
-                          setSelectedColor(null); // Reset color when size changes
+                          setSelectedColor(null);
                         }}
                         className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
                           selectedSize === size
@@ -404,8 +637,11 @@ const ShopifyProductPage = () => {
                 </div>
               )}
 
-              {/* Color Selection - SECOND (only show after size is selected) */}
-              {colors.length > 0 && selectedSize && availableColorsForSize.length > 0 && (
+              {/* Color Selection - SECOND (show after size is selected for regular products OR after both sizes for conjuntos) */}
+              {colors.length > 0 && 
+               ((hasConjuntoSizesGlobal && selectedTopSize && selectedBottomSize) || 
+                (!hasConjuntoSizesGlobal && selectedSize)) && 
+               availableColorsForSize.length > 0 && (
                 <div className="space-y-3">
                   <p className="font-semibold text-foreground">
                     Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
