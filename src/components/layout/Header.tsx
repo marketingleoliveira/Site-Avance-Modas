@@ -19,6 +19,7 @@ const navLinks = [
   },
   { name: "Lançamentos", href: "/categoria/lancamentos" },
   { name: "Promoções", href: "/categoria/promocoes" },
+  { name: "Rastrear Pedido", href: "/rastreio" },
   { name: "Contato", href: "/contato" },
 ];
 

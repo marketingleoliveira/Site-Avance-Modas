@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin, Package } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
@@ -113,6 +114,12 @@ const Footer = () => {
                 <a href="/#contato" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                   Contato
                 </a>
+              </li>
+              <li>
+                <Link to="/rastreio" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-2">
+                  <Package className="w-3 h-3" />
+                  Rastrear Pedido
+                </Link>
               </li>
             </ul>
           </div>
