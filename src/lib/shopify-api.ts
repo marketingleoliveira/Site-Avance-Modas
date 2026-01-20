@@ -277,18 +277,27 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
 
 export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: number = 100): Promise<ShopifyProduct[]> {
   try {
-    // Fetch all products and filter by title containing the type
+    // Fetch all products - type filtering is handled by collections if needed
+    // For stores without ATACADO/VAREJO in product titles, return all products
     const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: null });
     if (!data) return [];
     
     const allProducts: ShopifyProduct[] = data.data.products.edges;
     
-    // Filter products that have the exact type in title (ATACADO or VAREJO)
-    // Products must explicitly contain ATACADO or VAREJO - no shared products
-    return allProducts.filter(product => {
-      const title = product.node.title.toUpperCase();
-      return title.includes(type);
-    });
+    // Check if any product has type in title
+    const hasTypeInTitles = allProducts.some(product => 
+      product.node.title.toUpperCase().includes(type)
+    );
+    
+    // If products have type labels, filter by type; otherwise return all
+    if (hasTypeInTitles) {
+      return allProducts.filter(product => 
+        product.node.title.toUpperCase().includes(type)
+      );
+    }
+    
+    // Return all products when no type segmentation exists
+    return allProducts;
   } catch (error) {
     console.error(`Error fetching ${type} products:`, error);
     return [];
