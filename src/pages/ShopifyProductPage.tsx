@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, ArrowLeft, Ruler, Check, Package, Sparkles, User, Lock, CreditCard, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import ShopifyProductGrid from "@/components/shopify/ShopifyProductGrid";
 import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import tabelaMedidas from "@/assets/tabela-medidas.jpg";
-import VirtualFittingRoom from "@/components/product/VirtualFittingRoom";
+import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
+
+// Lazy load heavy components
+const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
+const VirtualFittingRoom = lazy(() => import("@/components/product/VirtualFittingRoom"));
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -43,20 +46,6 @@ const ShopifyProductPage = () => {
     };
     loadProduct();
   }, [handle]);
-
-  // Standard size order: P, M, G, GG
-  const SIZE_ORDER = ['PP', 'P', 'M', 'G', 'GG', 'XGG', 'EXGG'];
-
-  const sortSizes = (sizesArray: string[]) => {
-    return sizesArray.sort((a, b) => {
-      const aIndex = SIZE_ORDER.indexOf(a.toUpperCase());
-      const bIndex = SIZE_ORDER.indexOf(b.toUpperCase());
-      if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return -1;
-      return aIndex - bIndex;
-    });
-  };
 
   // Check if product is a "conjunto" (set with top + bottom)
   const isConjunto = useMemo(() => {
@@ -178,127 +167,6 @@ const ShopifyProductPage = () => {
     };
   }, [product]);
 
-  // Normalize text for color matching (remove accents, lowercase, handle variations)
-  const normalizeForMatch = (text: string): string => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove accents
-      .replace(/[-_]/g, ' ') // Replace hyphens/underscores with spaces
-      .replace(/\s+/g, ' ') // Normalize whitespace
-      .trim();
-  };
-
-  // Color name variations for smarter matching
-  const colorVariations: Record<string, string[]> = {
-    // Rosas
-    'rosa': ['rosa', 'pink', 'rose', 'rosinha'],
-    'rosa bebê': ['rosa bebe', 'rosa-bebe', 'rosabebe', 'baby pink', 'rosa claro'],
-    'rosa chiclete': ['rosa chiclete', 'rosa-chiclete', 'chiclete', 'bubblegum'],
-    'rosa choque': ['rosa choque', 'rosa-choque', 'hot pink', 'pink choque'],
-    'rosa antigo': ['rosa antigo', 'rosa-antigo', 'dusty rose', 'rose antigo'],
-    'algodão doce': ['algodao doce', 'algodao-doce', 'cotton candy', 'algodaodoce'],
-    
-    // Pretos e Brancos
-    'preto': ['preto', 'black', 'negro', 'dark', 'noir'],
-    'branco': ['branco', 'white', 'branquinho', 'snow'],
-    'off-white': ['off white', 'offwhite', 'off-white', 'branco gelo', 'gelo'],
-    'creme': ['creme', 'cream', 'ivory', 'marfim'],
-    
-    // Azuis
-    'azul': ['azul', 'blue'],
-    'azul marinho': ['marinho', 'navy', 'azul marinho', 'azul-marinho', 'naval'],
-    'azul royal': ['royal', 'azul royal', 'azul-royal', 'realeza'],
-    'azul bebê': ['azul bebe', 'azul-bebe', 'baby blue', 'azul claro', 'celeste'],
-    'azul céu': ['azul ceu', 'azul-ceu', 'sky blue', 'celeste'],
-    'azul petróleo': ['azul petroleo', 'azul-petroleo', 'petroleo', 'teal'],
-    'azul turquesa': ['azul turquesa', 'turquesa', 'turquoise', 'tiffany'],
-    'azul piscina': ['azul piscina', 'azul-piscina', 'piscina', 'aqua'],
-    'azul cobalto': ['cobalto', 'azul cobalto', 'azul-cobalto', 'cobalt'],
-    
-    // Verdes
-    'verde': ['verde', 'green'],
-    'verde limão': ['verde limao', 'verde-limao', 'limao', 'lime', 'lima'],
-    'verde água': ['verde agua', 'verde-agua', 'agua', 'aqua', 'mint'],
-    'verde menta': ['menta', 'verde menta', 'verde-menta', 'mint'],
-    'verde militar': ['militar', 'verde militar', 'verde-militar', 'army', 'army green'],
-    'verde musgo': ['musgo', 'verde musgo', 'verde-musgo', 'moss'],
-    'verde oliva': ['oliva', 'verde oliva', 'verde-oliva', 'olive'],
-    'verde esmeralda': ['esmeralda', 'verde esmeralda', 'verde-esmeralda', 'emerald'],
-    'verde bandeira': ['bandeira', 'verde bandeira', 'verde-bandeira'],
-    'verde floresta': ['floresta', 'verde floresta', 'verde-floresta', 'forest'],
-    
-    // Vermelhos
-    'vermelho': ['vermelho', 'red', 'rubro', 'encarnado'],
-    'vermelho escuro': ['vermelho escuro', 'vermelho-escuro', 'dark red', 'borgonha'],
-    'cereja': ['cereja', 'cherry', 'vermelho cereja'],
-    'tomate': ['tomate', 'tomato', 'vermelho tomate'],
-    
-    // Amarelos e Laranjas
-    'amarelo': ['amarelo', 'yellow'],
-    'amarelo ouro': ['amarelo ouro', 'amarelo-ouro', 'gold yellow', 'mostarda'],
-    'amarelo canário': ['canario', 'amarelo canario', 'amarelo-canario'],
-    'amarelo bebê': ['amarelo bebe', 'amarelo-bebe', 'baby yellow', 'amarelo claro'],
-    'laranja': ['laranja', 'orange'],
-    'laranja queimado': ['laranja queimado', 'laranja-queimado', 'burnt orange', 'terracota'],
-    'terracota': ['terracota', 'terracotta', 'terra cota'],
-    'pêssego': ['pessego', 'peach', 'peach pink'],
-    
-    // Roxos e Lilás
-    'roxo': ['roxo', 'purple', 'violeta', 'violet'],
-    'roxo escuro': ['roxo escuro', 'roxo-escuro', 'dark purple', 'uva'],
-    'lilás': ['lilas', 'lilac', 'lavanda', 'lavender'],
-    'lavanda': ['lavanda', 'lavender', 'lilas claro'],
-    'berinjela': ['berinjela', 'eggplant', 'aubergine'],
-    'uva': ['uva', 'grape', 'roxo uva'],
-    
-    // Cinzas
-    'cinza': ['cinza', 'gray', 'grey', 'grafite'],
-    'cinza claro': ['cinza claro', 'cinza-claro', 'light gray', 'prata'],
-    'cinza escuro': ['cinza escuro', 'cinza-escuro', 'dark gray', 'chumbo'],
-    'cinza mescla': ['mescla', 'cinza mescla', 'cinza-mescla', 'heather'],
-    'grafite': ['grafite', 'graphite', 'charcoal'],
-    'chumbo': ['chumbo', 'lead', 'dark grey'],
-    
-    // Marrons e Beges
-    'marrom': ['marrom', 'brown', 'cafe', 'chocolate', 'castanho'],
-    'marrom escuro': ['marrom escuro', 'marrom-escuro', 'dark brown', 'cacau'],
-    'café': ['cafe', 'coffee', 'marrom cafe'],
-    'chocolate': ['chocolate', 'marrom chocolate', 'cacau'],
-    'caramelo': ['caramelo', 'caramel', 'toffee'],
-    'bege': ['bege', 'beige', 'areia', 'sand'],
-    'areia': ['areia', 'sand', 'sandy'],
-    'nude': ['nude', 'pele', 'skin', 'neutro'],
-    'caqui': ['caqui', 'khaki', 'kaki'],
-    
-    // Vinhos e Bordôs
-    'vinho': ['vinho', 'burgundy', 'bordô', 'bordo', 'wine'],
-    'marsala': ['marsala', 'marsalla'],
-    'bordô': ['bordo', 'burgundy', 'bordeaux'],
-    
-    // Corais e Salmões
-    'coral': ['coral', 'coral pink'],
-    'salmão': ['salmao', 'salmon', 'rosa salmao'],
-    
-    // Fúcsias e Magentas
-    'fucsia': ['fucsia', 'fuchsia', 'magenta', 'pink escuro'],
-    'magenta': ['magenta', 'pink magenta'],
-    
-    // Metálicos
-    'dourado': ['dourado', 'gold', 'ouro', 'golden'],
-    'prata': ['prata', 'silver', 'prateado'],
-    'bronze': ['bronze', 'cobre', 'copper'],
-    'rose gold': ['rose gold', 'rosegold', 'ouro rose', 'ouro-rose'],
-    
-    // Especiais
-    'turquesa': ['turquesa', 'turquoise', 'tiffany', 'cyan'],
-    'ciano': ['ciano', 'cyan', 'aqua'],
-    'neon': ['neon', 'fluorescente', 'fluor'],
-    'animal print': ['animal print', 'animal-print', 'onca', 'leopardo', 'zebra'],
-    'tie dye': ['tie dye', 'tie-dye', 'tiedye', 'manchado'],
-    'estampado': ['estampado', 'estampa', 'print', 'floral'],
-  };
-
   // Find image index using smart color matching
   const findImageIndexForColor = (colorName: string): number => {
     if (!product || colors.length === 0) return 0;
@@ -314,7 +182,7 @@ const ShopifyProductPage = () => {
     if (idx >= 0) return idx;
     
     // Strategy 2: Match color variations in altText
-    const variations = colorVariations[normalizedColorName] || [normalizedColorName];
+    const variations = COLOR_VARIATIONS[normalizedColorName] || [normalizedColorName];
     idx = images.findIndex(img => {
       const altText = normalizeForMatch(img.node.altText || '');
       return variations.some(v => altText.includes(normalizeForMatch(v)));
@@ -362,7 +230,7 @@ const ShopifyProductPage = () => {
     // Try to match each color against the image
     for (const color of colors) {
       const normalizedColor = normalizeForMatch(color);
-      const variations = colorVariations[normalizedColor] || [normalizedColor];
+      const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
       
       // Check altText
       if (variations.some(v => altText.includes(normalizeForMatch(v)))) {
@@ -609,185 +477,6 @@ const ShopifyProductPage = () => {
                   {images.map((img, i) => {
                     // Smart color detection for this image
                     const detectedColor = findColorForImageIndex(i);
-                    
-                    // Color mapping for background colors (expanded)
-                    const colorMap: Record<string, { bg: string; text: string }> = {
-                      // Rosas
-                      'rosa': { bg: '#FF69B4', text: '#000' },
-                      'pink': { bg: '#FF69B4', text: '#000' },
-                      'rosa bebê': { bg: '#F4C2C2', text: '#000' },
-                      'rosa chiclete': { bg: '#FF1493', text: '#fff' },
-                      'rosa choque': { bg: '#FF007F', text: '#fff' },
-                      'rosa antigo': { bg: '#C08081', text: '#fff' },
-                      'algodão doce': { bg: '#FFBCD9', text: '#000' },
-                      'algodao doce': { bg: '#FFBCD9', text: '#000' },
-                      
-                      // Pretos e Brancos
-                      'preto': { bg: '#1a1a1a', text: '#fff' },
-                      'black': { bg: '#1a1a1a', text: '#fff' },
-                      'branco': { bg: '#f5f5f5', text: '#000' },
-                      'white': { bg: '#f5f5f5', text: '#000' },
-                      'off-white': { bg: '#faf9f6', text: '#000' },
-                      'offwhite': { bg: '#faf9f6', text: '#000' },
-                      'creme': { bg: '#fffdd0', text: '#000' },
-                      'cream': { bg: '#fffdd0', text: '#000' },
-                      
-                      // Azuis
-                      'azul': { bg: '#2563eb', text: '#fff' },
-                      'blue': { bg: '#2563eb', text: '#fff' },
-                      'azul royal': { bg: '#4169E1', text: '#fff' },
-                      'royal': { bg: '#4169E1', text: '#fff' },
-                      'azul marinho': { bg: '#1e3a5f', text: '#fff' },
-                      'marinho': { bg: '#1e3a5f', text: '#fff' },
-                      'navy': { bg: '#1e3a5f', text: '#fff' },
-                      'azul bebê': { bg: '#89CFF0', text: '#000' },
-                      'azul bebe': { bg: '#89CFF0', text: '#000' },
-                      'azul céu': { bg: '#87CEEB', text: '#000' },
-                      'azul ceu': { bg: '#87CEEB', text: '#000' },
-                      'celeste': { bg: '#87CEEB', text: '#000' },
-                      'azul petróleo': { bg: '#008080', text: '#fff' },
-                      'azul petroleo': { bg: '#008080', text: '#fff' },
-                      'azul piscina': { bg: '#00CED1', text: '#000' },
-                      'piscina': { bg: '#00CED1', text: '#000' },
-                      'azul cobalto': { bg: '#0047AB', text: '#fff' },
-                      'cobalto': { bg: '#0047AB', text: '#fff' },
-                      
-                      // Verdes
-                      'verde': { bg: '#16a34a', text: '#fff' },
-                      'green': { bg: '#16a34a', text: '#fff' },
-                      'verde limão': { bg: '#32CD32', text: '#000' },
-                      'verde limao': { bg: '#32CD32', text: '#000' },
-                      'limão': { bg: '#32CD32', text: '#000' },
-                      'limao': { bg: '#32CD32', text: '#000' },
-                      'lime': { bg: '#32CD32', text: '#000' },
-                      'verde água': { bg: '#66CDAA', text: '#000' },
-                      'verde agua': { bg: '#66CDAA', text: '#000' },
-                      'verde menta': { bg: '#98FF98', text: '#000' },
-                      'menta': { bg: '#98FF98', text: '#000' },
-                      'mint': { bg: '#98FF98', text: '#000' },
-                      'verde militar': { bg: '#4B5320', text: '#fff' },
-                      'militar': { bg: '#4B5320', text: '#fff' },
-                      'verde musgo': { bg: '#556b2f', text: '#fff' },
-                      'musgo': { bg: '#556b2f', text: '#fff' },
-                      'moss': { bg: '#556b2f', text: '#fff' },
-                      'verde oliva': { bg: '#808000', text: '#fff' },
-                      'oliva': { bg: '#808000', text: '#fff' },
-                      'olive': { bg: '#808000', text: '#fff' },
-                      'verde esmeralda': { bg: '#50C878', text: '#000' },
-                      'esmeralda': { bg: '#50C878', text: '#000' },
-                      'verde bandeira': { bg: '#009739', text: '#fff' },
-                      'verde floresta': { bg: '#228B22', text: '#fff' },
-                      'floresta': { bg: '#228B22', text: '#fff' },
-                      
-                      // Vermelhos
-                      'vermelho': { bg: '#dc2626', text: '#fff' },
-                      'red': { bg: '#dc2626', text: '#fff' },
-                      'vermelho escuro': { bg: '#8B0000', text: '#fff' },
-                      'cereja': { bg: '#DE3163', text: '#fff' },
-                      'tomate': { bg: '#FF6347', text: '#000' },
-                      
-                      // Amarelos e Laranjas
-                      'amarelo': { bg: '#facc15', text: '#000' },
-                      'yellow': { bg: '#facc15', text: '#000' },
-                      'amarelo ouro': { bg: '#FFD700', text: '#000' },
-                      'mostarda': { bg: '#FFDB58', text: '#000' },
-                      'amarelo canário': { bg: '#FFEF00', text: '#000' },
-                      'amarelo bebê': { bg: '#FFFACD', text: '#000' },
-                      'laranja': { bg: '#f97316', text: '#fff' },
-                      'orange': { bg: '#f97316', text: '#fff' },
-                      'laranja queimado': { bg: '#CC5500', text: '#fff' },
-                      'terracota': { bg: '#E2725B', text: '#fff' },
-                      'pêssego': { bg: '#FFCBA4', text: '#000' },
-                      'pessego': { bg: '#FFCBA4', text: '#000' },
-                      'peach': { bg: '#FFCBA4', text: '#000' },
-                      
-                      // Roxos e Lilás
-                      'roxo': { bg: '#9333ea', text: '#fff' },
-                      'purple': { bg: '#9333ea', text: '#fff' },
-                      'roxo escuro': { bg: '#4B0082', text: '#fff' },
-                      'lilás': { bg: '#c8a2c8', text: '#000' },
-                      'lilas': { bg: '#c8a2c8', text: '#000' },
-                      'lilac': { bg: '#c8a2c8', text: '#000' },
-                      'lavanda': { bg: '#E6E6FA', text: '#000' },
-                      'lavender': { bg: '#E6E6FA', text: '#000' },
-                      'berinjela': { bg: '#614051', text: '#fff' },
-                      'uva': { bg: '#6F2DA8', text: '#fff' },
-                      
-                      // Cinzas
-                      'cinza': { bg: '#6b7280', text: '#fff' },
-                      'gray': { bg: '#6b7280', text: '#fff' },
-                      'grey': { bg: '#6b7280', text: '#fff' },
-                      'cinza claro': { bg: '#D3D3D3', text: '#000' },
-                      'cinza escuro': { bg: '#4A4A4A', text: '#fff' },
-                      'cinza mescla': { bg: '#9CA3AF', text: '#000' },
-                      'mescla': { bg: '#9CA3AF', text: '#000' },
-                      'grafite': { bg: '#474747', text: '#fff' },
-                      'chumbo': { bg: '#36454F', text: '#fff' },
-                      
-                      // Marrons e Beges
-                      'marrom': { bg: '#78350f', text: '#fff' },
-                      'brown': { bg: '#78350f', text: '#fff' },
-                      'marrom escuro': { bg: '#3D2314', text: '#fff' },
-                      'café': { bg: '#6F4E37', text: '#fff' },
-                      'cafe': { bg: '#6F4E37', text: '#fff' },
-                      'chocolate': { bg: '#7B3F00', text: '#fff' },
-                      'caramelo': { bg: '#FFD59A', text: '#000' },
-                      'bege': { bg: '#d4a574', text: '#000' },
-                      'beige': { bg: '#d4a574', text: '#000' },
-                      'areia': { bg: '#C2B280', text: '#000' },
-                      'sand': { bg: '#C2B280', text: '#000' },
-                      'nude': { bg: '#e8c4a0', text: '#000' },
-                      'caqui': { bg: '#C3B091', text: '#000' },
-                      'khaki': { bg: '#C3B091', text: '#000' },
-                      
-                      // Vinhos e Bordôs
-                      'vinho': { bg: '#722f37', text: '#fff' },
-                      'burgundy': { bg: '#722f37', text: '#fff' },
-                      'marsala': { bg: '#8e4c54', text: '#fff' },
-                      'bordô': { bg: '#800020', text: '#fff' },
-                      'bordo': { bg: '#800020', text: '#fff' },
-                      
-                      // Corais e Salmões
-                      'coral': { bg: '#ff7f50', text: '#000' },
-                      'salmão': { bg: '#fa8072', text: '#000' },
-                      'salmao': { bg: '#fa8072', text: '#000' },
-                      'salmon': { bg: '#fa8072', text: '#000' },
-                      
-                      // Fúcsias e Magentas
-                      'fucsia': { bg: '#ff00ff', text: '#fff' },
-                      'fúcsia': { bg: '#ff00ff', text: '#fff' },
-                      'fuchsia': { bg: '#ff00ff', text: '#fff' },
-                      'magenta': { bg: '#ff00ff', text: '#fff' },
-                      
-                      // Turquesas e Cianos
-                      'turquesa': { bg: '#40e0d0', text: '#000' },
-                      'turquoise': { bg: '#40e0d0', text: '#000' },
-                      'tiffany': { bg: '#0ABAB5', text: '#000' },
-                      'ciano': { bg: '#00ffff', text: '#000' },
-                      'cyan': { bg: '#00ffff', text: '#000' },
-                      'aqua': { bg: '#00FFFF', text: '#000' },
-                      
-                      // Metálicos
-                      'dourado': { bg: '#d4af37', text: '#000' },
-                      'gold': { bg: '#d4af37', text: '#000' },
-                      'ouro': { bg: '#d4af37', text: '#000' },
-                      'prata': { bg: '#c0c0c0', text: '#000' },
-                      'silver': { bg: '#c0c0c0', text: '#000' },
-                      'bronze': { bg: '#CD7F32', text: '#000' },
-                      'cobre': { bg: '#B87333', text: '#fff' },
-                      'rose gold': { bg: '#B76E79', text: '#fff' },
-                      'rosegold': { bg: '#B76E79', text: '#fff' },
-                      
-                      // Especiais
-                      'neon': { bg: '#39FF14', text: '#000' },
-                      'fluorescente': { bg: '#39FF14', text: '#000' },
-                    };
-                    
-                    const getColorStyle = (colorName: string | undefined) => {
-                      if (!colorName) return null;
-                      const lowerColor = colorName.toLowerCase();
-                      return colorMap[lowerColor] || { bg: '#6b7280', text: '#fff' };
-                    };
                     
                     const colorStyle = getColorStyle(detectedColor || undefined);
                     
@@ -1080,18 +769,20 @@ const ShopifyProductPage = () => {
                   </div>
 
                   {/* Virtual Fitting Room Modal */}
-                  <VirtualFittingRoom 
-                    open={virtualFittingOpen}
-                    onOpenChange={setVirtualFittingOpen}
-                    sizes={sizes}
-                    onSizeRecommendation={(size) => {
-                      setSelectedSize(size);
-                      toast.success(`Tamanho ${size} selecionado!`, {
-                        description: "Baseado nas suas medidas",
-                        position: "top-center"
-                      });
-                    }}
-                  />
+                  <Suspense fallback={null}>
+                    <VirtualFittingRoom 
+                      open={virtualFittingOpen}
+                      onOpenChange={setVirtualFittingOpen}
+                      sizes={sizes}
+                      onSizeRecommendation={(size) => {
+                        setSelectedSize(size);
+                        toast.success(`Tamanho ${size} selecionado!`, {
+                          description: "Baseado nas suas medidas",
+                          position: "top-center"
+                        });
+                      }}
+                    />
+                  </Suspense>
                 </div>
               )}
 
@@ -1304,12 +995,14 @@ const ShopifyProductPage = () => {
 
         {/* Related Products */}
         <div className="mt-16 lg:mt-24">
-          <ShopifyProductGrid 
-            title="Você também pode gostar" 
-            subtitle="Confira outros produtos da nossa coleção"
-            limit={4}
-            showViewAll={false}
-          />
+          <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-lg" />}>
+            <ShopifyProductGrid 
+              title="Você também pode gostar" 
+              subtitle="Confira outros produtos da nossa coleção"
+              limit={4}
+              showViewAll={false}
+            />
+          </Suspense>
         </div>
       </main>
       
