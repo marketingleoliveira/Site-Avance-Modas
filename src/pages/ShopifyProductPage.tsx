@@ -447,8 +447,8 @@ const ShopifyProductPage = () => {
 
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Image Gallery */}
-            <div className="space-y-3 sm:space-y-4">
-              <div className="relative aspect-[4/5] sm:aspect-square bg-card rounded-xl sm:rounded-2xl overflow-hidden shadow-sm max-h-[50vh] sm:max-h-none mx-auto w-full max-w-[85vw] sm:max-w-none">
+            <div className="space-y-3 sm:space-y-4 overflow-hidden">
+              <div className="relative aspect-[4/5] sm:aspect-square bg-card rounded-xl sm:rounded-2xl overflow-hidden shadow-sm max-h-[50vh] sm:max-h-none mx-auto w-full">
                 {images.length > 0 ? (
                   <img 
                     src={images[currentImage].node.url} 
