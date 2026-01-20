@@ -814,7 +814,6 @@ const ShopifyProductPage = () => {
                         <div key={color} className="flex flex-col items-center">
                           <button
                             onClick={() => isAvailable && handleColorSelect(color)}
-                            onMouseEnter={() => isAvailable && handleColorSelect(color)}
                             disabled={!isAvailable}
                             className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all relative ${
                               !isAvailable
