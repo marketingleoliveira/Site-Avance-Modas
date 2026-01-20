@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
+import { useStoreContext } from "@/stores/storeContextStore";
 import { toast } from "sonner";
 import { ShoppingBag, ChevronRight } from "lucide-react";
 
@@ -64,30 +65,15 @@ const categoryConfig: Record<string, { title: string; description: string }> = {
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
-  const location = useLocation();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
+  
+  // Use persistent store context
+  const storeType = useStoreContext(state => state.storeType);
+  const displayStoreType = storeType === 'atacado' ? 'ATACADO' : 'VAREJO';
 
   const config = category ? categoryConfig[category] : null;
-
-  // Detect current store type - check referrer or sessionStorage
-  const getStoreType = (): 'ATACADO' | 'VAREJO' => {
-    // Check if coming from atacado route
-    const referrer = document.referrer;
-    if (referrer.includes('/atacado')) {
-      sessionStorage.setItem('store_type', 'atacado');
-      return 'ATACADO';
-    }
-    // Check sessionStorage
-    const stored = sessionStorage.getItem('store_type');
-    if (stored === 'atacado') return 'ATACADO';
-    if (stored === 'varejo') return 'VAREJO';
-    // Default to VAREJO
-    return 'VAREJO';
-  };
-
-  const storeType = getStoreType();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -95,7 +81,7 @@ const CategoryPage = () => {
       setLoading(true);
       
       // Fetch all products filtered by store type (ATACADO/VAREJO)
-      const allProducts = await fetchProductsByType(storeType, 100);
+      const allProducts = await fetchProductsByType(displayStoreType, 100);
       
       // Filter by category keywords (or show all if category is 'todos')
       if (category === 'todos') {
@@ -117,7 +103,7 @@ const CategoryPage = () => {
     };
 
     loadProducts();
-  }, [category, config, storeType]);
+  }, [category, config, displayStoreType]);
 
   const handleAddToCart = (product: ShopifyProduct, e: React.MouseEvent) => {
     e.preventDefault();
