@@ -398,6 +398,75 @@ const ShopifyProductPage = () => {
                       altText.includes(color.toLowerCase())
                     );
                     
+                    // Color mapping for background colors
+                    const colorMap: Record<string, { bg: string; text: string }> = {
+                      'rosa': { bg: '#FF69B4', text: '#000' },
+                      'pink': { bg: '#FF69B4', text: '#000' },
+                      'preto': { bg: '#1a1a1a', text: '#fff' },
+                      'black': { bg: '#1a1a1a', text: '#fff' },
+                      'branco': { bg: '#f5f5f5', text: '#000' },
+                      'white': { bg: '#f5f5f5', text: '#000' },
+                      'azul': { bg: '#2563eb', text: '#fff' },
+                      'blue': { bg: '#2563eb', text: '#fff' },
+                      'vermelho': { bg: '#dc2626', text: '#fff' },
+                      'red': { bg: '#dc2626', text: '#fff' },
+                      'verde': { bg: '#16a34a', text: '#fff' },
+                      'green': { bg: '#16a34a', text: '#fff' },
+                      'amarelo': { bg: '#facc15', text: '#000' },
+                      'yellow': { bg: '#facc15', text: '#000' },
+                      'laranja': { bg: '#f97316', text: '#fff' },
+                      'orange': { bg: '#f97316', text: '#fff' },
+                      'roxo': { bg: '#9333ea', text: '#fff' },
+                      'purple': { bg: '#9333ea', text: '#fff' },
+                      'cinza': { bg: '#6b7280', text: '#fff' },
+                      'gray': { bg: '#6b7280', text: '#fff' },
+                      'grey': { bg: '#6b7280', text: '#fff' },
+                      'marrom': { bg: '#78350f', text: '#fff' },
+                      'brown': { bg: '#78350f', text: '#fff' },
+                      'bege': { bg: '#d4a574', text: '#000' },
+                      'beige': { bg: '#d4a574', text: '#000' },
+                      'nude': { bg: '#e8c4a0', text: '#000' },
+                      'coral': { bg: '#ff7f50', text: '#000' },
+                      'vinho': { bg: '#722f37', text: '#fff' },
+                      'burgundy': { bg: '#722f37', text: '#fff' },
+                      'marsala': { bg: '#8e4c54', text: '#fff' },
+                      'lilás': { bg: '#c8a2c8', text: '#000' },
+                      'lilas': { bg: '#c8a2c8', text: '#000' },
+                      'lilac': { bg: '#c8a2c8', text: '#000' },
+                      'turquesa': { bg: '#40e0d0', text: '#000' },
+                      'turquoise': { bg: '#40e0d0', text: '#000' },
+                      'marinho': { bg: '#1e3a5f', text: '#fff' },
+                      'navy': { bg: '#1e3a5f', text: '#fff' },
+                      'creme': { bg: '#fffdd0', text: '#000' },
+                      'cream': { bg: '#fffdd0', text: '#000' },
+                      'off-white': { bg: '#faf9f6', text: '#000' },
+                      'offwhite': { bg: '#faf9f6', text: '#000' },
+                      'dourado': { bg: '#d4af37', text: '#000' },
+                      'gold': { bg: '#d4af37', text: '#000' },
+                      'prata': { bg: '#c0c0c0', text: '#000' },
+                      'silver': { bg: '#c0c0c0', text: '#000' },
+                      'ciano': { bg: '#00ffff', text: '#000' },
+                      'cyan': { bg: '#00ffff', text: '#000' },
+                      'magenta': { bg: '#ff00ff', text: '#fff' },
+                      'fúcsia': { bg: '#ff00ff', text: '#fff' },
+                      'fucsia': { bg: '#ff00ff', text: '#fff' },
+                      'salmão': { bg: '#fa8072', text: '#000' },
+                      'salmao': { bg: '#fa8072', text: '#000' },
+                      'salmon': { bg: '#fa8072', text: '#000' },
+                      'oliva': { bg: '#808000', text: '#fff' },
+                      'olive': { bg: '#808000', text: '#fff' },
+                      'musgo': { bg: '#556b2f', text: '#fff' },
+                      'moss': { bg: '#556b2f', text: '#fff' },
+                    };
+                    
+                    const getColorStyle = (colorName: string | undefined) => {
+                      if (!colorName) return null;
+                      const lowerColor = colorName.toLowerCase();
+                      return colorMap[lowerColor] || { bg: '#6b7280', text: '#fff' };
+                    };
+                    
+                    const colorStyle = getColorStyle(matchedColor);
+                    
                     return (
                       <button
                         key={i}
@@ -415,9 +484,16 @@ const ShopifyProductPage = () => {
                         }`}
                       >
                         <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} className="w-full h-full object-cover" />
-                        {/* Show color indicator on thumbnail */}
-                        {matchedColor && (
-                          <span className="absolute bottom-0.5 right-0.5 text-[8px] bg-black/60 text-white px-1 rounded truncate max-w-[90%]">
+                        {/* Color badge on top-right corner */}
+                        {matchedColor && colorStyle && (
+                          <span 
+                            className="absolute top-0.5 right-0.5 text-[7px] md:text-[8px] font-semibold px-1 md:px-1.5 py-0.5 rounded shadow-sm truncate max-w-[95%] uppercase tracking-tight"
+                            style={{ 
+                              backgroundColor: colorStyle.bg, 
+                              color: colorStyle.text,
+                              textShadow: colorStyle.text === '#fff' ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+                            }}
+                          >
                             {matchedColor}
                           </span>
                         )}
