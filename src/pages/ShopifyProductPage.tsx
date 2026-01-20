@@ -128,19 +128,129 @@ const ShopifyProductPage = () => {
     };
   }, [product]);
 
-  // Find image index by color order (first color = first image, etc.)
+  // Normalize text for color matching (remove accents, lowercase, handle variations)
+  const normalizeForMatch = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove accents
+      .replace(/[-_]/g, ' ') // Replace hyphens/underscores with spaces
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+  };
+
+  // Color name variations for smarter matching
+  const colorVariations: Record<string, string[]> = {
+    'rosa': ['rosa', 'pink', 'rose', 'rosinha'],
+    'rosa bebê': ['rosa bebe', 'rosa-bebe', 'rosabebe', 'baby pink'],
+    'preto': ['preto', 'black', 'negro', 'dark'],
+    'branco': ['branco', 'white', 'branquinho'],
+    'azul': ['azul', 'blue'],
+    'azul marinho': ['marinho', 'navy', 'azul marinho', 'azul-marinho'],
+    'azul royal': ['royal', 'azul royal', 'azul-royal'],
+    'vermelho': ['vermelho', 'red', 'rubro'],
+    'verde': ['verde', 'green'],
+    'amarelo': ['amarelo', 'yellow'],
+    'laranja': ['laranja', 'orange'],
+    'roxo': ['roxo', 'purple', 'violeta'],
+    'cinza': ['cinza', 'gray', 'grey', 'grafite'],
+    'marrom': ['marrom', 'brown', 'cafe', 'chocolate'],
+    'bege': ['bege', 'beige', 'creme', 'cream'],
+    'nude': ['nude', 'pele', 'skin'],
+    'coral': ['coral'],
+    'vinho': ['vinho', 'burgundy', 'marsala', 'bordô', 'bordo'],
+    'lilás': ['lilas', 'lilac', 'lavanda', 'lavender'],
+    'turquesa': ['turquesa', 'turquoise', 'tiffany'],
+    'fucsia': ['fucsia', 'fuchsia', 'magenta', 'pink escuro'],
+    'salmão': ['salmao', 'salmon'],
+    'oliva': ['oliva', 'olive', 'musgo', 'moss'],
+    'dourado': ['dourado', 'gold', 'ouro'],
+    'prata': ['prata', 'silver', 'cinza claro'],
+    'off-white': ['off white', 'offwhite', 'off-white', 'branco gelo'],
+  };
+
+  // Find image index using smart color matching
   const findImageIndexForColor = (colorName: string): number => {
     if (!product || colors.length === 0) return 0;
     
-    // Map color to its position in the colors array
-    const colorIndex = colors.findIndex(c => c.toLowerCase() === colorName.toLowerCase());
+    const normalizedColorName = normalizeForMatch(colorName);
+    const images = product.images.edges;
     
-    // Return the same index for the image (if within bounds)
-    if (colorIndex >= 0 && colorIndex < product.images.edges.length) {
+    // Strategy 1: Exact match in altText
+    let idx = images.findIndex(img => {
+      const altText = normalizeForMatch(img.node.altText || '');
+      return altText.includes(normalizedColorName);
+    });
+    if (idx >= 0) return idx;
+    
+    // Strategy 2: Match color variations in altText
+    const variations = colorVariations[normalizedColorName] || [normalizedColorName];
+    idx = images.findIndex(img => {
+      const altText = normalizeForMatch(img.node.altText || '');
+      return variations.some(v => altText.includes(normalizeForMatch(v)));
+    });
+    if (idx >= 0) return idx;
+    
+    // Strategy 3: Match in image URL/filename
+    idx = images.findIndex(img => {
+      const url = img.node.url || '';
+      const filename = normalizeForMatch(url.split('/').pop() || '');
+      return variations.some(v => filename.includes(normalizeForMatch(v)));
+    });
+    if (idx >= 0) return idx;
+    
+    // Strategy 4: Partial word match in altText (color at word boundary)
+    idx = images.findIndex(img => {
+      const altText = normalizeForMatch(img.node.altText || '');
+      const words = altText.split(' ');
+      return variations.some(v => 
+        words.some(word => word === normalizeForMatch(v) || word.startsWith(normalizeForMatch(v)))
+      );
+    });
+    if (idx >= 0) return idx;
+    
+    // Strategy 5: Fallback to index-based mapping (first color = first image)
+    const colorIndex = colors.findIndex(c => normalizeForMatch(c) === normalizedColorName);
+    if (colorIndex >= 0 && colorIndex < images.length) {
       return colorIndex;
     }
     
     return 0;
+  };
+
+  // Find color from image index using same smart matching
+  const findColorForImageIndex = (imageIndex: number): string | null => {
+    if (!product || colors.length === 0) return null;
+    
+    const image = product.images.edges[imageIndex];
+    if (!image) return null;
+    
+    const altText = normalizeForMatch(image.node.altText || '');
+    const url = image.node.url || '';
+    const filename = normalizeForMatch(url.split('/').pop() || '');
+    
+    // Try to match each color against the image
+    for (const color of colors) {
+      const normalizedColor = normalizeForMatch(color);
+      const variations = colorVariations[normalizedColor] || [normalizedColor];
+      
+      // Check altText
+      if (variations.some(v => altText.includes(normalizeForMatch(v)))) {
+        return color;
+      }
+      
+      // Check filename
+      if (variations.some(v => filename.includes(normalizeForMatch(v)))) {
+        return color;
+      }
+    }
+    
+    // Fallback to index-based mapping
+    if (imageIndex < colors.length) {
+      return colors[imageIndex];
+    }
+    
+    return null;
   };
 
   // Handle color selection and navigate to corresponding image
@@ -367,19 +477,23 @@ const ShopifyProductPage = () => {
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {images.map((img, i) => {
-                    // Get color by index (matching our color-to-image mapping)
-                    const colorByIndex = colors[i];
+                    // Smart color detection for this image
+                    const detectedColor = findColorForImageIndex(i);
                     
                     // Color mapping for background colors
                     const colorMap: Record<string, { bg: string; text: string }> = {
                       'rosa': { bg: '#FF69B4', text: '#000' },
                       'pink': { bg: '#FF69B4', text: '#000' },
+                      'rosa bebê': { bg: '#F4C2C2', text: '#000' },
                       'preto': { bg: '#1a1a1a', text: '#fff' },
                       'black': { bg: '#1a1a1a', text: '#fff' },
                       'branco': { bg: '#f5f5f5', text: '#000' },
                       'white': { bg: '#f5f5f5', text: '#000' },
                       'azul': { bg: '#2563eb', text: '#fff' },
                       'blue': { bg: '#2563eb', text: '#fff' },
+                      'azul royal': { bg: '#4169E1', text: '#fff' },
+                      'royal': { bg: '#4169E1', text: '#fff' },
+                      'azul marinho': { bg: '#1e3a5f', text: '#fff' },
                       'vermelho': { bg: '#dc2626', text: '#fff' },
                       'red': { bg: '#dc2626', text: '#fff' },
                       'verde': { bg: '#16a34a', text: '#fff' },
@@ -437,14 +551,14 @@ const ShopifyProductPage = () => {
                       return colorMap[lowerColor] || { bg: '#6b7280', text: '#fff' };
                     };
                     
-                    const colorStyle = getColorStyle(colorByIndex);
-                    
+                    const colorStyle = getColorStyle(detectedColor || undefined);
                     
                     const handleThumbnailInteraction = () => {
                       setCurrentImage(i);
-                      // Select color based on image index
-                      if (colorByIndex) {
-                        setSelectedColor(colorByIndex);
+                      // Select color using smart detection
+                      const color = findColorForImageIndex(i);
+                      if (color) {
+                        setSelectedColor(color);
                       }
                     };
                     
@@ -461,7 +575,7 @@ const ShopifyProductPage = () => {
                       >
                         <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} className="w-full h-full object-cover" />
                         {/* Color badge on top-right corner */}
-                        {colorByIndex && colorStyle && (
+                        {detectedColor && colorStyle && (
                           <span 
                             className="absolute top-0.5 right-0.5 text-[7px] md:text-[8px] font-semibold px-1 md:px-1.5 py-0.5 rounded shadow-sm truncate max-w-[95%] uppercase tracking-tight"
                             style={{ 
@@ -470,7 +584,7 @@ const ShopifyProductPage = () => {
                               textShadow: colorStyle.text === '#fff' ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
                             }}
                           >
-                            {colorByIndex}
+                            {detectedColor}
                           </span>
                         )}
                       </button>
