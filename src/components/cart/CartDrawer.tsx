@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,13 +12,15 @@ import {
 import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "@/stores/cartStore";
+import { useStoreContext } from "@/stores/storeContextStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { toast } from "sonner";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
-  const isAtacado = location.pathname.includes('atacado');
+  
+  // Use persistent store context instead of URL-based detection
+  const isAtacado = useStoreContext(state => state.isAtacado());
   const { settings: atacadoSettings, loading: settingsLoading } = useAtacadoSettings();
   
   const { 
