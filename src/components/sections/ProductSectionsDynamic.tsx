@@ -352,14 +352,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       )}
 
                       {/* Tags/Badges */}
-                      <div className="absolute left-2 top-2 flex flex-col gap-1">
+                      <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-1">
                         {(isPromo || hasDiscount) && (
-                          <span className="bg-red-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                          <span className="bg-red-600 text-white text-[10px] sm:text-xs min-w-[40px] sm:min-w-[50px] h-[24px] sm:h-[30px] px-2 sm:px-2.5 rounded font-bold uppercase animate-pulse flex items-center justify-center">
                             {hasDiscount ? `-${discountPercent}%` : 'PROMOÇÃO'}
                           </span>
                         )}
                         {isNew && !isPromo && !hasDiscount && (
-                          <span className="bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                          <span className="bg-emerald-500 text-white text-[10px] sm:text-xs min-w-[40px] sm:min-w-[50px] h-[24px] sm:h-[30px] px-2 sm:px-2.5 rounded font-bold uppercase animate-pulse flex items-center justify-center">
                             NOVO
                           </span>
                         )}
