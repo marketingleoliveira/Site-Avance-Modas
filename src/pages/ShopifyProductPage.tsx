@@ -74,8 +74,8 @@ const ShopifyProductPage = () => {
   }, [product]);
 
   // Extract unique sizes and colors from variants, separating top/bottom for conjuntos
-  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions, isColorAvailable, isSizeAvailable } = useMemo(() => {
-    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null, isColorAvailable: () => false, isSizeAvailable: () => false };
+  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions } = useMemo(() => {
+    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null };
     
     const sizesSet = new Set<string>();
     const topSizesSet = new Set<string>();
@@ -127,20 +127,38 @@ const ShopifyProductPage = () => {
       })?.node || null;
     };
 
-    // Check if a color has at least one variant available for sale
-    const checkColorAvailability = (color: string): boolean => {
-      return product.variants.edges.some(({ node }) => {
+    return { 
+      sizes: sortSizes(Array.from(sizesSet)), 
+      topSizes: sortSizes(Array.from(topSizesSet)),
+      bottomSizes: sortSizes(Array.from(bottomSizesSet)),
+      colors: Array.from(colorsSet),
+      getVariantByOptions: getVariant
+    };
+  }, [product]);
+
+  // Pre-compute color availability map (memoized)
+  const colorAvailabilityMap = useMemo(() => {
+    if (!product) return new Map<string, boolean>();
+    
+    const map = new Map<string, boolean>();
+    colors.forEach(color => {
+      const isAvailable = product.variants.edges.some(({ node }) => {
         if (!node.availableForSale) return false;
-        
         return node.selectedOptions?.some(opt => {
           const nameLower = opt.name.toLowerCase();
           return (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color;
         });
       });
-    };
+      map.set(color, isAvailable);
+    });
+    return map;
+  }, [product, colors]);
 
-    // Check if a size has at least one variant available for sale (considering selected color)
-    const checkSizeAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom', selectedColor: string | null): boolean => {
+  // Pre-compute size availability maps based on selected color (memoized)
+  const sizeAvailabilityMaps = useMemo(() => {
+    if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
+    
+    const checkAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
       return product.variants.edges.some(({ node }) => {
         if (!node.availableForSale) return false;
         
@@ -150,7 +168,6 @@ const ShopifyProductPage = () => {
         node.selectedOptions?.forEach(opt => {
           const nameLower = opt.name.toLowerCase();
           
-          // Check size based on type
           if (sizeType === 'top') {
             if ((nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) && opt.value === size) {
               sizeMatch = true;
@@ -165,7 +182,6 @@ const ShopifyProductPage = () => {
             }
           }
           
-          // Check color match
           if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === selectedColor) {
             colorMatch = true;
           }
@@ -175,107 +191,87 @@ const ShopifyProductPage = () => {
       });
     };
 
-    return { 
-      sizes: sortSizes(Array.from(sizesSet)), 
-      topSizes: sortSizes(Array.from(topSizesSet)),
-      bottomSizes: sortSizes(Array.from(bottomSizesSet)),
-      colors: Array.from(colorsSet),
-      getVariantByOptions: getVariant,
-      isColorAvailable: checkColorAvailability,
-      isSizeAvailable: checkSizeAvailability
-    };
-  }, [product]);
+    const regularMap = new Map<string, boolean>();
+    const topMap = new Map<string, boolean>();
+    const bottomMap = new Map<string, boolean>();
+    
+    sizes.forEach(size => regularMap.set(size, checkAvailability(size, 'regular')));
+    topSizes.forEach(size => topMap.set(size, checkAvailability(size, 'top')));
+    bottomSizes.forEach(size => bottomMap.set(size, checkAvailability(size, 'bottom')));
+    
+    return { regular: regularMap, top: topMap, bottom: bottomMap };
+  }, [product, sizes, topSizes, bottomSizes, selectedColor]);
 
-  // Find image index using smart color matching
-  const findImageIndexForColor = (colorName: string): number => {
-    if (!product || colors.length === 0) return 0;
+  // Fast lookup functions using pre-computed maps
+  const isColorAvailable = useCallback((color: string): boolean => {
+    return colorAvailabilityMap.get(color) ?? false;
+  }, [colorAvailabilityMap]);
+
+  const isSizeAvailable = useCallback((size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
+    return sizeAvailabilityMaps[sizeType].get(size) ?? false;
+  }, [sizeAvailabilityMaps]);
+
+  // Pre-compute image-to-color mapping (memoized)
+  const imageColorMapping = useMemo(() => {
+    if (!product || colors.length === 0) return { imageToColor: new Map<number, string>(), colorToImage: new Map<string, number>() };
     
-    const normalizedColorName = normalizeForMatch(colorName);
     const images = product.images.edges;
+    const imageToColor = new Map<number, string>();
+    const colorToImage = new Map<string, number>();
     
-    // Strategy 1: Exact match in altText
-    let idx = images.findIndex(img => {
+    // First pass: try to match each image to a color
+    images.forEach((img, idx) => {
       const altText = normalizeForMatch(img.node.altText || '');
-      return altText.includes(normalizedColorName);
-    });
-    if (idx >= 0) return idx;
-    
-    // Strategy 2: Match color variations in altText
-    const variations = COLOR_VARIATIONS[normalizedColorName] || [normalizedColorName];
-    idx = images.findIndex(img => {
-      const altText = normalizeForMatch(img.node.altText || '');
-      return variations.some(v => altText.includes(normalizeForMatch(v)));
-    });
-    if (idx >= 0) return idx;
-    
-    // Strategy 3: Match in image URL/filename
-    idx = images.findIndex(img => {
       const url = img.node.url || '';
       const filename = normalizeForMatch(url.split('/').pop() || '');
-      return variations.some(v => filename.includes(normalizeForMatch(v)));
-    });
-    if (idx >= 0) return idx;
-    
-    // Strategy 4: Partial word match in altText (color at word boundary)
-    idx = images.findIndex(img => {
-      const altText = normalizeForMatch(img.node.altText || '');
-      const words = altText.split(' ');
-      return variations.some(v => 
-        words.some(word => word === normalizeForMatch(v) || word.startsWith(normalizeForMatch(v)))
-      );
-    });
-    if (idx >= 0) return idx;
-    
-    // Strategy 5: Fallback to index-based mapping (first color = first image)
-    const colorIndex = colors.findIndex(c => normalizeForMatch(c) === normalizedColorName);
-    if (colorIndex >= 0 && colorIndex < images.length) {
-      return colorIndex;
-    }
-    
-    return 0;
-  };
-
-  // Find color from image index using same smart matching
-  const findColorForImageIndex = (imageIndex: number): string | null => {
-    if (!product || colors.length === 0) return null;
-    
-    const image = product.images.edges[imageIndex];
-    if (!image) return null;
-    
-    const altText = normalizeForMatch(image.node.altText || '');
-    const url = image.node.url || '';
-    const filename = normalizeForMatch(url.split('/').pop() || '');
-    
-    // Try to match each color against the image
-    for (const color of colors) {
-      const normalizedColor = normalizeForMatch(color);
-      const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
       
-      // Check altText
-      if (variations.some(v => altText.includes(normalizeForMatch(v)))) {
-        return color;
+      for (const color of colors) {
+        const normalizedColor = normalizeForMatch(color);
+        const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
+        
+        const matchFound = variations.some(v => {
+          const normalized = normalizeForMatch(v);
+          return altText.includes(normalized) || filename.includes(normalized);
+        });
+        
+        if (matchFound) {
+          imageToColor.set(idx, color);
+          if (!colorToImage.has(color)) {
+            colorToImage.set(color, idx);
+          }
+          break;
+        }
       }
-      
-      // Check filename
-      if (variations.some(v => filename.includes(normalizeForMatch(v)))) {
-        return color;
+    });
+    
+    // Second pass: fallback index-based mapping for unmatched colors
+    colors.forEach((color, idx) => {
+      if (!colorToImage.has(color) && idx < images.length) {
+        colorToImage.set(color, idx);
+        if (!imageToColor.has(idx)) {
+          imageToColor.set(idx, color);
+        }
       }
-    }
+    });
     
-    // Fallback to index-based mapping
-    if (imageIndex < colors.length) {
-      return colors[imageIndex];
-    }
-    
-    return null;
-  };
+    return { imageToColor, colorToImage };
+  }, [product, colors]);
 
-  // Handle color selection and navigate to corresponding image
-  const handleColorSelect = (color: string) => {
+  // Fast lookup using pre-computed maps
+  const findImageIndexForColor = useCallback((colorName: string): number => {
+    return imageColorMapping.colorToImage.get(colorName) ?? 0;
+  }, [imageColorMapping]);
+
+  const findColorForImageIndex = useCallback((imageIndex: number): string | null => {
+    return imageColorMapping.imageToColor.get(imageIndex) ?? (imageIndex < colors.length ? colors[imageIndex] : null);
+  }, [imageColorMapping, colors]);
+
+  // Handle color selection and navigate to corresponding image (memoized)
+  const handleColorSelect = useCallback((color: string) => {
     setSelectedColor(color);
     const imageIndex = findImageIndexForColor(color);
     setCurrentImage(imageIndex);
-  };
+  }, [findImageIndexForColor]);
 
   // Get variant for conjunto products with separate top/bottom sizes
   const getConjuntoVariant = useMemo(() => {
@@ -577,7 +573,7 @@ const ShopifyProductPage = () => {
                     
                     <div className="flex flex-wrap gap-2">
                       {topSizes.map((size) => {
-                        const isAvailable = isSizeAvailable(size, 'top', selectedColor);
+                        const isAvailable = isSizeAvailable(size, 'top');
                         return (
                           <div key={`top-${size}`} className="flex flex-col items-center">
                             <button
@@ -616,7 +612,7 @@ const ShopifyProductPage = () => {
                     
                     <div className="flex flex-wrap gap-2">
                       {bottomSizes.map((size) => {
-                        const isAvailable = isSizeAvailable(size, 'bottom', selectedColor);
+                        const isAvailable = isSizeAvailable(size, 'bottom');
                         return (
                           <div key={`bottom-${size}`} className="flex flex-col items-center">
                             <button
@@ -715,7 +711,7 @@ const ShopifyProductPage = () => {
                   
                   <div className="flex flex-wrap gap-2">
                     {sizes.map((size) => {
-                      const isAvailable = isSizeAvailable(size, 'regular', selectedColor);
+                      const isAvailable = isSizeAvailable(size, 'regular');
                       return (
                         <div key={size} className="flex flex-col items-center">
                           <button
