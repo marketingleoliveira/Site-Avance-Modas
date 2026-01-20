@@ -39,7 +39,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 select-none">
             {navLinks.map((link) => (
               <div 
                 key={link.name} 
@@ -64,7 +64,7 @@ const Header = () => {
                 )}
                 
                 {link.submenu && activeSubmenu === link.name && (
-                  <div className="absolute top-full left-0 bg-background border border-border py-2 min-w-[160px] animate-fade-in shadow-lg">
+                  <div className="absolute top-full left-0 bg-background border border-border py-2 min-w-[160px] animate-fade-in shadow-lg z-50">
                     {link.submenu.map((sublink) => (
                       <Link 
                         key={sublink.name}
@@ -114,7 +114,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-background border-t border-border animate-slide-in max-h-[calc(100vh-56px)] overflow-y-auto">
+        <div className="lg:hidden bg-background border-t border-border animate-slide-in max-h-[calc(100vh-56px)] overflow-y-auto select-none">
           <nav className="container px-4 sm:px-6 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <div key={link.name}>
