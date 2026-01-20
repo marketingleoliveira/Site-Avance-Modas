@@ -128,52 +128,23 @@ const ShopifyProductPage = () => {
     };
   }, [product]);
 
-  // Get available colors for selected size (handles both regular and conjunto products)
-  const availableColorsForSize = useMemo(() => {
-    if (!product) return [];
-    
-    // For conjunto products with separate top/bottom sizes
-    const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
-    if (hasConjuntoSizes) {
-      if (!selectedTopSize || !selectedBottomSize) return [];
-    } else if (!selectedSize) {
-      return [];
-    }
-    
-    const colorsSet = new Set<string>();
-    product.variants.edges.forEach(({ node }) => {
-      let hasSize = false;
-      let colorValue = '';
-      
-      node.selectedOptions?.forEach(opt => {
-        const nameLower = opt.name.toLowerCase();
-        
-        if (hasConjuntoSizes) {
-          // For conjunto: check if variant matches selected top AND bottom sizes
-          const isTopOption = nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta');
-          const isBottomOption = nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging');
-          
-          if ((isTopOption && opt.value === selectedTopSize) || (isBottomOption && opt.value === selectedBottomSize)) {
-            hasSize = true;
-          }
-        } else {
-          if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === selectedSize) {
-            hasSize = true;
-          }
-        }
-        
-        if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
-          colorValue = opt.value;
-        }
-      });
-      
-      if (hasSize && colorValue && node.availableForSale) {
-        colorsSet.add(colorValue);
-      }
+  // Find first image index that matches a color name
+  const findImageIndexForColor = (colorName: string): number => {
+    if (!product) return 0;
+    const colorLower = colorName.toLowerCase();
+    const idx = product.images.edges.findIndex(img => {
+      const altText = img.node.altText?.toLowerCase() || '';
+      return altText.includes(colorLower);
     });
-    
-    return Array.from(colorsSet);
-  }, [product, selectedSize, selectedTopSize, selectedBottomSize, topSizes, bottomSizes]);
+    return idx >= 0 ? idx : 0;
+  };
+
+  // Handle color selection and navigate to corresponding image
+  const handleColorSelect = (color: string) => {
+    setSelectedColor(color);
+    const imageIndex = findImageIndexForColor(color);
+    setCurrentImage(imageIndex);
+  };
 
   // Get variant for conjunto products with separate top/bottom sizes
   const getConjuntoVariant = useMemo(() => {
@@ -331,7 +302,7 @@ const ShopifyProductPage = () => {
       ? (selectedTopSize && selectedBottomSize)
       : (sizes.length === 0 || selectedSize)
     ) && 
-    (colors.length === 0 || selectedColor || availableColorsForSize.length === 0);
+    (colors.length === 0 || selectedColor);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -545,7 +516,6 @@ const ShopifyProductPage = () => {
                           key={`top-${size}`}
                           onClick={() => {
                             setSelectedTopSize(size);
-                            setSelectedColor(null);
                           }}
                           className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
                             selectedTopSize === size
@@ -572,7 +542,6 @@ const ShopifyProductPage = () => {
                           key={`bottom-${size}`}
                           onClick={() => {
                             setSelectedBottomSize(size);
-                            setSelectedColor(null);
                           }}
                           className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
                             selectedBottomSize === size
@@ -637,7 +606,6 @@ const ShopifyProductPage = () => {
                     onSizeRecommendation={(size) => {
                       setSelectedTopSize(size);
                       setSelectedBottomSize(size);
-                      setSelectedColor(null);
                       toast.success(`Tamanho ${size} selecionado!`, {
                         description: "Aplicado para peça superior e inferior",
                         position: "top-center"
@@ -660,7 +628,6 @@ const ShopifyProductPage = () => {
                         key={size}
                         onClick={() => {
                           setSelectedSize(size);
-                          setSelectedColor(null);
                         }}
                         className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
                           selectedSize === size
@@ -723,7 +690,6 @@ const ShopifyProductPage = () => {
                     sizes={sizes}
                     onSizeRecommendation={(size) => {
                       setSelectedSize(size);
-                      setSelectedColor(null);
                       toast.success(`Tamanho ${size} selecionado!`, {
                         description: "Baseado nas suas medidas",
                         position: "top-center"
@@ -733,20 +699,17 @@ const ShopifyProductPage = () => {
                 </div>
               )}
 
-              {/* Color Selection - SECOND (show after size is selected for regular products OR after both sizes for conjuntos) */}
-              {colors.length > 0 && 
-               ((hasConjuntoSizesGlobal && selectedTopSize && selectedBottomSize) || 
-                (!hasConjuntoSizesGlobal && selectedSize)) && 
-               availableColorsForSize.length > 0 && (
+              {/* Color Selection - ALWAYS VISIBLE */}
+              {colors.length > 0 && (
                 <div className="space-y-3">
                   <p className="font-semibold text-foreground">
                     Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {availableColorsForSize.map((color) => (
+                    {colors.map((color) => (
                       <button
                         key={color}
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() => handleColorSelect(color)}
                         className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all ${
                           selectedColor === color
                             ? "border-primary bg-primary text-primary-foreground"
