@@ -367,11 +367,8 @@ const ShopifyProductPage = () => {
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {images.map((img, i) => {
-                    // Try to extract color from altText
-                    const altText = img.node.altText?.toLowerCase() || '';
-                    const matchedColor = colors.find(color => 
-                      altText.includes(color.toLowerCase())
-                    );
+                    // Get color by index (matching our color-to-image mapping)
+                    const colorByIndex = colors[i];
                     
                     // Color mapping for background colors
                     const colorMap: Record<string, { bg: string; text: string }> = {
@@ -440,18 +437,22 @@ const ShopifyProductPage = () => {
                       return colorMap[lowerColor] || { bg: '#6b7280', text: '#fff' };
                     };
                     
-                    const colorStyle = getColorStyle(matchedColor);
+                    const colorStyle = getColorStyle(colorByIndex);
+                    
+                    
+                    const handleThumbnailInteraction = () => {
+                      setCurrentImage(i);
+                      // Select color based on image index
+                      if (colorByIndex) {
+                        setSelectedColor(colorByIndex);
+                      }
+                    };
                     
                     return (
                       <button
                         key={i}
-                        onClick={() => {
-                          setCurrentImage(i);
-                          // Auto-select color if found in image altText
-                          if (matchedColor) {
-                            setSelectedColor(matchedColor);
-                          }
-                        }}
+                        onClick={handleThumbnailInteraction}
+                        onMouseEnter={handleThumbnailInteraction}
                         className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all relative ${
                           currentImage === i 
                             ? "border-primary ring-2 ring-primary/20" 
@@ -460,7 +461,7 @@ const ShopifyProductPage = () => {
                       >
                         <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} className="w-full h-full object-cover" />
                         {/* Color badge on top-right corner */}
-                        {matchedColor && colorStyle && (
+                        {colorByIndex && colorStyle && (
                           <span 
                             className="absolute top-0.5 right-0.5 text-[7px] md:text-[8px] font-semibold px-1 md:px-1.5 py-0.5 rounded shadow-sm truncate max-w-[95%] uppercase tracking-tight"
                             style={{ 
@@ -469,7 +470,7 @@ const ShopifyProductPage = () => {
                               textShadow: colorStyle.text === '#fff' ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
                             }}
                           >
-                            {matchedColor}
+                            {colorByIndex}
                           </span>
                         )}
                       </button>
@@ -714,6 +715,7 @@ const ShopifyProductPage = () => {
                       <button
                         key={color}
                         onClick={() => handleColorSelect(color)}
+                        onMouseEnter={() => handleColorSelect(color)}
                         className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all ${
                           selectedColor === color
                             ? "border-primary bg-primary text-primary-foreground"
