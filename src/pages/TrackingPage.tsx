@@ -14,9 +14,9 @@ import {
 import { toast } from "sonner";
 import loggiLogo from "@/assets/loggi-logo.png";
 
-// Build Loggi tracking URL
+// Build Loggi tracking URL - using app.loggi.com/rastreador format
 const getLoggiTrackingUrl = (trackingNumber: string): string => {
-  return `https://www.loggi.com/rastreio/${trackingNumber}/`;
+  return `https://app.loggi.com/rastreador/${trackingNumber}`;
 };
 
 export default function TrackingPage() {
