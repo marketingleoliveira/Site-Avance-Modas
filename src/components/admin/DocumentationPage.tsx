@@ -26,10 +26,21 @@ import {
   Truck,
   CreditCard,
   Globe,
-  Smartphone
+  Smartphone,
+  ZoomIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+// Tutorial images
+import tutorialStep1 from "@/assets/tutorial/shopify-step1-settings.jpg";
+import tutorialStep2 from "@/assets/tutorial/shopify-step2-apps.jpg";
+import tutorialStep3 from "@/assets/tutorial/shopify-step3-create-app.jpg";
+import tutorialStep4 from "@/assets/tutorial/shopify-step4-storefront-api.jpg";
+import tutorialStep5 from "@/assets/tutorial/shopify-step5-permissions.jpg";
+import tutorialStep6 from "@/assets/tutorial/shopify-step6-install.jpg";
+import tutorialStep7 from "@/assets/tutorial/shopify-step7-token.jpg";
 
 const DocumentationPage = () => {
   const [copiedText, setCopiedText] = useState<string | null>(null);
@@ -108,10 +119,28 @@ const DocumentationPage = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pl-11 space-y-4">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                          <img 
+                            src={tutorialStep1} 
+                            alt="Menu lateral do Shopify com Configurações destacado" 
+                            className="w-full h-auto object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl">
+                        <img src={tutorialStep1} alt="Menu lateral do Shopify" className="w-full h-auto" />
+                      </DialogContent>
+                    </Dialog>
+                    
                     <ol className="list-decimal pl-4 space-y-2">
                       <li>Acesse <a href="https://admin.shopify.com" target="_blank" rel="noopener" className="text-primary hover:underline inline-flex items-center gap-1">admin.shopify.com <ExternalLink className="w-3 h-3" /></a></li>
                       <li>Faça login com suas credenciais da loja</li>
-                      <li>Você será redirecionado para o painel administrativo</li>
+                      <li>No menu lateral, procure por <strong>"Settings"</strong> ou <strong>"Configurações"</strong></li>
                     </ol>
                     <div className="bg-muted p-4 rounded-lg">
                       <p className="text-sm text-muted-foreground">
@@ -130,12 +159,49 @@ const DocumentationPage = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pl-11 space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep2} 
+                              alt="Página de configurações com Apps e canais de vendas" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep2} alt="Apps e canais de vendas" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep3} 
+                              alt="Página Desenvolver apps com botão Criar um app" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep3} alt="Criar um app" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    
                     <ol className="list-decimal pl-4 space-y-3">
-                      <li>No menu lateral, clique em <strong>"Configurações"</strong> (ícone de engrenagem)</li>
-                      <li>Selecione <strong>"Apps e canais de vendas"</strong></li>
+                      <li>Dentro de Configurações, clique em <strong>"Apps e canais de vendas"</strong></li>
                       <li>Clique em <strong>"Desenvolver apps"</strong> no canto superior</li>
                       <li>Se for a primeira vez, clique em <strong>"Permitir desenvolvimento de apps personalizados"</strong></li>
-                      <li>Clique em <strong>"Criar um app"</strong></li>
+                      <li>Clique no botão verde <strong>"Criar um app"</strong></li>
                       <li>Dê um nome ao app (ex: "Avance Modas Integration")</li>
                       <li>Clique em <strong>"Criar app"</strong></li>
                     </ol>
@@ -156,9 +222,50 @@ const DocumentationPage = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pl-11 space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep4} 
+                              alt="Aba Configuração com Storefront API integration" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Aba Configuração</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep4} alt="Storefront API integration" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep5} 
+                              alt="Seleção de permissões da Storefront API" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Permissões</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep5} alt="Permissões da API" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    
                     <ol className="list-decimal pl-4 space-y-3">
-                      <li>Após criar o app, vá para a aba <strong>"Configuração"</strong></li>
-                      <li>Na seção <strong>"Storefront API"</strong>, clique em <strong>"Configurar"</strong></li>
+                      <li>Após criar o app, vá para a aba <strong>"Configuration"</strong> (Configuração)</li>
+                      <li>Role a página até encontrar a seção <strong>"Storefront API integration"</strong></li>
+                      <li>Clique em <strong>"Configure"</strong></li>
                       <li>Marque as seguintes permissões:</li>
                     </ol>
                     
@@ -189,8 +296,8 @@ const DocumentationPage = () => {
                       </div>
                     </div>
 
-                    <ol className="list-decimal pl-4 space-y-2" start={4}>
-                      <li>Clique em <strong>"Salvar"</strong></li>
+                    <ol className="list-decimal pl-4 space-y-2" start={5}>
+                      <li>Clique em <strong>"Save"</strong></li>
                     </ol>
                   </AccordionContent>
                 </AccordionItem>
@@ -203,19 +310,59 @@ const DocumentationPage = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pl-11 space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep6} 
+                              alt="Botão Install app" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Instalar App</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep6} alt="Install app" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                            <img 
+                              src={tutorialStep7} 
+                              alt="Storefront API access token" 
+                              className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="w-8 h-8 text-white" />
+                            </div>
+                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Copiar Token</span>
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                          <img src={tutorialStep7} alt="API access token" className="w-full h-auto" />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    
                     <ol className="list-decimal pl-4 space-y-3">
-                      <li>Volte para a aba <strong>"Visão geral"</strong> do app</li>
-                      <li>Clique no botão <strong>"Instalar app"</strong></li>
-                      <li>Confirme a instalação clicando em <strong>"Instalar"</strong></li>
-                      <li>Após instalado, vá para <strong>"Credenciais da API"</strong></li>
-                      <li>Na seção <strong>"Storefront API access token"</strong>, clique em <strong>"Revelar token"</strong></li>
-                      <li>Copie o token (começa com "shpat_...")</li>
+                      <li>Volte para a aba <strong>"Overview"</strong> (Visão geral) do app</li>
+                      <li>Clique no botão <strong>"Install app"</strong></li>
+                      <li>Confirme a instalação clicando em <strong>"Install"</strong></li>
+                      <li>Após instalado, vá para a aba <strong>"API credentials"</strong></li>
+                      <li>Na seção <strong>"Storefront API access token"</strong>, clique em <strong>"Reveal token once"</strong></li>
+                      <li>Copie o token exibido</li>
                     </ol>
 
                     <Alert className="bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800">
                       <Shield className="h-4 w-4 text-red-600" />
                       <AlertDescription className="text-red-800 dark:text-red-200">
-                        <strong>ATENÇÃO:</strong> Guarde este token em local seguro! Ele dá acesso à sua loja e não pode ser recuperado depois.
+                        <strong>ATENÇÃO:</strong> Guarde este token em local seguro! Ele só pode ser visualizado uma vez. Se perder, terá que criar um novo app.
                       </AlertDescription>
                     </Alert>
                   </AccordionContent>
