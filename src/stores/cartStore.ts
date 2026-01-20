@@ -30,7 +30,7 @@ interface CartStore {
   removeItem: (variantId: string) => Promise<void>;
   clearCart: () => void;
   syncCart: () => Promise<void>;
-  getCheckoutUrl: () => string | null;
+  getCheckoutUrl: (options?: { validateMinimum?: boolean; minimumOrder?: number; isAtacado?: boolean }) => string | null;
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
@@ -364,7 +364,19 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => set({ items: [], cartId: null, checkoutUrl: null }),
       
-      getCheckoutUrl: () => get().checkoutUrl,
+      // Validate minimum order before returning checkout URL for atacado
+      getCheckoutUrl: (options) => {
+        const { validateMinimum = false, minimumOrder = 0, isAtacado = false } = options || {};
+        const totalPrice = get().getTotalPrice();
+        
+        // Block checkout URL for atacado if below minimum order
+        if (validateMinimum && isAtacado && totalPrice < minimumOrder) {
+          console.warn(`Checkout blocked: Total ${totalPrice} is below minimum ${minimumOrder} for atacado`);
+          return null;
+        }
+        
+        return get().checkoutUrl;
+      },
 
       syncCart: async () => {
         const { cartId, isSyncing, clearCart } = get();
