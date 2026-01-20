@@ -120,6 +120,7 @@ const SearchModal = ({ open, onOpenChange }: SearchModalProps) => {
                     <img
                       src={product.node.images.edges[0].node.url}
                       alt={product.node.title}
+                      loading="lazy"
                       className="w-16 h-16 object-cover rounded-md bg-muted"
                     />
                   )}

@@ -8,6 +8,7 @@ import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify-api";
+import { useRecentlyViewed, getCachedProduct, setCachedProduct } from "@/hooks/useRecentlyViewed";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import tabelaMedidas from "@/assets/tabela-medidas.jpg";
@@ -30,10 +31,20 @@ const ShopifyProductPage = () => {
   const [sizeTableOpen, setSizeTableOpen] = useState(false);
   const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
   const addItem = useCartStore(state => state.addItem);
+  const { addToRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
     const loadProduct = async () => {
       if (!handle) return;
+      
+      // Check cache first
+      const cached = getCachedProduct(handle);
+      if (cached) {
+        setProduct(cached.node);
+        setLoading(false);
+        return;
+      }
+      
       setLoading(true);
       setSelectedSize(null);
       setSelectedTopSize(null);
@@ -42,10 +53,18 @@ const ShopifyProductPage = () => {
       setCurrentImage(0);
       const data = await fetchProductByHandle(handle);
       setProduct(data);
+      
+      // Cache and add to recently viewed
+      if (data) {
+        const shopifyProduct: ShopifyProduct = { node: data };
+        setCachedProduct(handle, shopifyProduct);
+        addToRecentlyViewed(shopifyProduct);
+      }
+      
       setLoading(false);
     };
     loadProduct();
-  }, [handle]);
+  }, [handle, addToRecentlyViewed]);
 
   // Check if product is a "conjunto" (set with top + bottom)
   const isConjunto = useMemo(() => {
@@ -500,7 +519,7 @@ const ShopifyProductPage = () => {
                             : "border-transparent hover:border-muted-foreground/30"
                         }`}
                       >
-                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                         {/* Color badge on top-right corner */}
                         {detectedColor && colorStyle && (
                           <span 

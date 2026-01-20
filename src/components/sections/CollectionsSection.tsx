@@ -90,6 +90,7 @@ const CollectionsSection = ({ type }: CollectionsSectionProps) => {
                     <img 
                       src={collection.image.url} 
                       alt={collection.image.altText || collection.title}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                     />
                   ) : (

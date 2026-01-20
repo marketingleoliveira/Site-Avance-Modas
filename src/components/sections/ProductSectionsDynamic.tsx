@@ -332,6 +332,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
+                          loading="lazy"
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
