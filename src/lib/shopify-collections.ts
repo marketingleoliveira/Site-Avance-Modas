@@ -90,21 +90,9 @@ export async function fetchCollections(first: number = 20, query?: string): Prom
 export async function fetchCollectionsByType(type: 'ATACADO' | 'VAREJO'): Promise<ShopifyCollection[]> {
   try {
     const allCollections = await fetchCollections(50);
-    
-    // Check if any collection has type in title
-    const hasTypeInTitles = allCollections.some(collection => 
+    return allCollections.filter(collection => 
       collection.title.toUpperCase().includes(type)
     );
-    
-    // If collections have type labels, filter by type; otherwise return all
-    if (hasTypeInTitles) {
-      return allCollections.filter(collection => 
-        collection.title.toUpperCase().includes(type)
-      );
-    }
-    
-    // Return all collections when no type segmentation exists
-    return allCollections;
   } catch (error) {
     console.error(`Error fetching ${type} collections:`, error);
     return [];
