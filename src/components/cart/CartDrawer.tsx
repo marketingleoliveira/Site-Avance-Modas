@@ -165,39 +165,39 @@ export const CartDrawer = () => {
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between mt-2">
-                        <p className="font-bold text-primary">
+                      <div className="flex items-center justify-between mt-2 gap-2">
+                        <p className="font-bold text-primary text-sm sm:text-base flex-shrink-0">
                           {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
                         </p>
                         
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-7 w-7 rounded-full"
+                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                             disabled={isLoading}
                           >
-                            <Minus className="h-3 w-3" />
+                            <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
-                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                          <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-medium">{item.quantity}</span>
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-7 w-7 rounded-full"
+                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                             disabled={isLoading}
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-1"
+                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-0.5 sm:ml-1"
                             onClick={() => removeItem(item.variantId)}
                             disabled={isLoading}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </Button>
                         </div>
                       </div>

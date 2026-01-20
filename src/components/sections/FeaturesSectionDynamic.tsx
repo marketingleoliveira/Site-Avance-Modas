@@ -53,10 +53,10 @@ const FeaturesSectionDynamic = () => {
   }
 
   return (
-    <section className="bg-primary text-primary-foreground" style={{ height: '60px' }}>
-      <div className="container h-full flex items-center justify-center">
+    <section className="bg-primary text-primary-foreground w-full max-w-full overflow-hidden" style={{ height: '60px' }}>
+      <div className="container h-full flex items-center justify-center px-2 sm:px-4">
         <div 
-          className="flex items-center justify-center overflow-x-auto scrollbar-hide gap-6 md:gap-8 w-full"
+          className="flex items-center justify-start sm:justify-center overflow-x-auto scrollbar-hide gap-4 sm:gap-6 md:gap-8 w-full max-w-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {items.slice(0, parseInt(colsDesktop)).map((item, index) => {
@@ -64,12 +64,12 @@ const FeaturesSectionDynamic = () => {
             return (
               <div 
                 key={index} 
-                className="flex items-center gap-2 flex-shrink-0 px-2"
+                className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 px-1 sm:px-2"
               >
-                <Icon className="w-4 h-4 opacity-80" />
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold whitespace-nowrap">{item.title}</span>
-                  <span className="text-xs opacity-70 whitespace-nowrap hidden sm:inline">{item.description}</span>
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-80 flex-shrink-0" />
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <span className="text-[10px] sm:text-xs font-semibold whitespace-nowrap">{item.title}</span>
+                  <span className="text-[10px] sm:text-xs opacity-70 whitespace-nowrap hidden md:inline">{item.description}</span>
                 </div>
               </div>
             );

@@ -25,20 +25,20 @@ const AnnouncementBar = () => {
   }
 
   return (
-    <div className="bg-foreground text-background py-2 overflow-hidden">
-      <div className="container flex items-center justify-center gap-4">
+    <div className="bg-foreground text-background py-2 overflow-hidden w-full max-w-full">
+      <div className="container px-4 sm:px-6 flex items-center justify-center gap-2 sm:gap-4">
         <button 
           onClick={() => setCurrentIndex((prev) => (prev - 1 + messages.length) % messages.length)}
-          className="p-0.5 hover:opacity-70 transition-opacity"
+          className="p-0.5 hover:opacity-70 transition-opacity flex-shrink-0"
         >
           <ChevronLeft className="w-3 h-3" />
         </button>
-        <span className="text-[10px] sm:text-xs font-medium tracking-[0.2em] uppercase">
+        <span className="text-[9px] sm:text-xs font-medium tracking-[0.1em] sm:tracking-[0.2em] uppercase text-center line-clamp-1 max-w-[calc(100%-60px)]">
           {messages[currentIndex]}
         </span>
         <button 
           onClick={() => setCurrentIndex((prev) => (prev + 1) % messages.length)}
-          className="p-0.5 hover:opacity-70 transition-opacity"
+          className="p-0.5 hover:opacity-70 transition-opacity flex-shrink-0"
         >
           <ChevronRight className="w-3 h-3" />
         </button>

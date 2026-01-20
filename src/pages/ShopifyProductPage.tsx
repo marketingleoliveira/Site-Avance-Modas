@@ -571,7 +571,7 @@ const ShopifyProductPage = () => {
                       Tamanho: {selectedTopSize && <span className="text-primary">{selectedTopSize}</span>}
                     </p>
                     
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2">
                       {topSizes.map((size) => {
                         const isAvailable = isSizeAvailable(size, 'top');
                         return (
@@ -579,7 +579,7 @@ const ShopifyProductPage = () => {
                             <button
                               onClick={() => isAvailable && setSelectedTopSize(size)}
                               disabled={!isAvailable}
-                              className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                              className={`w-full sm:min-w-[48px] h-10 sm:h-12 px-2 sm:px-4 rounded-lg border-2 font-semibold text-sm sm:text-base transition-all relative ${
                                 !isAvailable
                                   ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                   : selectedTopSize === size
@@ -595,7 +595,7 @@ const ShopifyProductPage = () => {
                               )}
                             </button>
                             {!isAvailable && (
-                              <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                              <span className="text-[9px] sm:text-[10px] text-destructive font-medium mt-1">Esgotado</span>
                             )}
                           </div>
                         );
@@ -610,7 +610,7 @@ const ShopifyProductPage = () => {
                       Tamanho: {selectedBottomSize && <span className="text-primary">{selectedBottomSize}</span>}
                     </p>
                     
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2">
                       {bottomSizes.map((size) => {
                         const isAvailable = isSizeAvailable(size, 'bottom');
                         return (
@@ -618,7 +618,7 @@ const ShopifyProductPage = () => {
                             <button
                               onClick={() => isAvailable && setSelectedBottomSize(size)}
                               disabled={!isAvailable}
-                              className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                              className={`w-full sm:min-w-[48px] h-10 sm:h-12 px-2 sm:px-4 rounded-lg border-2 font-semibold text-sm sm:text-base transition-all relative ${
                                 !isAvailable
                                   ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                   : selectedBottomSize === size
@@ -634,7 +634,7 @@ const ShopifyProductPage = () => {
                               )}
                             </button>
                             {!isAvailable && (
-                              <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                              <span className="text-[9px] sm:text-[10px] text-destructive font-medium mt-1">Esgotado</span>
                             )}
                           </div>
                         );
@@ -709,7 +709,7 @@ const ShopifyProductPage = () => {
                     Tamanho: {selectedSize && <span className="text-primary">{selectedSize}</span>}
                   </p>
                   
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2">
                     {sizes.map((size) => {
                       const isAvailable = isSizeAvailable(size, 'regular');
                       return (
@@ -717,7 +717,7 @@ const ShopifyProductPage = () => {
                           <button
                             onClick={() => isAvailable && setSelectedSize(size)}
                             disabled={!isAvailable}
-                            className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                            className={`w-full sm:min-w-[48px] h-10 sm:h-12 px-2 sm:px-4 rounded-lg border-2 font-semibold text-sm sm:text-base transition-all relative ${
                               !isAvailable
                                 ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : selectedSize === size
@@ -733,7 +733,7 @@ const ShopifyProductPage = () => {
                             )}
                           </button>
                           {!isAvailable && (
-                            <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                            <span className="text-[9px] sm:text-[10px] text-destructive font-medium mt-1">Esgotado</span>
                           )}
                         </div>
                       );
@@ -807,7 +807,7 @@ const ShopifyProductPage = () => {
                   <p className="font-semibold text-foreground">
                     Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                     {colors.map((color) => {
                       const isAvailable = isColorAvailable(color);
                       return (
@@ -815,7 +815,7 @@ const ShopifyProductPage = () => {
                           <button
                             onClick={() => isAvailable && handleColorSelect(color)}
                             disabled={!isAvailable}
-                            className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all relative ${
+                            className={`w-full sm:min-w-[80px] h-10 sm:h-12 px-2 sm:px-4 rounded-lg border-2 font-medium text-xs sm:text-sm transition-all relative ${
                               !isAvailable
                                 ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                                 : selectedColor === color
@@ -823,7 +823,7 @@ const ShopifyProductPage = () => {
                                   : "border-border bg-card hover:border-primary/50"
                             }`}
                           >
-                            {color}
+                            <span className="truncate block">{color}</span>
                             {!isAvailable && (
                               <span className="absolute inset-0 flex items-center justify-center">
                                 <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
@@ -831,7 +831,7 @@ const ShopifyProductPage = () => {
                             )}
                           </button>
                           {!isAvailable && (
-                            <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                            <span className="text-[9px] sm:text-[10px] text-destructive font-medium mt-1">Esgotado</span>
                           )}
                         </div>
                       );
@@ -866,30 +866,30 @@ const ShopifyProductPage = () => {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 sm:gap-3 pt-2">
                 <Button 
                   variant="hero" 
                   size="xl" 
-                  className="flex-1 gap-2 h-14 text-base"
+                  className="flex-1 gap-1.5 sm:gap-2 h-12 sm:h-14 text-sm sm:text-base px-3 sm:px-6"
                   onClick={handleAddToCart}
                   disabled={!canAddToCart}
                 >
-                  <ShoppingBag className="w-5 h-5" />
-                  {!canAddToCart ? "Selecione as opções" : "Adicionar ao Carrinho"}
+                  <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="truncate">{!canAddToCart ? "Selecione opções" : "Adicionar ao Carrinho"}</span>
                 </Button>
-                <Button variant="outline" size="xl" className="h-14 w-14">
-                  <Heart className="w-5 h-5" />
+                <Button variant="outline" size="xl" className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
 
               {/* Payment & Security Badges */}
-              <div className="pt-4 space-y-4">
+              <div className="pt-4 space-y-3 sm:space-y-4">
                 {/* Security Badge */}
-                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <Lock className="w-5 h-5 text-green-600" />
-                  <div>
-                    <span className="text-sm font-medium text-green-700">Compra 100% Segura</span>
-                    <span className="text-xs text-green-600 ml-2">Dados criptografados</span>
+                <div className="flex items-center gap-2 p-2.5 sm:p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-xs sm:text-sm font-medium text-green-700">Compra 100% Segura</span>
+                    <span className="text-[10px] sm:text-xs text-green-600 ml-1 sm:ml-2 hidden xs:inline">Dados criptografados</span>
                   </div>
                 </div>
                 
