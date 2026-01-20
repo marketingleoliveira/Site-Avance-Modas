@@ -1,10 +1,10 @@
 import { toast } from "sonner";
 import { getSiteSetting } from "./site-settings";
 
-// Default config (fallback)
+// Default config (fallback - empty to force configuration)
 const DEFAULT_CONFIG = {
-  store_domain: 'avancemodas-xzj71.myshopify.com',
-  storefront_token: '1678fc304859b1e97883d02841c7bedf',
+  store_domain: '',
+  storefront_token: '',
   api_version: '2025-07'
 };
 
