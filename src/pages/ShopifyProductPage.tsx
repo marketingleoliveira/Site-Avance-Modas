@@ -128,40 +128,25 @@ const ShopifyProductPage = () => {
     };
   }, [product]);
 
-  // Find first image index that matches a color name
+  // Find image index by color order (first color = first image, etc.)
   const findImageIndexForColor = (colorName: string): number => {
-    if (!product) return 0;
-    const colorLower = colorName.toLowerCase();
+    if (!product || colors.length === 0) return 0;
     
-    // Try to find by altText first
-    let idx = product.images.edges.findIndex(img => {
-      const altText = img.node.altText?.toLowerCase() || '';
-      return altText.includes(colorLower);
-    });
+    // Map color to its position in the colors array
+    const colorIndex = colors.findIndex(c => c.toLowerCase() === colorName.toLowerCase());
     
-    // If not found by altText, try by image URL (filename)
-    if (idx < 0) {
-      idx = product.images.edges.findIndex(img => {
-        const url = img.node.url?.toLowerCase() || '';
-        // Normalize color name for URL matching (remove accents, spaces)
-        const normalizedColor = colorLower
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/\s+/g, '-');
-        return url.includes(normalizedColor) || url.includes(colorLower.replace(/\s+/g, '-'));
-      });
+    // Return the same index for the image (if within bounds)
+    if (colorIndex >= 0 && colorIndex < product.images.edges.length) {
+      return colorIndex;
     }
     
-    console.log('Color search:', colorName, '-> Found index:', idx, 'Images:', product.images.edges.map(img => ({ alt: img.node.altText, url: img.node.url.split('/').pop() })));
-    
-    return idx >= 0 ? idx : 0;
+    return 0;
   };
 
   // Handle color selection and navigate to corresponding image
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     const imageIndex = findImageIndexForColor(color);
-    console.log('handleColorSelect:', color, '-> imageIndex:', imageIndex);
     setCurrentImage(imageIndex);
   };
 
