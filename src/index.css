@@ -111,11 +111,28 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+  }
+
+  #root {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   h1, h2, h3, h4, h5, h6 {
