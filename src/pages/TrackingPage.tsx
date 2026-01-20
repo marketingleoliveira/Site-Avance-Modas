@@ -143,40 +143,40 @@ export default function TrackingPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
-        <div className="max-w-2xl mx-auto space-y-8">
+      <main className="flex-1 container mx-auto px-4 py-6 sm:py-8 md:py-12">
+        <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <MapPin className="w-8 h-8 text-primary" />
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 mb-3 sm:mb-4">
+              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Rastrear Pedido</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Rastrear Pedido</h1>
+            <p className="text-sm sm:text-base text-muted-foreground px-4">
               Digite o número do seu pedido para acompanhar a entrega
             </p>
           </div>
 
           {/* Search Card */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Search className="w-5 h-5" />
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                 Buscar Pedido
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 O número do pedido está no e-mail de confirmação (ex: #1001)
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Input
-                  placeholder="Digite o número do pedido (ex: 1001 ou #1001)"
+                  placeholder="Digite o número (ex: 1001)"
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   className="flex-1"
                 />
-                <Button onClick={handleSearch} disabled={isLoading}>
+                <Button onClick={handleSearch} disabled={isLoading} className="w-full sm:w-auto">
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (

@@ -31,15 +31,15 @@ const Header = () => {
 
   return (
     <header className="bg-background sticky top-0 z-50 border-b border-border">
-      <div className="container">
-        <div className="flex items-center justify-between h-16">
+      <div className="container px-4 sm:px-6">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Avance" className="h-14 w-auto object-contain" />
+            <img src={logo} alt="Avance" className="h-10 sm:h-12 lg:h-14 w-auto object-contain" />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
             {navLinks.map((link) => (
               <div 
                 key={link.name} 
@@ -48,14 +48,14 @@ const Header = () => {
                 onMouseLeave={() => setActiveSubmenu(null)}
               >
                 {link.submenu ? (
-                  <span className="flex items-center gap-1 text-xs font-semibold tracking-[0.15em] uppercase text-foreground hover:text-muted-foreground transition-colors py-2 cursor-pointer">
+                  <span className="flex items-center gap-1 text-[10px] xl:text-xs font-semibold tracking-[0.15em] uppercase text-foreground hover:text-muted-foreground transition-colors py-2 cursor-pointer">
                     {link.name}
                     <ChevronDown className="w-3 h-3" />
                   </span>
                 ) : (
                   <Link 
                     to={link.href} 
-                    className={`flex items-center gap-1 text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2 ${
+                    className={`flex items-center gap-1 text-[10px] xl:text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2 ${
                       location.pathname === link.href ? 'text-accent' : 'text-foreground hover:text-muted-foreground'
                     }`}
                   >
@@ -85,16 +85,16 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
             <button 
               onClick={() => setSearchOpen(true)}
               className="p-2 hover:bg-secondary rounded-full transition-colors"
               aria-label="Buscar produtos"
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
             </button>
-            <button className="p-2 hover:bg-secondary rounded-full transition-colors">
-              <User className="w-4 h-4" />
+            <button className="p-2 hover:bg-secondary rounded-full transition-colors hidden sm:flex">
+              <User className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
             </button>
             <CartDrawer />
             
@@ -114,19 +114,19 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-background border-t border-border animate-slide-in">
-          <nav className="container py-4 flex flex-col gap-2">
+        <div className="lg:hidden bg-background border-t border-border animate-slide-in max-h-[calc(100vh-56px)] overflow-y-auto">
+          <nav className="container px-4 sm:px-6 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <div key={link.name}>
                 {link.submenu ? (
-                  <span className="block text-xs font-semibold tracking-[0.15em] uppercase text-foreground py-2">
+                  <span className="block text-xs font-semibold tracking-[0.15em] uppercase text-foreground py-2.5 border-b border-border/50">
                     {link.name}
                   </span>
                 ) : (
                   <Link 
                     to={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`block text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2 ${
+                    className={`block text-xs font-semibold tracking-[0.15em] uppercase transition-colors py-2.5 border-b border-border/50 ${
                       location.pathname === link.href ? 'text-accent' : 'text-foreground hover:text-accent'
                     }`}
                   >
@@ -134,13 +134,13 @@ const Header = () => {
                   </Link>
                 )}
                 {link.submenu && (
-                  <div className="pl-4 flex flex-col gap-1">
+                  <div className="pl-4 flex flex-col">
                     {link.submenu.map((sublink) => (
                       <Link 
                         key={sublink.name}
                         to={sublink.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`text-xs font-medium transition-colors py-1.5 ${
+                        className={`text-xs font-medium transition-colors py-2 border-b border-border/30 ${
                           location.pathname === sublink.href 
                             ? 'text-accent' 
                             : 'text-muted-foreground hover:text-accent'
