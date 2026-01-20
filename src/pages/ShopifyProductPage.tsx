@@ -391,19 +391,39 @@ const ShopifyProductPage = () => {
               {/* Thumbnails */}
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                  {images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentImage(i)}
-                      className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImage === i 
-                          ? "border-primary ring-2 ring-primary/20" 
-                          : "border-transparent hover:border-muted-foreground/30"
-                      }`}
-                    >
-                      <img src={img.node.url} alt={`Imagem ${i + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
+                  {images.map((img, i) => {
+                    // Try to extract color from altText
+                    const altText = img.node.altText?.toLowerCase() || '';
+                    const matchedColor = colors.find(color => 
+                      altText.includes(color.toLowerCase())
+                    );
+                    
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setCurrentImage(i);
+                          // Auto-select color if found in image altText
+                          if (matchedColor) {
+                            setSelectedColor(matchedColor);
+                          }
+                        }}
+                        className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all relative ${
+                          currentImage === i 
+                            ? "border-primary ring-2 ring-primary/20" 
+                            : "border-transparent hover:border-muted-foreground/30"
+                        }`}
+                      >
+                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} className="w-full h-full object-cover" />
+                        {/* Show color indicator on thumbnail */}
+                        {matchedColor && (
+                          <span className="absolute bottom-0.5 right-0.5 text-[8px] bg-black/60 text-white px-1 rounded truncate max-w-[90%]">
+                            {matchedColor}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
