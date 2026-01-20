@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
+import { useStoreContext } from "@/stores/storeContextStore";
 
 const StoreSelector = () => {
+  const setStoreType = useStoreContext(state => state.setStoreType);
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background flex items-center justify-center p-4 sm:p-6">
       {/* Background Pattern */}
@@ -32,7 +34,8 @@ const StoreSelector = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Atacado Card */}
           <Link 
-            to="/atacado" 
+            to="/atacado"
+            onClick={() => setStoreType('atacado')}
             className="group relative bg-card rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 border border-border overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -64,7 +67,8 @@ const StoreSelector = () => {
 
           {/* Varejo Card */}
           <Link 
-            to="/varejo" 
+            to="/varejo"
+            onClick={() => setStoreType('varejo')}
             className="group relative bg-card rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 border border-border overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

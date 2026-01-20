@@ -8,12 +8,17 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
+import { useStoreContext } from "@/stores/storeContextStore";
 
 const InicioVarejo = () => {
+  const setStoreType = useStoreContext(state => state.setStoreType);
+  
   useEffect(() => {
-    // Set store type for category pages
+    // Set store type for checkout validation (persists across pages)
+    setStoreType('varejo');
     sessionStorage.setItem("store_type", "varejo");
-  }, []);
+  }, [setStoreType]);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <AnnouncementBar />

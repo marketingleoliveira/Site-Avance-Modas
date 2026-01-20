@@ -10,6 +10,7 @@ import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
+import { useStoreContext } from "@/stores/storeContextStore";
 import {
   Dialog,
   DialogContent,
@@ -27,9 +28,11 @@ const InicioAtacado = () => {
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const navigate = useNavigate();
   const { settings: atacadoSettings, loading } = useAtacadoSettings();
+  const setStoreType = useStoreContext(state => state.setStoreType);
 
   useEffect(() => {
-    // Set store type for category pages
+    // Set store type for checkout validation (persists across pages)
+    setStoreType('atacado');
     sessionStorage.setItem("store_type", "atacado");
     
     // Check if user has already seen the notice in this session
