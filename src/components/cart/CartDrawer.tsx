@@ -58,7 +58,13 @@ export const CartDrawer = () => {
       return;
     }
     
-    const checkoutUrl = getCheckoutUrl();
+    // Use validated checkout URL with minimum order check
+    const checkoutUrl = getCheckoutUrl({
+      validateMinimum: true,
+      minimumOrder: minimumOrder,
+      isAtacado: isAtacado
+    });
+    
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
       setIsOpen(false);
@@ -66,9 +72,16 @@ export const CartDrawer = () => {
         description: "Complete seu pedido na nova aba.",
       });
     } else {
-      toast.error("Erro ao abrir checkout", {
-        description: "Tente adicionar um produto novamente.",
-      });
+      // Double-check: if atacado and below minimum, show specific error
+      if (isAtacado && totalPrice < minimumOrder) {
+        toast.error("Checkout bloqueado", {
+          description: `Valor mínimo de ${formatPrice(minimumOrder)} não atingido para atacado.`,
+        });
+      } else {
+        toast.error("Erro ao abrir checkout", {
+          description: "Tente adicionar um produto novamente.",
+        });
+      }
     }
   };
 
@@ -319,7 +332,7 @@ export const CartDrawer = () => {
                   className="w-full h-12 text-base font-semibold" 
                   size="lg"
                   variant={isBelowMinimum ? "outline" : "default"}
-                  disabled={items.length === 0 || isLoading || isSyncing}
+                  disabled={items.length === 0 || isLoading || isSyncing || isBelowMinimum}
                 >
                   {isLoading || isSyncing ? (
                     <>
