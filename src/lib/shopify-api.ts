@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = {
 // Cache for the config
 let cachedConfig: typeof DEFAULT_CONFIG | null = null;
 let cacheTimestamp = 0;
-const CACHE_TTL = 60000; // 1 minute
+const CACHE_TTL = 30000; // 30 seconds - reduced for faster config updates
 
 async function getShopifyConfig() {
   if (cachedConfig && Date.now() - cacheTimestamp < CACHE_TTL) {
@@ -30,6 +30,12 @@ async function getShopifyConfig() {
   }
   
   return DEFAULT_CONFIG;
+}
+
+// Function to invalidate the config cache (call after saving new config)
+export function invalidateShopifyConfigCache() {
+  cachedConfig = null;
+  cacheTimestamp = 0;
 }
 
 function getStorefrontUrl(config: typeof DEFAULT_CONFIG): string {

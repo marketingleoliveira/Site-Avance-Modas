@@ -27,7 +27,8 @@ import {
   XCircle,
   CheckCircle2
 } from "lucide-react";
-import { updateSiteSetting, uploadSiteImage } from "@/lib/site-settings";
+import { updateSiteSetting, uploadSiteImage, invalidateSettingsCache } from "@/lib/site-settings";
+import { invalidateShopifyConfigCache } from "@/lib/shopify-api";
 import { toast } from "sonner";
 
 export interface ShopifyConfigSettings {
@@ -181,6 +182,9 @@ export default function StoreConfigEditor({
       ]);
       
       if (results.every(r => r)) {
+        // Invalidate all caches to ensure new config is used immediately
+        invalidateSettingsCache();
+        invalidateShopifyConfigCache();
         toast.success("Todas as configurações foram salvas!");
         onUpdate();
       } else {
@@ -276,6 +280,11 @@ export default function StoreConfigEditor({
     setSaving(false);
     
     if (success) {
+      // Invalidate caches to ensure new config is used immediately
+      if (key === 'shopify_config') {
+        invalidateSettingsCache('shopify_config');
+        invalidateShopifyConfigCache();
+      }
       toast.success("Configurações salvas!");
       onUpdate();
     } else {
