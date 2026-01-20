@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,12 @@ import {
   Key,
   Loader2,
   Eye,
-  EyeOff
+  EyeOff,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  XCircle,
+  CheckCircle2
 } from "lucide-react";
 import { updateSiteSetting, uploadSiteImage } from "@/lib/site-settings";
 import { toast } from "sonner";
@@ -85,6 +90,8 @@ export default function StoreConfigEditor({
 }: StoreConfigEditorProps) {
   const [saving, setSaving] = useState(false);
   const [showToken, setShowToken] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+  const [connectionError, setConnectionError] = useState<string>('');
   
   // Local state for forms
   const [localShopify, setLocalShopify] = useState<ShopifyConfigSettings>(shopifyConfig || {
@@ -174,6 +181,76 @@ export default function StoreConfigEditor({
       setSaving(false);
     }
   };
+
+  const testShopifyConnection = useCallback(async () => {
+    if (!localShopify.store_domain || !localShopify.storefront_token) {
+      toast.error("Preencha o domínio e o token primeiro");
+      return;
+    }
+
+    setConnectionStatus('testing');
+    setConnectionError('');
+
+    try {
+      const url = `https://${localShopify.store_domain}/api/${localShopify.api_version}/graphql.json`;
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': localShopify.storefront_token
+        },
+        body: JSON.stringify({
+          query: `{ shop { name } }`
+        }),
+      });
+
+      if (response.status === 402) {
+        setConnectionStatus('error');
+        setConnectionError('Plano do Shopify requer upgrade para usar a API');
+        return;
+      }
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setConnectionStatus('error');
+          setConnectionError('Token inválido ou sem permissões');
+          return;
+        }
+        if (response.status === 404) {
+          setConnectionStatus('error');
+          setConnectionError('Loja não encontrada. Verifique o domínio.');
+          return;
+        }
+        setConnectionStatus('error');
+        setConnectionError(`Erro HTTP: ${response.status}`);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.errors) {
+        setConnectionStatus('error');
+        setConnectionError(data.errors[0]?.message || 'Erro na API do Shopify');
+        return;
+      }
+
+      if (data.data?.shop?.name) {
+        setConnectionStatus('success');
+        toast.success(`Conectado à loja: ${data.data.shop.name}`);
+      } else {
+        setConnectionStatus('error');
+        setConnectionError('Resposta inesperada da API');
+      }
+    } catch (error) {
+      setConnectionStatus('error');
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        setConnectionError('Não foi possível conectar. Verifique o domínio.');
+      } else {
+        setConnectionError(error instanceof Error ? error.message : 'Erro desconhecido');
+      }
+    }
+  }, [localShopify]);
 
   const saveSection = async (key: string, value: unknown) => {
     setSaving(true);
@@ -307,19 +384,59 @@ export default function StoreConfigEditor({
                 </div>
               </div>
 
-              {localShopify.store_domain && localShopify.storefront_token && (
-                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <Check className="w-5 h-5 text-green-600" />
-                  <span className="text-sm text-green-700">
-                    Configuração completa! O sistema usará essas credenciais.
+              {/* Connection Status Display */}
+              {connectionStatus === 'success' && (
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-800">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <span className="text-sm text-green-700 dark:text-green-300 font-medium">
+                    Conexão validada com sucesso!
                   </span>
                 </div>
               )}
 
-              <Button onClick={() => saveSection('shopify_config', localShopify)} disabled={saving}>
-                <Save className="w-4 h-4 mr-2" />
-                Salvar Conexão Shopify
-              </Button>
+              {connectionStatus === 'error' && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg dark:bg-red-950 dark:border-red-800">
+                  <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-sm text-red-700 dark:text-red-300 font-medium block">
+                      Falha na conexão
+                    </span>
+                    <span className="text-xs text-red-600 dark:text-red-400">
+                      {connectionError}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {connectionStatus === 'idle' && localShopify.store_domain && localShopify.storefront_token && (
+                <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800">
+                  <WifiOff className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <span className="text-sm text-amber-700 dark:text-amber-300">
+                    Credenciais preenchidas. Clique em "Testar Conexão" para validar.
+                  </span>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={testShopifyConnection} 
+                  disabled={connectionStatus === 'testing' || !localShopify.store_domain || !localShopify.storefront_token}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  {connectionStatus === 'testing' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Wifi className="w-4 h-4" />
+                  )}
+                  Testar Conexão
+                </Button>
+                
+                <Button onClick={() => saveSection('shopify_config', localShopify)} disabled={saving}>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Conexão Shopify
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
