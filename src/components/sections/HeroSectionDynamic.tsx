@@ -89,24 +89,24 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
       </div>
 
       {/* Content */}
-      <div className="container relative h-full flex items-center">
-        <div className="max-w-lg space-y-6 text-white">
+      <div className="container px-4 sm:px-6 relative h-full flex items-center">
+        <div className="max-w-lg space-y-3 sm:space-y-4 lg:space-y-6 text-white">
           {/* Badge */}
-          <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold tracking-widest uppercase rounded-full animate-fade-in">
+          <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm text-white text-[10px] sm:text-xs font-semibold tracking-widest uppercase rounded-full animate-fade-in">
             {type === 'ATACADO' ? 'Atacado' : 'Varejo'}
           </span>
 
           {/* Main Text */}
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2">
             <p 
               key={`promo-${currentSlide}`}
-              className="text-accent font-bold text-2xl lg:text-3xl animate-fade-in"
+              className="text-accent font-bold text-lg sm:text-xl lg:text-3xl animate-fade-in"
             >
               {currentSlideData.promo_text}
             </p>
             <h1 
               key={`subtitle-${currentSlide}`}
-              className="text-4xl lg:text-6xl font-black tracking-tight leading-none animate-fade-in"
+              className="text-2xl sm:text-3xl lg:text-6xl font-black tracking-tight leading-none animate-fade-in"
               style={{ animationDelay: '100ms' }}
             >
               {currentSlideData.promo_subtitle}
@@ -114,7 +114,7 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
             {currentSlideData.title && (
               <h2 
                 key={`title-${currentSlide}`}
-                className="text-xl lg:text-2xl font-medium text-white/90 animate-fade-in"
+                className="text-sm sm:text-lg lg:text-2xl font-medium text-white/90 animate-fade-in"
                 style={{ animationDelay: '200ms' }}
               >
                 {currentSlideData.title}
@@ -125,19 +125,19 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
           {/* CTA Button */}
           <Button 
             size="lg"
-            className="bg-white text-black hover:bg-white/90 font-semibold tracking-wide group/btn animate-fade-in"
+            className="bg-white text-black hover:bg-white/90 font-semibold tracking-wide group/btn animate-fade-in h-9 sm:h-10 lg:h-11 text-xs sm:text-sm px-4 sm:px-6"
             style={{ animationDelay: '300ms' }}
             asChild={!!currentSlideData.button_link && currentSlideData.button_link !== '#'}
           >
             {currentSlideData.button_link && currentSlideData.button_link !== '#' ? (
               <a href={currentSlideData.button_link}>
                 {currentSlideData.button_text}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1.5 sm:ml-2 w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:translate-x-1 transition-transform" />
               </a>
             ) : (
               <>
                 {currentSlideData.button_text}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1.5 sm:ml-2 w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:translate-x-1 transition-transform" />
               </>
             )}
           </Button>
@@ -149,24 +149,24 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
             aria-label="Slide anterior"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
             aria-label="Próximo slide"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
           </button>
         </>
       )}
 
       {/* Dots Navigation */}
       {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2">
           {slides.map((_, index) => (
             <button
               key={index}
@@ -174,8 +174,8 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
               className={cn(
                 "transition-all duration-300 rounded-full",
                 index === currentSlide 
-                  ? "w-8 h-2 bg-white" 
-                  : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                  ? "w-6 sm:w-8 h-1.5 sm:h-2 bg-white" 
+                  : "w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80"
               )}
               aria-label={`Ir para slide ${index + 1}`}
             />
