@@ -10,8 +10,8 @@ import type {
 
 // Default values (fallback to hardcoded config if no DB settings)
 const DEFAULT_SHOPIFY_CONFIG: ShopifyConfigSettings = {
-  store_domain: 'avancemodas-xzj71.myshopify.com',
-  storefront_token: '1678fc304859b1e97883d02841c7bedf',
+  store_domain: '',
+  storefront_token: '',
   api_version: '2025-07'
 };
 
