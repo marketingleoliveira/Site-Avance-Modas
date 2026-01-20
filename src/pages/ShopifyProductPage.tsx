@@ -447,8 +447,8 @@ const ShopifyProductPage = () => {
 
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Image Gallery */}
-            <div className="space-y-4">
-              <div className="relative aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="relative aspect-[4/5] sm:aspect-square bg-card rounded-xl sm:rounded-2xl overflow-hidden shadow-sm max-h-[50vh] sm:max-h-none mx-auto w-full max-w-[85vw] sm:max-w-none">
                 {images.length > 0 ? (
                   <img 
                     src={images[currentImage].node.url} 
@@ -457,7 +457,7 @@ const ShopifyProductPage = () => {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
-                    <ShoppingBag className="w-16 h-16 text-muted-foreground" />
+                    <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground" />
                   </div>
                 )}
                 
@@ -465,22 +465,22 @@ const ShopifyProductPage = () => {
                   <>
                     <button 
                       onClick={prevImage}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md"
+                      className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md"
                     >
-                      <ChevronLeft className="w-5 h-5 text-foreground" />
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                     </button>
                     <button 
                       onClick={nextImage}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md"
+                      className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2.5 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md"
                     >
-                      <ChevronRight className="w-5 h-5 text-foreground" />
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                     </button>
                   </>
                 )}
 
                 {/* Image counter */}
                 {images.length > 1 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1.5 rounded-full">
+                  <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
                     {currentImage + 1} / {images.length}
                   </div>
                 )}
