@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Package, 
   Search, 
@@ -96,10 +97,29 @@ const getFulfillmentBadge = (status: string) => {
   );
 };
 
+// Check if tracking code is from Loggi
+const isLoggiTracking = (trackingNumber: string, trackingCompany: string | null): boolean => {
+  const companyLower = (trackingCompany || "").toLowerCase();
+  // Check if company name contains loggi
+  if (companyLower.includes("loggi")) return true;
+  // Loggi tracking codes typically start with specific patterns
+  const loggiPatterns = [/^LGI/i, /^LOGGI/i, /^\d{10,}$/];
+  return loggiPatterns.some(pattern => pattern.test(trackingNumber));
+};
+
+// Build Loggi tracking URL
+const getLoggiTrackingUrl = (trackingNumber: string): string => {
+  return `https://www.loggi.com/rastreio/${trackingNumber}/`;
+};
+
 export default function TrackingPage() {
   const [orderNumber, setOrderNumber] = useState("");
+  const [loggiCode, setLoggiCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<TrackingResponse | null>(null);
+  const [activeTab, setActiveTab] = useState("pedido");
+  const [showLoggiEmbed, setShowLoggiEmbed] = useState(false);
+  const [loggiTrackingCode, setLoggiTrackingCode] = useState("");
 
   const handleSearch = async () => {
     if (!orderNumber.trim()) {
@@ -109,6 +129,7 @@ export default function TrackingPage() {
 
     setIsLoading(true);
     setResult(null);
+    setShowLoggiEmbed(false);
 
     try {
       const { data, error } = await supabase.functions.invoke("get-order-tracking", {
@@ -123,6 +144,17 @@ export default function TrackingPage() {
 
       setResult(data);
 
+      // Check if any tracking is from Loggi and auto-show embed
+      if (data.found && data.tracking && data.tracking.length > 0) {
+        const loggiTrack = data.tracking.find((t: TrackingItem) => 
+          isLoggiTracking(t.trackingNumber, t.trackingCompany)
+        );
+        if (loggiTrack) {
+          setLoggiTrackingCode(loggiTrack.trackingNumber);
+          setShowLoggiEmbed(true);
+        }
+      }
+
       if (!data.found) {
         toast.error(data.message || "Pedido não encontrado");
       }
@@ -134,9 +166,23 @@ export default function TrackingPage() {
     }
   };
 
+  const handleLoggiDirectSearch = () => {
+    if (!loggiCode.trim()) {
+      toast.error("Digite o código de rastreio da Loggi");
+      return;
+    }
+    setLoggiTrackingCode(loggiCode.trim());
+    setShowLoggiEmbed(true);
+    setResult(null);
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Código copiado!");
+  };
+
+  const openLoggiTracking = (trackingNumber: string) => {
+    window.open(getLoggiTrackingUrl(trackingNumber), "_blank");
   };
 
   return (
@@ -144,7 +190,7 @@ export default function TrackingPage() {
       <Header />
       
       <main className="flex-1 container mx-auto px-4 py-6 sm:py-8 md:py-12">
-        <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">
+        <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 mb-3 sm:mb-4">
@@ -152,45 +198,135 @@ export default function TrackingPage() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Rastrear Pedido</h1>
             <p className="text-sm sm:text-base text-muted-foreground px-4">
-              Digite o número do seu pedido para acompanhar a entrega
+              Acompanhe sua entrega em tempo real
             </p>
           </div>
 
-          {/* Search Card */}
-          <Card>
-            <CardHeader className="pb-3 sm:pb-6">
-              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-                Buscar Pedido
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                O número do pedido está no e-mail de confirmação (ex: #1001)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  placeholder="Digite o número (ex: 1001)"
-                  value={orderNumber}
-                  onChange={(e) => setOrderNumber(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="flex-1"
-                />
-                <Button onClick={handleSearch} disabled={isLoading} className="w-full sm:w-auto">
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4 mr-2" />
-                      Buscar
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Search Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="pedido" className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span className="hidden sm:inline">Número do</span> Pedido
+              </TabsTrigger>
+              <TabsTrigger value="loggi" className="flex items-center gap-2">
+                <Truck className="w-4 h-4" />
+                Rastreio Loggi
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Results */}
+            <TabsContent value="pedido" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Buscar por Número do Pedido
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    O número do pedido está no e-mail de confirmação (ex: #1001)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Input
+                      placeholder="Digite o número (ex: 1001)"
+                      value={orderNumber}
+                      onChange={(e) => setOrderNumber(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className="flex-1"
+                    />
+                    <Button onClick={handleSearch} disabled={isLoading} className="w-full sm:w-auto">
+                      {isLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Search className="w-4 h-4 mr-2" />
+                          Buscar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="loggi" className="mt-4">
+              <Card>
+                <CardHeader className="pb-3 sm:pb-6">
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Rastrear Diretamente na Loggi
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Cole o código de rastreio que você recebeu por e-mail ou SMS
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Input
+                      placeholder="Cole o código de rastreio"
+                      value={loggiCode}
+                      onChange={(e) => setLoggiCode(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleLoggiDirectSearch()}
+                      className="flex-1"
+                    />
+                    <Button onClick={handleLoggiDirectSearch} className="w-full sm:w-auto">
+                      <Search className="w-4 h-4 mr-2" />
+                      Rastrear
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          {/* Loggi Embed */}
+          {showLoggiEmbed && loggiTrackingCode && (
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Truck className="w-5 h-5" />
+                    Rastreio Loggi
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(loggiTrackingCode)}
+                    >
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copiar
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => openLoggiTracking(loggiTrackingCode)}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      Abrir no Site
+                    </Button>
+                  </div>
+                </div>
+                <CardDescription>
+                  Código: <code className="bg-muted px-2 py-1 rounded text-sm font-mono">{loggiTrackingCode}</code>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="relative w-full bg-muted" style={{ height: '600px' }}>
+                  <iframe
+                    src={getLoggiTrackingUrl(loggiTrackingCode)}
+                    className="absolute inset-0 w-full h-full border-0"
+                    title="Rastreio Loggi"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                    loading="lazy"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Order Results */}
           {result && (
             <>
               {!result.found ? (
@@ -241,16 +377,16 @@ export default function TrackingPage() {
                     </CardContent>
                   </Card>
 
-                  {/* Tracking Info Card */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Truck className="w-5 h-5" />
-                        Informações de Rastreio
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {result.hasTracking && result.tracking && result.tracking.length > 0 ? (
+                  {/* Tracking Info Card - Only show if NOT Loggi (since Loggi embed is shown above) */}
+                  {result.hasTracking && result.tracking && result.tracking.length > 0 && !showLoggiEmbed && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Truck className="w-5 h-5" />
+                          Informações de Rastreio
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="space-y-4">
                           {result.tracking.map((track, index) => (
                             <div key={index} className="space-y-3">
@@ -280,7 +416,20 @@ export default function TrackingPage() {
                                   </div>
                                 </div>
 
-                                {track.trackingUrl && (
+                                {/* Check if it's Loggi and show special button */}
+                                {isLoggiTracking(track.trackingNumber, track.trackingCompany) ? (
+                                  <Button
+                                    variant="default"
+                                    className="w-full"
+                                    onClick={() => {
+                                      setLoggiTrackingCode(track.trackingNumber);
+                                      setShowLoggiEmbed(true);
+                                    }}
+                                  >
+                                    <Truck className="w-4 h-4 mr-2" />
+                                    Ver Rastreio Loggi
+                                  </Button>
+                                ) : track.trackingUrl && (
                                   <Button
                                     variant="default"
                                     className="w-full"
@@ -298,7 +447,20 @@ export default function TrackingPage() {
                             </div>
                           ))}
                         </div>
-                      ) : (
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* No tracking yet */}
+                  {!result.hasTracking && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Truck className="w-5 h-5" />
+                          Informações de Rastreio
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
                         <div className="text-center py-8 space-y-3">
                           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted">
                             <Clock className="w-6 h-6 text-muted-foreground" />
@@ -310,9 +472,9 @@ export default function TrackingPage() {
                             </p>
                           </div>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               )}
             </>
