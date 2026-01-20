@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -92,6 +92,7 @@ export default function StoreConfigEditor({
   const [showToken, setShowToken] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [connectionError, setConnectionError] = useState<string>('');
+  const [shopName, setShopName] = useState<string>('');
   
   // Local state for forms
   const [localShopify, setLocalShopify] = useState<ShopifyConfigSettings>(shopifyConfig || {
@@ -134,6 +135,17 @@ export default function StoreConfigEditor({
     terms_of_use: "",
     wholesale_policy: ""
   });
+
+  // Auto-test connection on mount if credentials exist
+  useEffect(() => {
+    if (shopifyConfig?.store_domain && shopifyConfig?.storefront_token) {
+      const timer = setTimeout(() => {
+        testShopifyConnection(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogoUpload = async (file: File) => {
     const path = `brand/logo-${Date.now()}.${file.name.split('.').pop()}`;
@@ -182,14 +194,17 @@ export default function StoreConfigEditor({
     }
   };
 
-  const testShopifyConnection = useCallback(async () => {
+  const testShopifyConnection = useCallback(async (showToast: boolean = true) => {
     if (!localShopify.store_domain || !localShopify.storefront_token) {
-      toast.error("Preencha o domínio e o token primeiro");
+      if (showToast) {
+        toast.error("Preencha o domínio e o token primeiro");
+      }
       return;
     }
 
     setConnectionStatus('testing');
     setConnectionError('');
+    setShopName('');
 
     try {
       const url = `https://${localShopify.store_domain}/api/${localShopify.api_version}/graphql.json`;
@@ -237,7 +252,10 @@ export default function StoreConfigEditor({
 
       if (data.data?.shop?.name) {
         setConnectionStatus('success');
-        toast.success(`Conectado à loja: ${data.data.shop.name}`);
+        setShopName(data.data.shop.name);
+        if (showToast) {
+          toast.success(`Conectado à loja: ${data.data.shop.name}`);
+        }
       } else {
         setConnectionStatus('error');
         setConnectionError('Resposta inesperada da API');
@@ -282,9 +300,18 @@ export default function StoreConfigEditor({
 
       <Tabs defaultValue="shopify" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="shopify" className="gap-2">
+          <TabsTrigger value="shopify" className="gap-2 relative">
             <Store className="w-4 h-4" />
             Shopify
+            {connectionStatus === 'success' && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+            )}
+            {connectionStatus === 'error' && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-background" />
+            )}
+            {connectionStatus === 'testing' && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-background animate-pulse" />
+            )}
           </TabsTrigger>
           <TabsTrigger value="brand" className="gap-2">
             <Palette className="w-4 h-4" />
@@ -386,11 +413,21 @@ export default function StoreConfigEditor({
 
               {/* Connection Status Display */}
               {connectionStatus === 'success' && (
-                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-800">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-sm text-green-700 dark:text-green-300 font-medium">
-                    Conexão validada com sucesso!
-                  </span>
+                <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-800">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  <div className="flex-1">
+                    <span className="text-sm text-green-700 dark:text-green-300 font-medium block">
+                      Conexão validada com sucesso!
+                    </span>
+                    {shopName && (
+                      <span className="text-lg font-semibold text-green-800 dark:text-green-200">
+                        {shopName}
+                      </span>
+                    )}
+                  </div>
+                  <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300 dark:border-green-700">
+                    Conectada
+                  </Badge>
                 </div>
               )}
 
@@ -419,7 +456,7 @@ export default function StoreConfigEditor({
 
               <div className="flex gap-2">
                 <Button 
-                  onClick={testShopifyConnection} 
+                  onClick={() => testShopifyConnection(true)} 
                   disabled={connectionStatus === 'testing' || !localShopify.store_domain || !localShopify.storefront_token}
                   variant="outline"
                   className="gap-2"
