@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,8 +22,33 @@ serve(async (req) => {
       );
     }
 
+    // Get Supabase client to fetch dynamic config
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch Shopify config from database
+    const { data: configData, error: configError } = await supabase
+      .from("site_settings")
+      .select("setting_value")
+      .eq("setting_key", "shopify_config")
+      .maybeSingle();
+
+    if (configError) {
+      console.error("Error fetching shopify config:", configError);
+      return new Response(
+        JSON.stringify({ error: "Erro ao buscar configuração da loja" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Extract store domain from config or use fallback
+    const shopifyConfig = configData?.setting_value as { storeDomain?: string } | null;
+    const shopifyStoreDomain = shopifyConfig?.storeDomain || "r3ha52-nj.myshopify.com";
+    
+    console.log("Using Shopify store domain:", shopifyStoreDomain);
+
     const shopifyAccessToken = Deno.env.get("SHOPIFY_ACCESS_TOKEN");
-    const shopifyStoreDomain = "avancemodas-xzj71.myshopify.com";
 
     if (!shopifyAccessToken) {
       console.error("SHOPIFY_ACCESS_TOKEN not configured");
