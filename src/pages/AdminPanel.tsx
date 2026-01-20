@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -17,6 +17,7 @@ import PromoBannerEditor from "@/components/admin/PromoBannerEditor";
 import AnnouncementEditor from "@/components/admin/AnnouncementEditor";
 import StoreConfigEditor, { ShopifyConfigSettings, BrandSettings, ShippingSettings, SocialSettings, LegalSettings } from "@/components/admin/StoreConfigEditor";
 import MaintenanceEditor, { MaintenanceSettings } from "@/components/admin/MaintenanceEditor";
+import DocumentationPage from "@/components/admin/DocumentationPage";
 
 interface NewsletterSubscriber {
   id: string;
@@ -451,6 +452,10 @@ const AdminPanel = () => {
             <TabsTrigger value="admins" className="text-xs">
               <Shield className="w-3 h-3 mr-1" />
               Admins
+            </TabsTrigger>
+            <TabsTrigger value="docs" className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <BookOpen className="w-3 h-3 mr-1" />
+              Docs
             </TabsTrigger>
           </TabsList>
 
@@ -1651,6 +1656,11 @@ const AdminPanel = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Documentation */}
+          <TabsContent value="docs">
+            <DocumentationPage />
           </TabsContent>
         </Tabs>
       </main>
