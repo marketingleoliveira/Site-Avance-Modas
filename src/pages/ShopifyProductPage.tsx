@@ -66,8 +66,8 @@ const ShopifyProductPage = () => {
   }, [product]);
 
   // Extract unique sizes and colors from variants, separating top/bottom for conjuntos
-  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions, isColorAvailable } = useMemo(() => {
-    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null, isColorAvailable: () => false };
+  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions, isColorAvailable, isSizeAvailable } = useMemo(() => {
+    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null, isColorAvailable: () => false, isSizeAvailable: () => false };
     
     const sizesSet = new Set<string>();
     const topSizesSet = new Set<string>();
@@ -131,13 +131,50 @@ const ShopifyProductPage = () => {
       });
     };
 
+    // Check if a size has at least one variant available for sale (considering selected color)
+    const checkSizeAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom', selectedColor: string | null): boolean => {
+      return product.variants.edges.some(({ node }) => {
+        if (!node.availableForSale) return false;
+        
+        let sizeMatch = false;
+        let colorMatch = selectedColor ? false : true;
+        
+        node.selectedOptions?.forEach(opt => {
+          const nameLower = opt.name.toLowerCase();
+          
+          // Check size based on type
+          if (sizeType === 'top') {
+            if ((nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) && opt.value === size) {
+              sizeMatch = true;
+            }
+          } else if (sizeType === 'bottom') {
+            if ((nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging')) && opt.value === size) {
+              sizeMatch = true;
+            }
+          } else {
+            if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === size) {
+              sizeMatch = true;
+            }
+          }
+          
+          // Check color match
+          if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === selectedColor) {
+            colorMatch = true;
+          }
+        });
+        
+        return sizeMatch && colorMatch;
+      });
+    };
+
     return { 
       sizes: sortSizes(Array.from(sizesSet)), 
       topSizes: sortSizes(Array.from(topSizesSet)),
       bottomSizes: sortSizes(Array.from(bottomSizesSet)),
       colors: Array.from(colorsSet),
       getVariantByOptions: getVariant,
-      isColorAvailable: checkColorAvailability
+      isColorAvailable: checkColorAvailability,
+      isSizeAvailable: checkSizeAvailability
     };
   }, [product]);
 
@@ -831,21 +868,34 @@ const ShopifyProductPage = () => {
                     </p>
                     
                     <div className="flex flex-wrap gap-2">
-                      {topSizes.map((size) => (
-                        <button
-                          key={`top-${size}`}
-                          onClick={() => {
-                            setSelectedTopSize(size);
-                          }}
-                          className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
-                            selectedTopSize === size
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card hover:border-primary/50"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {topSizes.map((size) => {
+                        const isAvailable = isSizeAvailable(size, 'top', selectedColor);
+                        return (
+                          <div key={`top-${size}`} className="flex flex-col items-center">
+                            <button
+                              onClick={() => isAvailable && setSelectedTopSize(size)}
+                              disabled={!isAvailable}
+                              className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                                !isAvailable
+                                  ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                  : selectedTopSize === size
+                                    ? "border-primary bg-primary text-primary-foreground"
+                                    : "border-border bg-card hover:border-primary/50"
+                              }`}
+                            >
+                              {size}
+                              {!isAvailable && (
+                                <span className="absolute inset-0 flex items-center justify-center">
+                                  <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
+                                </span>
+                              )}
+                            </button>
+                            {!isAvailable && (
+                              <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -857,21 +907,34 @@ const ShopifyProductPage = () => {
                     </p>
                     
                     <div className="flex flex-wrap gap-2">
-                      {bottomSizes.map((size) => (
-                        <button
-                          key={`bottom-${size}`}
-                          onClick={() => {
-                            setSelectedBottomSize(size);
-                          }}
-                          className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
-                            selectedBottomSize === size
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card hover:border-primary/50"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {bottomSizes.map((size) => {
+                        const isAvailable = isSizeAvailable(size, 'bottom', selectedColor);
+                        return (
+                          <div key={`bottom-${size}`} className="flex flex-col items-center">
+                            <button
+                              onClick={() => isAvailable && setSelectedBottomSize(size)}
+                              disabled={!isAvailable}
+                              className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                                !isAvailable
+                                  ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                  : selectedBottomSize === size
+                                    ? "border-primary bg-primary text-primary-foreground"
+                                    : "border-border bg-card hover:border-primary/50"
+                              }`}
+                            >
+                              {size}
+                              {!isAvailable && (
+                                <span className="absolute inset-0 flex items-center justify-center">
+                                  <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
+                                </span>
+                              )}
+                            </button>
+                            {!isAvailable && (
+                              <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -943,21 +1006,34 @@ const ShopifyProductPage = () => {
                   </p>
                   
                   <div className="flex flex-wrap gap-2">
-                    {sizes.map((size) => (
-                      <button
-                        key={size}
-                        onClick={() => {
-                          setSelectedSize(size);
-                        }}
-                        className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all ${
-                          selectedSize === size
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-card hover:border-primary/50"
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    {sizes.map((size) => {
+                      const isAvailable = isSizeAvailable(size, 'regular', selectedColor);
+                      return (
+                        <div key={size} className="flex flex-col items-center">
+                          <button
+                            onClick={() => isAvailable && setSelectedSize(size)}
+                            disabled={!isAvailable}
+                            className={`min-w-[48px] h-12 px-4 rounded-lg border-2 font-semibold transition-all relative ${
+                              !isAvailable
+                                ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : selectedSize === size
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-border bg-card hover:border-primary/50"
+                            }`}
+                          >
+                            {size}
+                            {!isAvailable && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
+                              </span>
+                            )}
+                          </button>
+                          {!isAvailable && (
+                            <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Size Help Buttons */}
@@ -1029,26 +1105,30 @@ const ShopifyProductPage = () => {
                     {colors.map((color) => {
                       const isAvailable = isColorAvailable(color);
                       return (
-                        <button
-                          key={color}
-                          onClick={() => isAvailable && handleColorSelect(color)}
-                          onMouseEnter={() => isAvailable && handleColorSelect(color)}
-                          disabled={!isAvailable}
-                          className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all relative ${
-                            !isAvailable
-                              ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
-                              : selectedColor === color
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : "border-border bg-card hover:border-primary/50"
-                          }`}
-                        >
-                          {color}
+                        <div key={color} className="flex flex-col items-center">
+                          <button
+                            onClick={() => isAvailable && handleColorSelect(color)}
+                            onMouseEnter={() => isAvailable && handleColorSelect(color)}
+                            disabled={!isAvailable}
+                            className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all relative ${
+                              !isAvailable
+                                ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                                : selectedColor === color
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-border bg-card hover:border-primary/50"
+                            }`}
+                          >
+                            {color}
+                            {!isAvailable && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
+                              </span>
+                            )}
+                          </button>
                           {!isAvailable && (
-                            <span className="absolute inset-0 flex items-center justify-center">
-                              <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
-                            </span>
+                            <span className="text-[10px] text-destructive font-medium mt-1">Esgotado</span>
                           )}
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
