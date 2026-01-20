@@ -12,6 +12,7 @@ import {
   Copy
 } from "lucide-react";
 import { toast } from "sonner";
+import loggiLogo from "@/assets/loggi-logo.png";
 
 // Build Loggi tracking URL
 const getLoggiTrackingUrl = (trackingNumber: string): string => {
@@ -55,13 +56,10 @@ export default function TrackingPage() {
           <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center mb-2">
               <img 
-                src="https://images.loggi.com/loggi-logo.svg" 
+                src={loggiLogo} 
                 alt="Loggi" 
-                className="h-10 sm:h-14"
-                onError={(e) => {
-                  // Fallback to text if logo fails to load
-                  e.currentTarget.style.display = 'none';
-                }}
+                className="object-contain"
+                style={{ width: '100px', height: '60px' }}
               />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Rastreio de Entregas</h1>
