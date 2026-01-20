@@ -33,14 +33,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-// Tutorial images
-import tutorialStep1 from "@/assets/tutorial/shopify-step1-settings.jpg";
-import tutorialStep2 from "@/assets/tutorial/shopify-step2-apps.jpg";
-import tutorialStep3 from "@/assets/tutorial/shopify-step3-create-app.jpg";
-import tutorialStep4 from "@/assets/tutorial/shopify-step4-storefront-api.jpg";
-import tutorialStep5 from "@/assets/tutorial/shopify-step5-permissions.jpg";
-import tutorialStep6 from "@/assets/tutorial/shopify-step6-install.jpg";
-import tutorialStep7 from "@/assets/tutorial/shopify-step7-token.jpg";
+// Tutorial images - Updated for Shopify 2025 Dashboard
+import tutorialStep1 from "@/assets/tutorial/shopify-2025-step1-settings.jpg";
+import tutorialStep2 from "@/assets/tutorial/shopify-2025-step2-apps.jpg";
+import tutorialStep3 from "@/assets/tutorial/shopify-2025-step3-create-app.jpg";
+import tutorialStep4 from "@/assets/tutorial/shopify-2025-step4-storefront.jpg";
+import tutorialStep5 from "@/assets/tutorial/shopify-2025-step5-permissions.jpg";
+import tutorialStep6 from "@/assets/tutorial/shopify-2025-step6-token.jpg";
 
 const DocumentationPage = () => {
   const [copiedText, setCopiedText] = useState<string | null>(null);
@@ -310,59 +309,45 @@ const DocumentationPage = () => {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pl-11 space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
-                            <img 
-                              src={tutorialStep6} 
-                              alt="Botão Install app" 
-                              className="w-full h-auto object-cover"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <ZoomIn className="w-8 h-8 text-white" />
-                            </div>
-                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Instalar App</span>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
+                          <img 
+                            src={tutorialStep6} 
+                            alt="API credentials e Storefront token" 
+                            className="w-full h-auto object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-8 h-8 text-white" />
                           </div>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl">
-                          <img src={tutorialStep6} alt="Install app" className="w-full h-auto" />
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <div className="relative cursor-pointer group rounded-lg overflow-hidden border border-border">
-                            <img 
-                              src={tutorialStep7} 
-                              alt="Storefront API access token" 
-                              className="w-full h-auto object-cover"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <ZoomIn className="w-8 h-8 text-white" />
-                            </div>
-                            <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">Copiar Token</span>
-                          </div>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-4xl">
-                          <img src={tutorialStep7} alt="API access token" className="w-full h-auto" />
-                        </DialogContent>
-                      </Dialog>
-                    </div>
+                          <span className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">API Credentials</span>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl">
+                        <img src={tutorialStep6} alt="API credentials" className="w-full h-auto" />
+                      </DialogContent>
+                    </Dialog>
                     
                     <ol className="list-decimal pl-4 space-y-3">
-                      <li>Volte para a aba <strong>"Overview"</strong> (Visão geral) do app</li>
-                      <li>Clique no botão <strong>"Install app"</strong></li>
-                      <li>Confirme a instalação clicando em <strong>"Install"</strong></li>
+                      <li>Na página do app, clique no botão verde <strong>"Install app"</strong></li>
+                      <li>Confirme a instalação na janela que aparecer</li>
                       <li>Após instalado, vá para a aba <strong>"API credentials"</strong></li>
-                      <li>Na seção <strong>"Storefront API access token"</strong>, clique em <strong>"Reveal token once"</strong></li>
-                      <li>Copie o token exibido</li>
+                      <li>Na seção <strong>"Storefront API access token"</strong>:</li>
                     </ol>
+
+                    <div className="bg-muted p-4 rounded-lg space-y-2">
+                      <p className="font-medium text-sm">Para copiar o token:</p>
+                      <ul className="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                        <li>Clique em <strong>"Reveal token once"</strong> para revelar</li>
+                        <li>Ou clique no ícone de copiar ao lado do token</li>
+                        <li>O token começa com <code className="bg-background px-2 py-0.5 rounded">shpat_</code></li>
+                      </ul>
+                    </div>
 
                     <Alert className="bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800">
                       <Shield className="h-4 w-4 text-red-600" />
                       <AlertDescription className="text-red-800 dark:text-red-200">
-                        <strong>ATENÇÃO:</strong> Guarde este token em local seguro! Ele só pode ser visualizado uma vez. Se perder, terá que criar um novo app.
+                        <strong>ATENÇÃO:</strong> O token só pode ser revelado UMA VEZ! Copie e guarde em local seguro antes de sair da página. Se perder, terá que criar um novo app.
                       </AlertDescription>
                     </Alert>
                   </AccordionContent>
