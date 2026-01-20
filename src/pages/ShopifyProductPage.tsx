@@ -66,8 +66,8 @@ const ShopifyProductPage = () => {
   }, [product]);
 
   // Extract unique sizes and colors from variants, separating top/bottom for conjuntos
-  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions } = useMemo(() => {
-    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null };
+  const { sizes, topSizes, bottomSizes, colors, getVariantByOptions, isColorAvailable } = useMemo(() => {
+    if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null, isColorAvailable: () => false };
     
     const sizesSet = new Set<string>();
     const topSizesSet = new Set<string>();
@@ -119,12 +119,25 @@ const ShopifyProductPage = () => {
       })?.node || null;
     };
 
+    // Check if a color has at least one variant available for sale
+    const checkColorAvailability = (color: string): boolean => {
+      return product.variants.edges.some(({ node }) => {
+        if (!node.availableForSale) return false;
+        
+        return node.selectedOptions?.some(opt => {
+          const nameLower = opt.name.toLowerCase();
+          return (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color;
+        });
+      });
+    };
+
     return { 
       sizes: sortSizes(Array.from(sizesSet)), 
       topSizes: sortSizes(Array.from(topSizesSet)),
       bottomSizes: sortSizes(Array.from(bottomSizesSet)),
       colors: Array.from(colorsSet),
-      getVariantByOptions: getVariant
+      getVariantByOptions: getVariant,
+      isColorAvailable: checkColorAvailability
     };
   }, [product]);
 
@@ -1013,20 +1026,31 @@ const ShopifyProductPage = () => {
                     Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => handleColorSelect(color)}
-                        onMouseEnter={() => handleColorSelect(color)}
-                        className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all ${
-                          selectedColor === color
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-card hover:border-primary/50"
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
+                    {colors.map((color) => {
+                      const isAvailable = isColorAvailable(color);
+                      return (
+                        <button
+                          key={color}
+                          onClick={() => isAvailable && handleColorSelect(color)}
+                          onMouseEnter={() => isAvailable && handleColorSelect(color)}
+                          disabled={!isAvailable}
+                          className={`min-w-[80px] h-12 px-4 rounded-lg border-2 font-medium transition-all relative ${
+                            !isAvailable
+                              ? "border-border/50 bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                              : selectedColor === color
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-card hover:border-primary/50"
+                          }`}
+                        >
+                          {color}
+                          {!isAvailable && (
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="absolute w-full h-0.5 bg-muted-foreground/50 rotate-[-20deg]" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
