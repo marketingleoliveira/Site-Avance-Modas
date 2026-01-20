@@ -132,10 +132,28 @@ const ShopifyProductPage = () => {
   const findImageIndexForColor = (colorName: string): number => {
     if (!product) return 0;
     const colorLower = colorName.toLowerCase();
-    const idx = product.images.edges.findIndex(img => {
+    
+    // Try to find by altText first
+    let idx = product.images.edges.findIndex(img => {
       const altText = img.node.altText?.toLowerCase() || '';
       return altText.includes(colorLower);
     });
+    
+    // If not found by altText, try by image URL (filename)
+    if (idx < 0) {
+      idx = product.images.edges.findIndex(img => {
+        const url = img.node.url?.toLowerCase() || '';
+        // Normalize color name for URL matching (remove accents, spaces)
+        const normalizedColor = colorLower
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '-');
+        return url.includes(normalizedColor) || url.includes(colorLower.replace(/\s+/g, '-'));
+      });
+    }
+    
+    console.log('Color search:', colorName, '-> Found index:', idx, 'Images:', product.images.edges.map(img => ({ alt: img.node.altText, url: img.node.url.split('/').pop() })));
+    
     return idx >= 0 ? idx : 0;
   };
 
@@ -143,6 +161,7 @@ const ShopifyProductPage = () => {
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
     const imageIndex = findImageIndexForColor(color);
+    console.log('handleColorSelect:', color, '-> imageIndex:', imageIndex);
     setCurrentImage(imageIndex);
   };
 
