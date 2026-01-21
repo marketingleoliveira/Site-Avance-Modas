@@ -219,22 +219,42 @@ const ShopifyProductPage = () => {
     const imageToColor = new Map<number, string>();
     const colorToImage = new Map<string, number>();
     
-    // First pass: try to match each image to a color
+    // Helper to check if a text contains color variations
+    const textContainsColor = (text: string, color: string): boolean => {
+      const normalizedColor = normalizeForMatch(color);
+      const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
+      
+      // Add the original color and its parts as variations
+      const allVariations = [...variations, normalizedColor];
+      
+      // For compound colors like "azul marinho", also check for just "marinho"
+      const colorParts = normalizedColor.split(' ');
+      if (colorParts.length > 1) {
+        colorParts.forEach(part => {
+          if (part.length > 3) { // Only add parts with more than 3 chars
+            allVariations.push(part);
+          }
+        });
+      }
+      
+      return allVariations.some(v => {
+        const normalized = normalizeForMatch(v);
+        // Match as whole word to avoid partial matches (e.g., "rosa" in "marrom rosa")
+        const regex = new RegExp(`(^|[^a-z])${normalized}([^a-z]|$)`, 'i');
+        return regex.test(text) || text.includes(normalized);
+      });
+    };
+    
+    // First pass: try to match each image to a color using filename
     images.forEach((img, idx) => {
-      const altText = normalizeForMatch(img.node.altText || '');
       const url = img.node.url || '';
-      const filename = normalizeForMatch(url.split('/').pop() || '');
+      // Get filename and decode URL encoding
+      const rawFilename = decodeURIComponent(url.split('/').pop() || '').toLowerCase();
+      const filename = normalizeForMatch(rawFilename);
+      const altText = normalizeForMatch(img.node.altText || '');
       
       for (const color of colors) {
-        const normalizedColor = normalizeForMatch(color);
-        const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
-        
-        const matchFound = variations.some(v => {
-          const normalized = normalizeForMatch(v);
-          return altText.includes(normalized) || filename.includes(normalized);
-        });
-        
-        if (matchFound) {
+        if (textContainsColor(filename, color) || textContainsColor(altText, color)) {
           imageToColor.set(idx, color);
           if (!colorToImage.has(color)) {
             colorToImage.set(color, idx);
@@ -244,7 +264,29 @@ const ShopifyProductPage = () => {
       }
     });
     
-    // Second pass: fallback index-based mapping for unmatched colors
+    // Second pass: for colors without matched images, try reverse matching
+    colors.forEach((color) => {
+      if (!colorToImage.has(color)) {
+        // Try to find any image that matches this specific color
+        images.forEach((img, idx) => {
+          if (colorToImage.has(color)) return; // Already found
+          
+          const url = img.node.url || '';
+          const rawFilename = decodeURIComponent(url.split('/').pop() || '').toLowerCase();
+          const filename = normalizeForMatch(rawFilename);
+          const altText = normalizeForMatch(img.node.altText || '');
+          
+          if (textContainsColor(filename, color) || textContainsColor(altText, color)) {
+            colorToImage.set(color, idx);
+            if (!imageToColor.has(idx)) {
+              imageToColor.set(idx, color);
+            }
+          }
+        });
+      }
+    });
+    
+    // Third pass: fallback index-based mapping for still unmatched colors
     colors.forEach((color, idx) => {
       if (!colorToImage.has(color) && idx < images.length) {
         colorToImage.set(color, idx);
@@ -253,6 +295,11 @@ const ShopifyProductPage = () => {
         }
       }
     });
+    
+    // Debug logging for development
+    console.log('Color to Image mapping:', Object.fromEntries(colorToImage));
+    console.log('Available colors:', colors);
+    console.log('Image filenames:', images.map(img => decodeURIComponent(img.node.url.split('/').pop() || '')));
     
     return { imageToColor, colorToImage };
   }, [product, colors]);
