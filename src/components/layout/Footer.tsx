@@ -52,9 +52,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 lg:col-span-1 flex flex-col gap-3 sm:gap-4 lg:gap-6">
             <img src={logo} alt="Avance" className="h-10 sm:h-12 lg:h-16 w-auto object-contain brightness-0 invert" />
-            <p className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 leading-relaxed">
-              Moda fitness de qualidade para quem busca estilo e performance nos treinos.
-            </p>
+            <p className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 leading-relaxed">Moda fitness de qualidade para quem busca estilo e performance nos treinos e na moda praia.</p>
             {/* Payment Methods */}
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <VisaIcon />
