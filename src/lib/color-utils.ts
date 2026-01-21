@@ -16,14 +16,14 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   
   // Azuis
   'azul': ['azul', 'blue'],
-  'azul marinho': ['marinho', 'navy', 'azul marinho', 'azul-marinho', 'naval'],
-  'azul royal': ['royal', 'azul royal', 'azul-royal', 'realeza'],
-  'azul bebê': ['azul bebe', 'azul-bebe', 'baby blue', 'azul claro', 'celeste'],
-  'azul céu': ['azul ceu', 'azul-ceu', 'sky blue', 'celeste'],
-  'azul petróleo': ['azul petroleo', 'azul-petroleo', 'petroleo', 'teal'],
+  'azul marinho': ['marinho', 'navy', 'azul marinho', 'azul-marinho', 'azulmarinho', 'naval', 'dark blue', 'darkblue'],
+  'azul royal': ['royal', 'azul royal', 'azul-royal', 'azulroyal', 'realeza'],
+  'azul bebê': ['azul bebe', 'azul-bebe', 'azulbebe', 'baby blue', 'azul claro', 'azulclaro', 'celeste'],
+  'azul céu': ['azul ceu', 'azul-ceu', 'azulceu', 'sky blue', 'celeste'],
+  'azul petróleo': ['azul petroleo', 'azul-petroleo', 'azulpetroleo', 'petroleo', 'teal'],
   'azul turquesa': ['azul turquesa', 'turquesa', 'turquoise', 'tiffany'],
-  'azul piscina': ['azul piscina', 'azul-piscina', 'piscina', 'aqua'],
-  'azul cobalto': ['cobalto', 'azul cobalto', 'azul-cobalto', 'cobalt'],
+  'azul piscina': ['azul piscina', 'azul-piscina', 'azulpiscina', 'piscina', 'aqua'],
+  'azul cobalto': ['cobalto', 'azul cobalto', 'azul-cobalto', 'azulcobalto', 'cobalt'],
   
   // Verdes
   'verde': ['verde', 'green'],
@@ -70,11 +70,11 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   'chumbo': ['chumbo', 'lead', 'dark grey'],
   
   // Marrons e Beges
-  'marrom': ['marrom', 'brown', 'cafe', 'chocolate', 'castanho'],
-  'marrom escuro': ['marrom escuro', 'marrom-escuro', 'dark brown', 'cacau'],
+  'marrom': ['marrom', 'brown', 'cafe', 'chocolate', 'castanho', 'caramelo', 'tan'],
+  'marrom escuro': ['marrom escuro', 'marrom-escuro', 'marromescuro', 'dark brown', 'cacau'],
   'café': ['cafe', 'coffee', 'marrom cafe'],
   'chocolate': ['chocolate', 'marrom chocolate', 'cacau'],
-  'caramelo': ['caramelo', 'caramel', 'toffee'],
+  'caramelo': ['caramelo', 'caramel', 'toffee', 'caramelado'],
   'bege': ['bege', 'beige', 'areia', 'sand'],
   'areia': ['areia', 'sand', 'sandy'],
   'nude': ['nude', 'pele', 'skin', 'neutro'],
