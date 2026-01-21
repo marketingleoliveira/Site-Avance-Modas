@@ -9,14 +9,15 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   'algodão doce': ['algodao doce', 'algodao-doce', 'cotton candy', 'algodaodoce'],
   
   // Pretos e Brancos
-  'preto': ['preto', 'black', 'negro', 'dark', 'noir'],
-  'branco': ['branco', 'white', 'branquinho', 'snow'],
+  'preto': ['preto', 'preta', 'black', 'negro', 'dark', 'noir'],
+  'branco': ['branco', 'branca', 'white', 'branquinho', 'snow'],
   'off-white': ['off white', 'offwhite', 'off-white', 'branco gelo', 'gelo'],
   'creme': ['creme', 'cream', 'ivory', 'marfim'],
   
   // Azuis
   'azul': ['azul', 'blue'],
-  'azul marinho': ['marinho', 'navy', 'azul marinho', 'azul-marinho', 'azulmarinho', 'naval', 'dark blue', 'darkblue'],
+  'azul marinho': ['marinho', 'marinha', 'navy', 'azul marinho', 'azul-marinho', 'azulmarinho', 'naval', 'dark blue', 'darkblue'],
+  'azul-marinho': ['marinho', 'marinha', 'navy', 'azul marinho', 'azul-marinho', 'azulmarinho', 'naval', 'dark blue', 'darkblue'],
   'azul royal': ['royal', 'azul royal', 'azul-royal', 'azulroyal', 'realeza'],
   'azul bebê': ['azul bebe', 'azul-bebe', 'azulbebe', 'baby blue', 'azul claro', 'azulclaro', 'celeste'],
   'azul céu': ['azul ceu', 'azul-ceu', 'azulceu', 'sky blue', 'celeste'],
@@ -28,7 +29,8 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   // Verdes
   'verde': ['verde', 'green'],
   'verde limão': ['verde limao', 'verde-limao', 'limao', 'lime', 'lima'],
-  'verde água': ['verde agua', 'verde-agua', 'agua', 'aqua', 'mint'],
+  'verde água': ['verde agua', 'verde-agua', 'v.agua', 'vagua', 'agua', 'aqua', 'mint'],
+  'verde agua': ['verde agua', 'verde-agua', 'v.agua', 'vagua', 'agua', 'aqua', 'mint'],
   'verde menta': ['menta', 'verde menta', 'verde-menta', 'mint'],
   'verde militar': ['militar', 'verde militar', 'verde-militar', 'army', 'army green'],
   'verde musgo': ['musgo', 'verde musgo', 'verde-musgo', 'moss'],
@@ -38,13 +40,13 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   'verde floresta': ['floresta', 'verde floresta', 'verde-floresta', 'forest'],
   
   // Vermelhos
-  'vermelho': ['vermelho', 'red', 'rubro', 'encarnado'],
+  'vermelho': ['vermelho', 'vermelha', 'red', 'rubro', 'encarnado'],
   'vermelho escuro': ['vermelho escuro', 'vermelho-escuro', 'dark red', 'borgonha'],
   'cereja': ['cereja', 'cherry', 'vermelho cereja'],
   'tomate': ['tomate', 'tomato', 'vermelho tomate'],
   
   // Amarelos e Laranjas
-  'amarelo': ['amarelo', 'yellow'],
+  'amarelo': ['amarelo', 'amarela', 'yellow'],
   'amarelo ouro': ['amarelo ouro', 'amarelo-ouro', 'gold yellow', 'mostarda'],
   'amarelo canário': ['canario', 'amarelo canario', 'amarelo-canario'],
   'amarelo bebê': ['amarelo bebe', 'amarelo-bebe', 'baby yellow', 'amarelo claro'],
@@ -54,7 +56,7 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   'pêssego': ['pessego', 'peach', 'peach pink'],
   
   // Roxos e Lilás
-  'roxo': ['roxo', 'purple', 'violeta', 'violet'],
+  'roxo': ['roxo', 'roxa', 'purple', 'violeta', 'violet'],
   'roxo escuro': ['roxo escuro', 'roxo-escuro', 'dark purple', 'uva'],
   'lilás': ['lilas', 'lilac', 'lavanda', 'lavender'],
   'lavanda': ['lavanda', 'lavender', 'lilas claro'],
@@ -90,16 +92,21 @@ export const COLOR_VARIATIONS: Record<string, string[]> = {
   'salmão': ['salmao', 'salmon', 'rosa salmao'],
   
   // Fúcsias e Magentas
-  'fucsia': ['fucsia', 'fuchsia', 'magenta', 'pink escuro'],
-  'magenta': ['magenta', 'pink magenta'],
+  'fucsia': ['fucsia', 'fúcsia', 'fuchsia', 'magenta', 'pink escuro'],
+  'fúcsia': ['fucsia', 'fúcsia', 'fuchsia', 'magenta', 'pink escuro'],
+  
+  // Pink (cor específica)
+  'pink': ['pink', 'rosa pink', 'rosa choque', 'hot pink'],
   
   // Metálicos
-  'dourado': ['dourado', 'gold', 'ouro', 'golden'],
-  'prata': ['prata', 'silver', 'prateado'],
+  'dourado': ['dourado', 'dourada', 'gold', 'ouro', 'golden'],
+  'prata': ['prata', 'silver', 'prateado', 'prateada'],
   'bronze': ['bronze', 'cobre', 'copper'],
   'rose gold': ['rose gold', 'rosegold', 'ouro rose', 'ouro-rose'],
   
   // Especiais
+  'royal': ['royal', 'azul royal', 'azul-royal'],
+  'militar': ['militar', 'verde militar', 'army'],
   'turquesa': ['turquesa', 'turquoise', 'tiffany', 'cyan'],
   'ciano': ['ciano', 'cyan', 'aqua'],
   'neon': ['neon', 'fluorescente', 'fluor'],

@@ -219,42 +219,69 @@ const ShopifyProductPage = () => {
     const imageToColor = new Map<number, string>();
     const colorToImage = new Map<string, number>();
     
-    // Helper to check if a text contains color variations
-    const textContainsColor = (text: string, color: string): boolean => {
-      const normalizedColor = normalizeForMatch(color);
-      const variations = COLOR_VARIATIONS[normalizedColor] || [normalizedColor];
+    // Build a comprehensive list of search terms for each color
+    const getSearchTermsForColor = (color: string): string[] => {
+      const normalized = normalizeForMatch(color);
+      const terms = new Set<string>();
       
-      // Add the original color and its parts as variations
-      const allVariations = [...variations, normalizedColor];
+      // Add the normalized color itself
+      terms.add(normalized);
       
-      // For compound colors like "azul marinho", also check for just "marinho"
-      const colorParts = normalizedColor.split(' ');
-      if (colorParts.length > 1) {
-        colorParts.forEach(part => {
-          if (part.length > 3) { // Only add parts with more than 3 chars
-            allVariations.push(part);
-          }
-        });
+      // Add variations from dictionary (try multiple key formats)
+      const keysToTry = [normalized, color.toLowerCase(), color];
+      for (const key of keysToTry) {
+        const variations = COLOR_VARIATIONS[key];
+        if (variations) {
+          variations.forEach(v => terms.add(normalizeForMatch(v)));
+        }
       }
       
-      return allVariations.some(v => {
-        const normalized = normalizeForMatch(v);
-        // Match as whole word to avoid partial matches (e.g., "rosa" in "marrom rosa")
-        const regex = new RegExp(`(^|[^a-z])${normalized}([^a-z]|$)`, 'i');
-        return regex.test(text) || text.includes(normalized);
+      // For compound colors, add individual significant parts
+      const parts = normalized.split(/[\s\-]+/);
+      parts.forEach(part => {
+        if (part.length >= 4) { // Minimum 4 chars to avoid false positives
+          terms.add(part);
+          // Also add feminine/masculine variants for Portuguese
+          if (part.endsWith('o')) terms.add(part.slice(0, -1) + 'a');
+          if (part.endsWith('a')) terms.add(part.slice(0, -1) + 'o');
+        }
+      });
+      
+      // Add common abbreviations
+      if (normalized.includes('verde agua') || normalized.includes('verde água')) {
+        terms.add('v.agua');
+        terms.add('vagua');
+        terms.add('v agua');
+      }
+      if (normalized.includes('azul marinho') || normalized.includes('azul-marinho')) {
+        terms.add('marinho');
+        terms.add('marinha');
+      }
+      
+      return Array.from(terms);
+    };
+    
+    // Check if filename contains any of the color search terms
+    const filenameMatchesColor = (filename: string, color: string): boolean => {
+      const normalizedFilename = normalizeForMatch(filename);
+      const searchTerms = getSearchTermsForColor(color);
+      
+      return searchTerms.some(term => {
+        // Check for exact word boundary match or substring
+        const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const wordBoundaryRegex = new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, 'i');
+        return wordBoundaryRegex.test(normalizedFilename) || normalizedFilename.includes(term);
       });
     };
     
-    // First pass: try to match each image to a color using filename
+    // First pass: match images to colors
     images.forEach((img, idx) => {
       const url = img.node.url || '';
-      // Get filename and decode URL encoding
-      const rawFilename = decodeURIComponent(url.split('/').pop() || '').toLowerCase();
-      const filename = normalizeForMatch(rawFilename);
-      const altText = normalizeForMatch(img.node.altText || '');
+      const filename = decodeURIComponent(url.split('/').pop() || '');
+      const altText = img.node.altText || '';
       
       for (const color of colors) {
-        if (textContainsColor(filename, color) || textContainsColor(altText, color)) {
+        if (filenameMatchesColor(filename, color) || filenameMatchesColor(altText, color)) {
           imageToColor.set(idx, color);
           if (!colorToImage.has(color)) {
             colorToImage.set(color, idx);
@@ -264,29 +291,27 @@ const ShopifyProductPage = () => {
       }
     });
     
-    // Second pass: for colors without matched images, try reverse matching
+    // Second pass: for unmatched colors, try a more aggressive search
     colors.forEach((color) => {
       if (!colorToImage.has(color)) {
-        // Try to find any image that matches this specific color
-        images.forEach((img, idx) => {
-          if (colorToImage.has(color)) return; // Already found
+        for (let idx = 0; idx < images.length; idx++) {
+          if (colorToImage.has(color)) break;
           
-          const url = img.node.url || '';
-          const rawFilename = decodeURIComponent(url.split('/').pop() || '').toLowerCase();
-          const filename = normalizeForMatch(rawFilename);
-          const altText = normalizeForMatch(img.node.altText || '');
+          const url = images[idx].node.url || '';
+          const filename = decodeURIComponent(url.split('/').pop() || '');
+          const altText = images[idx].node.altText || '';
           
-          if (textContainsColor(filename, color) || textContainsColor(altText, color)) {
+          if (filenameMatchesColor(filename, color) || filenameMatchesColor(altText, color)) {
             colorToImage.set(color, idx);
             if (!imageToColor.has(idx)) {
               imageToColor.set(idx, color);
             }
           }
-        });
+        }
       }
     });
     
-    // Third pass: fallback index-based mapping for still unmatched colors
+    // Third pass: fallback to index-based mapping for still unmatched
     colors.forEach((color, idx) => {
       if (!colorToImage.has(color) && idx < images.length) {
         colorToImage.set(color, idx);
@@ -296,10 +321,12 @@ const ShopifyProductPage = () => {
       }
     });
     
-    // Debug logging for development
-    console.log('Color to Image mapping:', Object.fromEntries(colorToImage));
-    console.log('Available colors:', colors);
-    console.log('Image filenames:', images.map(img => decodeURIComponent(img.node.url.split('/').pop() || '')));
+    // Debug logging
+    console.log('Color mapping result:', {
+      colorToImage: Object.fromEntries(colorToImage),
+      colors,
+      filenames: images.map(img => decodeURIComponent(img.node.url.split('/').pop() || ''))
+    });
     
     return { imageToColor, colorToImage };
   }, [product, colors]);
