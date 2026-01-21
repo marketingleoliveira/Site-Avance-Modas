@@ -138,7 +138,8 @@ const Footer = () => {
           <div className="col-span-2 sm:col-span-1">
             <h4 className="text-[11px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4 lg:mb-6">Contato</h4>
             <ul className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-              <li className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80">(11) 9 8927-3818<Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+              <li className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80">>
+(11) 9 8927-3818<Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                 (11) 99999-9999
               </li>
               <li className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 break-all">
