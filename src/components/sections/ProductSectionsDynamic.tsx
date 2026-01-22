@@ -351,16 +351,33 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
 
-                      {/* Color Swatches - Right Side (below logo) */}
+                      {/* Color Swatches - Right Side (below logo) with hover/click banner animation */}
                       {colors.length > 0 && (
                         <div className="absolute right-2 top-16 flex flex-col gap-1.5">
                           {colors.map((color, idx) => (
                             <div
                               key={idx}
-                              className="w-5 h-5 rounded-full shadow-md border-2 border-white"
-                              style={{ backgroundColor: color.hex || '#ccc' }}
-                              title={color.name}
-                            />
+                              className="group/color relative flex items-center justify-end"
+                            >
+                              {/* Color name banner - appears on hover (desktop) or focus (mobile) */}
+                              <div 
+                                className="absolute right-0 flex items-center h-5 overflow-hidden transition-all duration-300 ease-out origin-right
+                                  w-5 rounded-full group-hover/color:w-auto group-hover/color:rounded-l-full group-hover/color:rounded-r-full group-hover/color:pl-2 group-hover/color:pr-6
+                                  focus-within:w-auto focus-within:rounded-l-full focus-within:rounded-r-full focus-within:pl-2 focus-within:pr-6
+                                  shadow-md border-2 border-white cursor-pointer"
+                                style={{ backgroundColor: color.hex || '#ccc' }}
+                                tabIndex={0}
+                              >
+                                <span 
+                                  className="text-[10px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 group-hover/color:opacity-100 focus-within:opacity-100"
+                                  style={{ 
+                                    color: ['#ffffff', '#faf9f6', '#fffdd0', '#e8d0c0', '#d4b896', '#eab308', '#f97316'].includes(color.hex || '') ? '#000' : '#fff' 
+                                  }}
+                                >
+                                  {color.name}
+                                </span>
+                              </div>
+                            </div>
                           ))}
                         </div>
                       )}
