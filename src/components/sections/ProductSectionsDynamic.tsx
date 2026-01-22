@@ -4,6 +4,7 @@ import { useProductSections, useLayoutSettings } from "@/hooks/useSiteSettings";
 import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
+import logoAvance from "@/assets/logo-avance.png";
 
 interface ProductSectionsDynamicProps {
   type: 'ATACADO' | 'VAREJO';
@@ -341,9 +342,18 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
                       
-                      {/* Color Swatches - Right Side */}
+                      {/* Logo - Top Right */}
+                      <div className="absolute right-2 top-2">
+                        <img 
+                          src={logoAvance} 
+                          alt="Avance Modas" 
+                          className="w-[50px] h-[50px] object-contain"
+                        />
+                      </div>
+
+                      {/* Color Swatches - Right Side (below logo) */}
                       {colors.length > 0 && (
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
+                        <div className="absolute right-2 top-16 flex flex-col gap-1.5">
                           {colors.map((color, idx) => (
                             <div
                               key={idx}
