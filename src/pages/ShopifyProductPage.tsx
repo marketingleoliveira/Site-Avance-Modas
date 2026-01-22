@@ -11,7 +11,7 @@ import { fetchProductByHandle, ShopifyProduct } from "@/lib/shopify-api";
 import { useRecentlyViewed, getCachedProduct, setCachedProduct } from "@/hooks/useRecentlyViewed";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import tabelaMedidas from "@/assets/tabela-medidas.jpg";
+import SizeChartTable from "@/components/product/SizeChartTable";
 import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
 
 // Lazy load heavy components
@@ -748,15 +748,8 @@ const ShopifyProductPage = () => {
                           </DialogTitle>
                         </DialogHeader>
                         <div className="mt-4">
-                          <img 
-                            src={tabelaMedidas} 
-                            alt="Tabela de Medidas Avance" 
-                            className="w-full rounded-lg"
-                          />
+                          <SizeChartTable />
                         </div>
-                        <p className="text-sm text-muted-foreground text-center mt-4">
-                          Para medir o seu corpo é necessário ter uma fita métrica.
-                        </p>
                       </DialogContent>
                     </Dialog>
 
@@ -846,15 +839,8 @@ const ShopifyProductPage = () => {
                           </DialogTitle>
                         </DialogHeader>
                         <div className="mt-4">
-                          <img 
-                            src={tabelaMedidas} 
-                            alt="Tabela de Medidas Avance" 
-                            className="w-full rounded-lg"
-                          />
+                          <SizeChartTable />
                         </div>
-                        <p className="text-sm text-muted-foreground text-center mt-4">
-                          Para medir o seu corpo é necessário ter uma fita métrica.
-                        </p>
                       </DialogContent>
                     </Dialog>
 

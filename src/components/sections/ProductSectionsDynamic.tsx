@@ -357,25 +357,27 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                           {colors.map((color, idx) => (
                             <div
                               key={idx}
-                              className="group/color relative flex items-center justify-end"
+                              className="group/color relative h-5 flex items-center justify-end"
                             >
-                              {/* Color name banner - appears on hover (desktop) or focus (mobile) */}
+                              {/* Banner that expands on hover */}
                               <div 
-                                className="absolute right-0 flex items-center h-5 overflow-hidden transition-all duration-300 ease-out origin-right
-                                  w-5 rounded-full group-hover/color:w-auto group-hover/color:rounded-l-full group-hover/color:rounded-r-full group-hover/color:pl-2 group-hover/color:pr-6
-                                  focus-within:w-auto focus-within:rounded-l-full focus-within:rounded-r-full focus-within:pl-2 focus-within:pr-6
+                                className="absolute right-0 h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
+                                  w-5 hover:w-[90px] focus:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full
                                   shadow-md border-2 border-white cursor-pointer"
                                 style={{ backgroundColor: color.hex || '#ccc' }}
                                 tabIndex={0}
                               >
+                                {/* Color name text */}
                                 <span 
-                                  className="text-[10px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 group-hover/color:opacity-100 focus-within:opacity-100"
+                                  className="absolute left-2 text-[9px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 group-hover/color:opacity-100 group-focus/color:opacity-100"
                                   style={{ 
                                     color: ['#ffffff', '#faf9f6', '#fffdd0', '#e8d0c0', '#d4b896', '#eab308', '#f97316'].includes(color.hex || '') ? '#000' : '#fff' 
                                   }}
                                 >
                                   {color.name}
                                 </span>
+                                {/* Circle indicator stays on right */}
+                                <div className="w-5 h-5 rounded-full flex-shrink-0" />
                               </div>
                             </div>
                           ))}
