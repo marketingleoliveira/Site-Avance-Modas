@@ -73,32 +73,44 @@ const ShopifyProductPage = () => {
     return titleLower.includes('conjunto');
   }, [product]);
 
-  // Extract unique sizes and colors from variants, separating top/bottom for conjuntos
+  // Extract unique sizes and colors from product.options (PRIMARY SOURCE - contains ALL values)
+  // This is more reliable than variants.selectedOptions since product.options has the complete list
   const { sizes, topSizes, bottomSizes, colors, getVariantByOptions } = useMemo(() => {
     if (!product) return { sizes: [], topSizes: [], bottomSizes: [], colors: [], getVariantByOptions: () => null };
     
-    const sizesSet = new Set<string>();
-    const topSizesSet = new Set<string>();
-    const bottomSizesSet = new Set<string>();
-    const colorsSet = new Set<string>();
+    let sizesArray: string[] = [];
+    let topSizesArray: string[] = [];
+    let bottomSizesArray: string[] = [];
+    let colorsArray: string[] = [];
     
-    product.variants.edges.forEach(({ node }) => {
-      node.selectedOptions?.forEach(opt => {
-        const nameLower = opt.name.toLowerCase();
-        
-        // Check for top/bottom specific size options
-        if (nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) {
-          topSizesSet.add(opt.value);
-        } else if (nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging')) {
-          bottomSizesSet.add(opt.value);
-        } else if (nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') {
-          sizesSet.add(opt.value);
-        }
-        
-        if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
-          colorsSet.add(opt.value);
-        }
-      });
+    // Use product.options as the PRIMARY source for all available options
+    // This contains ALL values, not just the ones in the first N variants
+    product.options?.forEach(option => {
+      const nameLower = option.name.toLowerCase();
+      
+      // Check for top/bottom specific size options (for conjuntos)
+      if (nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) {
+        topSizesArray = option.values;
+      } else if (nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging')) {
+        bottomSizesArray = option.values;
+      } else if (nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') {
+        sizesArray = option.values;
+      }
+      
+      if (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) {
+        colorsArray = option.values;
+      }
+    });
+
+    // Debug logging to verify options are being extracted correctly
+    console.log('Product options extracted:', {
+      productTitle: product.title,
+      options: product.options,
+      sizes: sizesArray,
+      topSizes: topSizesArray,
+      bottomSizes: bottomSizesArray,
+      colors: colorsArray,
+      variantsCount: product.variants.edges.length
     });
 
     const getVariant = (size: string | null, color: string | null) => {
@@ -128,10 +140,10 @@ const ShopifyProductPage = () => {
     };
 
     return { 
-      sizes: sortSizes(Array.from(sizesSet)), 
-      topSizes: sortSizes(Array.from(topSizesSet)),
-      bottomSizes: sortSizes(Array.from(bottomSizesSet)),
-      colors: Array.from(colorsSet),
+      sizes: sortSizes(sizesArray), 
+      topSizes: sortSizes(topSizesArray),
+      bottomSizes: sortSizes(bottomSizesArray),
+      colors: colorsArray,
       getVariantByOptions: getVariant
     };
   }, [product]);

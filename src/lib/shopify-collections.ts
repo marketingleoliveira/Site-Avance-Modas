@@ -38,7 +38,7 @@ const COLLECTIONS_QUERY = `
                     currencyCode
                   }
                 }
-                images(first: 5) {
+                images(first: 30) {
                   edges {
                     node {
                       url
@@ -46,7 +46,7 @@ const COLLECTIONS_QUERY = `
                     }
                   }
                 }
-                variants(first: 10) {
+                variants(first: 100) {
                   edges {
                     node {
                       id

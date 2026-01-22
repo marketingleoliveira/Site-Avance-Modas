@@ -156,7 +156,7 @@ const STOREFRONT_QUERY = `
               currencyCode
             }
           }
-          images(first: 5) {
+          images(first: 30) {
             edges {
               node {
                 url
@@ -164,7 +164,7 @@ const STOREFRONT_QUERY = `
               }
             }
           }
-          variants(first: 10) {
+          variants(first: 100) {
             edges {
               node {
                 id
@@ -215,7 +215,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
           currencyCode
         }
       }
-      images(first: 10) {
+      images(first: 50) {
         edges {
           node {
             url
@@ -223,7 +223,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
           }
         }
       }
-      variants(first: 20) {
+      variants(first: 250) {
         edges {
           node {
             id
