@@ -58,7 +58,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState("store-config");
+  const [activeTab, setActiveTab] = useState("sac");
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["estrutura", "conteudo", "atendimento"]);
   
   // Notification counts
