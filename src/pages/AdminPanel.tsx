@@ -404,84 +404,86 @@ const AdminPanel = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container py-8 mt-4">
-        <Tabs defaultValue="store-config" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-8 lg:grid-cols-16 max-w-7xl gap-1">
-            <TabsTrigger value="store-config" className="text-xs bg-primary/10">
-              <Store className="w-3 h-3 mr-1" />
-              Loja
-            </TabsTrigger>
-            <TabsTrigger value="maintenance" className={`text-xs ${maintenanceSettings?.enabled ? 'bg-amber-100 text-amber-800' : ''}`}>
-              <Wrench className="w-3 h-3 mr-1" />
-              Manutenção
-            </TabsTrigger>
-            <TabsTrigger value="selector" className="text-xs">
-              <Image className="w-3 h-3 mr-1" />
-              Entrada
-            </TabsTrigger>
-            <TabsTrigger value="announcement" className="text-xs">
-              <Megaphone className="w-3 h-3 mr-1" />
-              Anúncios
-            </TabsTrigger>
-            <TabsTrigger value="countdown" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
-              <Clock className="w-3 h-3 mr-1" />
-              Countdown
-            </TabsTrigger>
-            <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
-            <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
-            <TabsTrigger value="videos" className="text-xs">
-              <Play className="w-3 h-3 mr-1" />
-              Vídeos
-            </TabsTrigger>
-            <TabsTrigger value="promo-banner" className="text-xs">
-              <Tag className="w-3 h-3 mr-1" />
-              Promoção
-            </TabsTrigger>
-            <TabsTrigger value="atacado-config" className="text-xs">
-              <ShoppingBag className="w-3 h-3 mr-1" />
-              Atacado
-            </TabsTrigger>
-            <TabsTrigger value="features" className="text-xs">
-              <Settings className="w-3 h-3 mr-1" />
-              Benefícios
-            </TabsTrigger>
-            <TabsTrigger value="layout" className="text-xs">
-              <Layout className="w-3 h-3 mr-1" />
-              Layout
-            </TabsTrigger>
-            <TabsTrigger value="sections" className="text-xs">
-              <Grid className="w-3 h-3 mr-1" />
-              Seções
-            </TabsTrigger>
-            <TabsTrigger value="instagram" className="text-xs">
-              <Instagram className="w-3 h-3 mr-1" />
-              Instagram
-            </TabsTrigger>
-            <TabsTrigger value="contact" className="text-xs">
-              <Phone className="w-3 h-3 mr-1" />
-              Contato
-            </TabsTrigger>
-            <TabsTrigger value="newsletter" className="text-xs">
-              <Mail className="w-3 h-3 mr-1" />
-              Newsletter
-            </TabsTrigger>
-            <TabsTrigger value="admins" className="text-xs">
-              <Shield className="w-3 h-3 mr-1" />
-              Admins
-            </TabsTrigger>
-            <TabsTrigger value="sac" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
-              <MessageSquare className="w-3 h-3 mr-1" />
-              SAC
-            </TabsTrigger>
-            <TabsTrigger value="private-label" className="text-xs bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
-              <Tag className="w-3 h-3 mr-1" />
-              Private Label
-            </TabsTrigger>
-            <TabsTrigger value="docs" className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-              <BookOpen className="w-3 h-3 mr-1" />
-              Docs
-            </TabsTrigger>
-          </TabsList>
+      <main className="container py-8">
+        <Tabs defaultValue="store-config" className="space-y-6">
+          <div className="bg-card border rounded-lg p-4 mb-4">
+            <TabsList className="flex flex-wrap gap-2 h-auto bg-transparent">
+              <TabsTrigger value="store-config" className="text-xs bg-primary/10 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Store className="w-3 h-3 mr-1" />
+                Loja
+              </TabsTrigger>
+              <TabsTrigger value="maintenance" className={`text-xs ${maintenanceSettings?.enabled ? 'bg-amber-100 text-amber-800' : ''} data-[state=active]:bg-primary data-[state=active]:text-primary-foreground`}>
+                <Wrench className="w-3 h-3 mr-1" />
+                Manutenção
+              </TabsTrigger>
+              <TabsTrigger value="selector" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Image className="w-3 h-3 mr-1" />
+                Entrada
+              </TabsTrigger>
+              <TabsTrigger value="announcement" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Megaphone className="w-3 h-3 mr-1" />
+                Anúncios
+              </TabsTrigger>
+              <TabsTrigger value="countdown" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Clock className="w-3 h-3 mr-1" />
+                Countdown
+              </TabsTrigger>
+              <TabsTrigger value="atacado" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Hero Atacado</TabsTrigger>
+              <TabsTrigger value="varejo" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Hero Varejo</TabsTrigger>
+              <TabsTrigger value="videos" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Play className="w-3 h-3 mr-1" />
+                Vídeos
+              </TabsTrigger>
+              <TabsTrigger value="promo-banner" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Tag className="w-3 h-3 mr-1" />
+                Promoção
+              </TabsTrigger>
+              <TabsTrigger value="atacado-config" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <ShoppingBag className="w-3 h-3 mr-1" />
+                Atacado
+              </TabsTrigger>
+              <TabsTrigger value="features" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Settings className="w-3 h-3 mr-1" />
+                Benefícios
+              </TabsTrigger>
+              <TabsTrigger value="layout" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Layout className="w-3 h-3 mr-1" />
+                Layout
+              </TabsTrigger>
+              <TabsTrigger value="sections" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Grid className="w-3 h-3 mr-1" />
+                Seções
+              </TabsTrigger>
+              <TabsTrigger value="instagram" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Instagram className="w-3 h-3 mr-1" />
+                Instagram
+              </TabsTrigger>
+              <TabsTrigger value="contact" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Phone className="w-3 h-3 mr-1" />
+                Contato
+              </TabsTrigger>
+              <TabsTrigger value="newsletter" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Mail className="w-3 h-3 mr-1" />
+                Newsletter
+              </TabsTrigger>
+              <TabsTrigger value="admins" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Shield className="w-3 h-3 mr-1" />
+                Admins
+              </TabsTrigger>
+              <TabsTrigger value="sac" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <MessageSquare className="w-3 h-3 mr-1" />
+                SAC
+              </TabsTrigger>
+              <TabsTrigger value="private-label" className="text-xs bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Tag className="w-3 h-3 mr-1" />
+                Private Label
+              </TabsTrigger>
+              <TabsTrigger value="docs" className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <BookOpen className="w-3 h-3 mr-1" />
+                Docs
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Store Configuration */}
           <TabsContent value="store-config">
