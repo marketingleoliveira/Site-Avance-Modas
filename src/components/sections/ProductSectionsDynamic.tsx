@@ -351,13 +351,13 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
 
-                      {/* Color Swatches - Right Side (below logo) - limited to stay within image */}
+                      {/* Color Swatches - Right Side (below logo) - limited to 4 colors max */}
                       {colors.length > 0 && (
-                        <div className="absolute right-2 top-16 bottom-2 flex flex-col gap-2 overflow-hidden pointer-events-auto">
+                        <div className="absolute right-2 top-16 flex flex-col gap-1.5 md:gap-2 z-10">
                           {colors.slice(0, 4).map((color, idx) => (
                             <div
                               key={idx}
-                              className="group/color relative h-7 md:h-5 flex items-center justify-end"
+                              className="group/color relative h-6 md:h-5 flex items-center justify-end"
                             >
                               {/* Banner that expands on hover/focus - larger touch area on mobile */}
                               <button 
@@ -369,8 +369,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                                 onTouchStart={(e) => {
                                   e.stopPropagation();
                                 }}
-                                className="absolute right-0 h-7 md:h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
-                                  w-7 md:w-5 hover:w-[90px] focus:w-[90px] active:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full active:rounded-l-full
+                                className="absolute right-0 h-6 md:h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
+                                  w-6 md:w-5 hover:w-[90px] focus:w-[90px] active:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full active:rounded-l-full
                                   shadow-md border-2 border-white cursor-pointer touch-manipulation"
                                 style={{ backgroundColor: color.hex || '#ccc' }}
                               >
@@ -385,7 +385,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                                   {color.name}
                                 </span>
                                 {/* Circle indicator stays on right */}
-                                <div className="w-7 md:w-5 h-7 md:h-5 rounded-full flex-shrink-0" />
+                                <div className="w-6 md:w-5 h-6 md:h-5 rounded-full flex-shrink-0" />
                               </button>
                             </div>
                           ))}
