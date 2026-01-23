@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import CountdownBanner from "@/components/sections/CountdownBanner";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -21,6 +22,7 @@ const InicioVarejo = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <CountdownBanner />
       <AnnouncementBar />
       <Header />
       

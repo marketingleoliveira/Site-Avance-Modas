@@ -1,3 +1,4 @@
+import CountdownBanner from "@/components/sections/CountdownBanner";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -11,6 +12,7 @@ import ShopifyProductGrid from "@/components/shopify/ShopifyProductGrid";
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <CountdownBanner />
       <AnnouncementBar />
       <Header />
       

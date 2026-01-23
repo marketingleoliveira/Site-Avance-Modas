@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, createAdminUser } from "@/lib/site-settings";
+import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, CountdownBannerSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen } from "lucide-react";
@@ -19,6 +19,7 @@ import StoreConfigEditor, { ShopifyConfigSettings, BrandSettings, ShippingSettin
 import MaintenanceEditor, { MaintenanceSettings } from "@/components/admin/MaintenanceEditor";
 import DocumentationPage from "@/components/admin/DocumentationPage";
 import PrivateLabelEditor from "@/components/admin/PrivateLabelEditor";
+import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -53,6 +54,7 @@ const AdminPanel = () => {
   const [atacadoSettings, setAtacadoSettings] = useState<AtacadoSettings | null>(null);
   const [videosSettings, setVideosSettings] = useState<VideosSettings | null>(null);
   const [promoBannerSettings, setPromoBannerSettings] = useState<PromoBannerSettings | null>(null);
+  const [countdownBannerSettings, setCountdownBannerSettings] = useState<CountdownBannerSettings | null>(null);
   const [announcementSettings, setAnnouncementSettings] = useState<AnnouncementSettings | null>(null);
   const [shopifyConfig, setShopifyConfig] = useState<ShopifyConfigSettings | null>(null);
   const [brandSettings, setBrandSettings] = useState<BrandSettings | null>(null);
@@ -117,7 +119,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const loadSettings = async () => {
-      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, announcement, shopify, brand, shipping, social, legal, maintenance] = await Promise.all([
+      const [atacado, varejo, selector, feat, contact, layout, secAtacado, secVarejo, instagram, atacadoConfig, videos, promoBanner, countdownBanner, announcement, shopify, brand, shipping, social, legal, maintenance] = await Promise.all([
         getSiteSetting<HeroSettings>('hero_atacado'),
         getSiteSetting<HeroSettings>('hero_varejo'),
         getSiteSetting<StoreSelectorSettings>('store_selector'),
@@ -130,6 +132,7 @@ const AdminPanel = () => {
         getSiteSetting<AtacadoSettings>('atacado_settings'),
         getSiteSetting<VideosSettings>('videos_settings'),
         getSiteSetting<PromoBannerSettings>('promo_banner_settings'),
+        getSiteSetting<CountdownBannerSettings>('countdown_banner_settings'),
         getSiteSetting<AnnouncementSettings>('announcement_settings'),
         getSiteSetting<ShopifyConfigSettings>('shopify_config'),
         getSiteSetting<BrandSettings>('brand_settings'),
@@ -182,6 +185,13 @@ const AdminPanel = () => {
         description: "Promoção por tempo limitado. Não perca!",
         button_text: "Aproveitar",
         button_link: "/#produtos"
+      });
+      setCountdownBannerSettings(countdownBanner || {
+        enabled: false,
+        promo_text: "PROMO - FRETE EXPRESSO POR 14,90 PARA TODO O BRASIL!",
+        button_text: "APROVEITAR AGORA",
+        button_link: "/#produtos",
+        end_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       });
       setAnnouncementSettings(announcement || {
         enabled: true,
@@ -393,8 +403,8 @@ const AdminPanel = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container py-8">
-        <Tabs defaultValue="store-config" className="space-y-6">
+      <main className="container py-8 mt-4">
+        <Tabs defaultValue="store-config" className="space-y-8">
           <TabsList className="grid w-full grid-cols-8 lg:grid-cols-16 max-w-7xl gap-1">
             <TabsTrigger value="store-config" className="text-xs bg-primary/10">
               <Store className="w-3 h-3 mr-1" />
@@ -411,6 +421,10 @@ const AdminPanel = () => {
             <TabsTrigger value="announcement" className="text-xs">
               <Megaphone className="w-3 h-3 mr-1" />
               Anúncios
+            </TabsTrigger>
+            <TabsTrigger value="countdown" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+              <Clock className="w-3 h-3 mr-1" />
+              Countdown
             </TabsTrigger>
             <TabsTrigger value="atacado" className="text-xs">Hero Atacado</TabsTrigger>
             <TabsTrigger value="varejo" className="text-xs">Hero Varejo</TabsTrigger>
@@ -577,6 +591,36 @@ const AdminPanel = () => {
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Salvando..." : "Salvar Anúncios"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Countdown Banner Settings */}
+          <TabsContent value="countdown">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5" />
+                  Banner com Countdown
+                </CardTitle>
+                <CardDescription>
+                  Configure o banner de oferta com contagem regressiva no topo do site
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <CountdownBannerEditor
+                  settings={countdownBannerSettings}
+                  onChange={setCountdownBannerSettings}
+                />
+                <Button 
+                  onClick={() => saveSettings('countdown_banner_settings', countdownBannerSettings)}
+                  disabled={saving}
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? "Salvando..." : "Salvar Countdown"}
                 </Button>
               </CardContent>
             </Card>
