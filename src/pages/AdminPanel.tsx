@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ interface MenuItem {
   label: string;
   icon: React.ReactNode;
   badge?: string;
+  badgeType?: 'warning' | 'info' | 'success';
 }
 
 interface MenuCategory {
@@ -59,6 +60,10 @@ const AdminPanel = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("store-config");
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["estrutura", "conteudo", "atendimento"]);
+  
+  // Notification counts
+  const [pendingSacCount, setPendingSacCount] = useState(0);
+  const [newSubscribersCount, setNewSubscribersCount] = useState(0);
   
   const [heroAtacado, setHeroAtacado] = useState<HeroSettings | null>(null);
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
@@ -91,15 +96,46 @@ const AdminPanel = () => {
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [creatingAdmin, setCreatingAdmin] = useState(false);
 
-  // Menu categories
-  const menuCategories: MenuCategory[] = [
+  // Load notification counts
+  const loadNotificationCounts = async () => {
+    try {
+      // Get pending SAC tickets count
+      const { count: sacCount, error: sacError } = await supabase
+        .from('sac_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente');
+      
+      if (!sacError && sacCount !== null) {
+        setPendingSacCount(sacCount);
+      }
+
+      // Get new subscribers from last 7 days
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { count: subscriberCount, error: subscriberError } = await supabase
+        .from('newsletter_subscribers')
+        .select('*', { count: 'exact', head: true })
+        .gte('subscribed_at', sevenDaysAgo.toISOString())
+        .eq('is_active', true);
+      
+      if (!subscriberError && subscriberCount !== null) {
+        setNewSubscribersCount(subscriberCount);
+      }
+    } catch (error) {
+      console.error('Error loading notification counts:', error);
+    }
+  };
+
+  // Menu categories with dynamic badges
+  const menuCategories: MenuCategory[] = useMemo(() => [
     {
       id: "estrutura",
       label: "Estrutura & Layout",
       icon: <Palette className="w-4 h-4" />,
       items: [
         { id: "store-config", label: "Configurações da Loja", icon: <Store className="w-4 h-4" /> },
-        { id: "maintenance", label: "Modo Manutenção", icon: <Wrench className="w-4 h-4" />, badge: maintenanceSettings?.enabled ? "ATIVO" : undefined },
+        { id: "maintenance", label: "Modo Manutenção", icon: <Wrench className="w-4 h-4" />, badge: maintenanceSettings?.enabled ? "ATIVO" : undefined, badgeType: 'warning' as const },
         { id: "selector", label: "Página de Entrada", icon: <Image className="w-4 h-4" /> },
         { id: "layout", label: "Layout & Grades", icon: <Layout className="w-4 h-4" /> },
         { id: "sections", label: "Seções de Produtos", icon: <Grid className="w-4 h-4" /> },
@@ -128,13 +164,13 @@ const AdminPanel = () => {
       label: "Atendimento & Gestão",
       icon: <MessageSquare className="w-4 h-4" />,
       items: [
-        { id: "sac", label: "SAC - Atendimento", icon: <MessageSquare className="w-4 h-4" /> },
-        { id: "newsletter", label: "Newsletter", icon: <Mail className="w-4 h-4" /> },
+        { id: "sac", label: "SAC - Atendimento", icon: <MessageSquare className="w-4 h-4" />, badge: pendingSacCount > 0 ? String(pendingSacCount) : undefined, badgeType: 'warning' as const },
+        { id: "newsletter", label: "Newsletter", icon: <Mail className="w-4 h-4" />, badge: newSubscribersCount > 0 ? `+${newSubscribersCount}` : undefined, badgeType: 'info' as const },
         { id: "admins", label: "Administradores", icon: <Shield className="w-4 h-4" /> },
         { id: "docs", label: "Documentação", icon: <BookOpen className="w-4 h-4" /> },
       ]
     }
-  ];
+  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount]);
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
@@ -285,6 +321,7 @@ const AdminPanel = () => {
       loadSettings();
       loadSubscribers();
       loadAdminUsers();
+      loadNotificationCounts();
     }
   }, [isAdmin]);
 
@@ -1771,7 +1808,13 @@ const AdminPanel = () => {
                       {item.icon}
                       <span className="flex-1 text-left truncate">{item.label}</span>
                       {item.badge && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500 text-white font-medium">
+                        <span className={cn(
+                          "text-[10px] px-1.5 py-0.5 rounded font-medium animate-pulse",
+                          item.badgeType === 'warning' && "bg-destructive text-destructive-foreground",
+                          item.badgeType === 'info' && "bg-primary text-primary-foreground",
+                          item.badgeType === 'success' && "bg-accent text-accent-foreground",
+                          !item.badgeType && "bg-muted text-muted-foreground"
+                        )}>
                           {item.badge}
                         </span>
                       )}
@@ -1788,13 +1831,23 @@ const AdminPanel = () => {
                       onClick={() => setActiveTab(item.id)}
                       title={item.label}
                       className={cn(
-                        "w-full flex items-center justify-center p-2 rounded-md transition-colors",
+                        "w-full flex items-center justify-center p-2 rounded-md transition-colors relative",
                         activeTab === item.id
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                       )}
                     >
                       {item.icon}
+                      {item.badge && (
+                        <span className={cn(
+                          "absolute -top-1 -right-1 w-4 h-4 text-[8px] flex items-center justify-center rounded-full font-bold animate-pulse",
+                          item.badgeType === 'warning' && "bg-destructive text-destructive-foreground",
+                          item.badgeType === 'info' && "bg-primary text-primary-foreground",
+                          !item.badgeType && "bg-muted text-muted-foreground"
+                        )}>
+                          {item.badge.length > 2 ? '!' : item.badge}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
