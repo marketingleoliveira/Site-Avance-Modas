@@ -70,10 +70,14 @@ export interface LegalSettings {
   privacy_policy: string;
   terms_of_use: string;
   wholesale_policy: string;
-  exchange_policy_title: string;
-  exchange_policy_text: string;
-  exchange_days: number;
-  exchange_conditions: string;
+  // Atacado exchange policy
+  exchange_atacado_text: string;
+  exchange_atacado_conditions: string;
+  exchange_atacado_days: number;
+  // Varejo exchange policy
+  exchange_varejo_text: string;
+  exchange_varejo_conditions: string;
+  exchange_varejo_days: number;
 }
 
 interface StoreConfigEditorProps {
@@ -139,10 +143,12 @@ export default function StoreConfigEditor({
     privacy_policy: "",
     terms_of_use: "",
     wholesale_policy: "",
-    exchange_policy_title: "Política de Troca",
-    exchange_policy_text: "Aceitamos trocas em até 7 dias após o recebimento, apenas em casos de defeito de fabricação.",
-    exchange_days: 7,
-    exchange_conditions: "O produto deve estar sem uso, com etiquetas originais e na embalagem."
+    exchange_atacado_text: "Trocas somente em casos de defeito de fabricação. Prazo de 7 dias após o recebimento.",
+    exchange_atacado_conditions: "O produto deve estar sem uso, com etiquetas originais e na embalagem.",
+    exchange_atacado_days: 7,
+    exchange_varejo_text: "Aceitamos trocas em até 7 dias após o recebimento.",
+    exchange_varejo_conditions: "O produto deve estar sem uso, com etiquetas originais e na embalagem.",
+    exchange_varejo_days: 7
   });
 
   // Auto-test connection on mount if credentials exist
@@ -811,52 +817,88 @@ export default function StoreConfigEditor({
                 </div>
               </div>
 
-              {/* Exchange Policy */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold border-b pb-2">Política de Troca (Página de Produto)</h3>
+              {/* Exchange Policy - Atacado */}
+              <div className="space-y-4 p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded">ATACADO</span>
+                  Política de Troca Atacado
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Esta política é exibida na página de cada produto, no accordion abaixo das características.
+                  Esta política é exibida para produtos com "ATACADO" no título.
                 </p>
                 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Prazo para Troca (dias)</Label>
-                    <Input
-                      type="number"
-                      value={localLegal.exchange_days}
-                      onChange={(e) => setLocalLegal({ ...localLegal, exchange_days: parseInt(e.target.value) || 7 })}
-                      min={1}
-                      max={90}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Título da Seção</Label>
-                    <Input
-                      value={localLegal.exchange_policy_title}
-                      onChange={(e) => setLocalLegal({ ...localLegal, exchange_policy_title: e.target.value })}
-                      placeholder="Política de Troca"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label>Prazo para Troca (dias)</Label>
+                  <Input
+                    type="number"
+                    value={localLegal.exchange_atacado_days}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_atacado_days: parseInt(e.target.value) || 7 })}
+                    min={1}
+                    max={90}
+                    className="max-w-[150px]"
+                  />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Texto Principal da Política</Label>
                   <textarea
-                    value={localLegal.exchange_policy_text}
-                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_policy_text: e.target.value })}
-                    placeholder="Aceitamos trocas em até 7 dias após o recebimento..."
-                    className="w-full min-h-[100px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={localLegal.exchange_atacado_text}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_atacado_text: e.target.value })}
+                    placeholder="Trocas somente em casos de defeito de fabricação..."
+                    className="w-full min-h-[80px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Condições para Troca</Label>
                   <textarea
-                    value={localLegal.exchange_conditions}
-                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_conditions: e.target.value })}
+                    value={localLegal.exchange_atacado_conditions}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_atacado_conditions: e.target.value })}
                     placeholder="O produto deve estar sem uso, com etiquetas originais..."
+                    className="w-full min-h-[60px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+
+              {/* Exchange Policy - Varejo */}
+              <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">VAREJO</span>
+                  Política de Troca Varejo
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Esta política é exibida para produtos com "VAREJO" no título.
+                </p>
+                
+                <div className="space-y-2">
+                  <Label>Prazo para Troca (dias)</Label>
+                  <Input
+                    type="number"
+                    value={localLegal.exchange_varejo_days}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_varejo_days: parseInt(e.target.value) || 7 })}
+                    min={1}
+                    max={90}
+                    className="max-w-[150px]"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Texto Principal da Política</Label>
+                  <textarea
+                    value={localLegal.exchange_varejo_text}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_varejo_text: e.target.value })}
+                    placeholder="Aceitamos trocas em até 7 dias..."
                     className="w-full min-h-[80px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Condições para Troca</Label>
+                  <textarea
+                    value={localLegal.exchange_varejo_conditions}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_varejo_conditions: e.target.value })}
+                    placeholder="O produto deve estar sem uso, com etiquetas originais..."
+                    className="w-full min-h-[60px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
               </div>
