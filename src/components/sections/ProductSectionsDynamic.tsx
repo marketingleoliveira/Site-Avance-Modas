@@ -353,23 +353,31 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
                       {/* Color Swatches - Right Side (below logo) with hover/click banner animation */}
                       {colors.length > 0 && (
-                        <div className="absolute right-2 top-16 flex flex-col gap-1.5">
+                        <div className="absolute right-2 top-16 flex flex-col gap-2">
                           {colors.map((color, idx) => (
                             <div
                               key={idx}
-                              className="group/color relative h-5 flex items-center justify-end"
+                              className="group/color relative h-7 md:h-5 flex items-center justify-end"
                             >
-                              {/* Banner that expands on hover */}
-                              <div 
-                                className="absolute right-0 h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
-                                  w-5 hover:w-[90px] focus:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full
-                                  shadow-md border-2 border-white cursor-pointer"
+                              {/* Banner that expands on hover/focus - larger touch area on mobile */}
+                              <button 
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                onTouchStart={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                className="absolute right-0 h-7 md:h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
+                                  w-7 md:w-5 hover:w-[90px] focus:w-[90px] active:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full active:rounded-l-full
+                                  shadow-md border-2 border-white cursor-pointer touch-manipulation"
                                 style={{ backgroundColor: color.hex || '#ccc' }}
-                                tabIndex={0}
                               >
                                 {/* Color name text */}
                                 <span 
-                                  className="absolute left-2 text-[9px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 group-hover/color:opacity-100 group-focus/color:opacity-100"
+                                  className="absolute left-2.5 text-[10px] md:text-[9px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 
+                                    group-hover/color:opacity-100 group-focus-within/color:opacity-100 group-active/color:opacity-100"
                                   style={{ 
                                     color: ['#ffffff', '#faf9f6', '#fffdd0', '#e8d0c0', '#d4b896', '#eab308', '#f97316'].includes(color.hex || '') ? '#000' : '#fff' 
                                   }}
@@ -377,8 +385,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                                   {color.name}
                                 </span>
                                 {/* Circle indicator stays on right */}
-                                <div className="w-5 h-5 rounded-full flex-shrink-0" />
-                              </div>
+                                <div className="w-7 md:w-5 h-7 md:h-5 rounded-full flex-shrink-0" />
+                              </button>
                             </div>
                           ))}
                         </div>
