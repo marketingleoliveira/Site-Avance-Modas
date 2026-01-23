@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Package } from "lucide-react";
+import { Mail, Phone, MapPin, Package, Shield, Lock, BadgeCheck } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
@@ -8,59 +8,109 @@ import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { cn } from "@/lib/utils";
 
-// Payment method icons as simple SVG components
+// Payment method icons with real brand colors
 const VisaIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <text x="24" y="20" textAnchor="middle" fontSize="10" fontWeight="bold" fontStyle="italic">
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(26,91,199,0.6)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#1A5BC7" />
+    <text x="25" y="21" textAnchor="middle" fontSize="12" fontWeight="bold" fontStyle="italic" fill="white" fontFamily="Arial, sans-serif">
       VISA
     </text>
   </svg>
 );
+
 const MastercardIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="18" cy="16" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="30" cy="16" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(235,0,27,0.5)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#1A1F36" />
+    <circle cx="19" cy="16" r="8" fill="#EB001B" />
+    <circle cx="31" cy="16" r="8" fill="#F79E1B" />
+    <path d="M25 9.5a8 8 0 0 0 0 13" fill="#FF5F00" />
   </svg>
 );
+
 const EloIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <text x="24" y="20" textAnchor="middle" fontSize="10" fontWeight="bold">
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,205,0,0.6)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#000000" />
+    <text x="25" y="20" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#FFCD00" fontFamily="Arial, sans-serif">
       elo
     </text>
+    <circle cx="38" cy="10" r="4" fill="#00A4E0" />
+    <circle cx="38" cy="22" r="4" fill="#EF4123" />
+    <circle cx="12" cy="16" r="4" fill="#FFCD00" />
   </svg>
 );
+
 const HipercardIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <text x="24" y="18" textAnchor="middle" fontSize="7" fontWeight="bold">
-      hipercard
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(177,31,36,0.5)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#B11F24" />
+    <text x="25" y="19" textAnchor="middle" fontSize="8" fontWeight="bold" fill="white" fontFamily="Arial, sans-serif">
+      HIPERCARD
     </text>
   </svg>
 );
+
 const PixIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M24 8 L30 14 L24 20 L18 14 Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M24 12 L30 18 L24 24 L18 18 Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(50,187,177,0.6)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#32BBB1" />
+    <g transform="translate(25, 16) rotate(45)">
+      <rect x="-6" y="-6" width="12" height="12" fill="white" rx="2" />
+    </g>
+    <text x="25" y="28" textAnchor="middle" fontSize="6" fontWeight="bold" fill="white" fontFamily="Arial, sans-serif">
+      PIX
+    </text>
   </svg>
 );
+
 const BoletoIcon = () => (
-  <svg viewBox="0 0 48 32" className="h-6 w-auto" fill="currentColor">
-    <rect x="1" y="1" width="46" height="30" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    <rect x="8" y="10" width="2" height="12" fill="currentColor" />
-    <rect x="12" y="10" width="1" height="12" fill="currentColor" />
-    <rect x="15" y="10" width="3" height="12" fill="currentColor" />
-    <rect x="20" y="10" width="1" height="12" fill="currentColor" />
-    <rect x="23" y="10" width="2" height="12" fill="currentColor" />
-    <rect x="27" y="10" width="1" height="12" fill="currentColor" />
-    <rect x="30" y="10" width="3" height="12" fill="currentColor" />
-    <rect x="35" y="10" width="1" height="12" fill="currentColor" />
-    <rect x="38" y="10" width="2" height="12" fill="currentColor" />
+  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+    <rect x="1" y="1" width="48" height="30" rx="4" fill="#2D2D2D" />
+    <rect x="8" y="8" width="2" height="14" fill="#FFF" />
+    <rect x="12" y="8" width="1" height="14" fill="#FFF" />
+    <rect x="15" y="8" width="3" height="14" fill="#FFF" />
+    <rect x="20" y="8" width="1" height="14" fill="#FFF" />
+    <rect x="23" y="8" width="2" height="14" fill="#FFF" />
+    <rect x="27" y="8" width="1" height="14" fill="#FFF" />
+    <rect x="30" y="8" width="3" height="14" fill="#FFF" />
+    <rect x="35" y="8" width="1" height="14" fill="#FFF" />
+    <rect x="38" y="8" width="2" height="14" fill="#FFF" />
+    <rect x="42" y="8" width="1" height="14" fill="#FFF" />
+    <text x="25" y="28" textAnchor="middle" fontSize="5" fill="#999" fontFamily="Arial, sans-serif">
+      BOLETO
+    </text>
   </svg>
 );
+
+// Security badges
+const SecurityBadge = ({ 
+  icon: Icon, 
+  label, 
+  delay,
+  isVisible 
+}: { 
+  icon: React.ElementType; 
+  label: string; 
+  delay: number;
+  isVisible: boolean;
+}) => (
+  <div 
+    className={cn(
+      "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 transition-all duration-500 hover:bg-primary-foreground/20 hover:border-primary-foreground/40 hover:scale-105 group",
+      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+    )}
+    style={{ transitionDelay: `${delay}ms` }}
+  >
+    <Icon className="w-3.5 h-3.5 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+    <span className="text-[9px] sm:text-[10px] font-medium text-primary-foreground/90 whitespace-nowrap">{label}</span>
+  </div>
+);
+
+const paymentMethods = [
+  { Icon: VisaIcon, name: "Visa" },
+  { Icon: MastercardIcon, name: "Mastercard" },
+  { Icon: HipercardIcon, name: "Hipercard" },
+  { Icon: EloIcon, name: "Elo" },
+  { Icon: PixIcon, name: "Pix" },
+  { Icon: BoletoIcon, name: "Boleto" },
+];
 
 // Animated section component
 interface AnimatedSectionProps {
@@ -138,19 +188,52 @@ const Footer = () => {
                 Moda fitness de qualidade para quem busca estilo e performance nos treinos e na moda praia.
               </p>
               {/* Payment Methods */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                {[VisaIcon, MastercardIcon, HipercardIcon, EloIcon, PixIcon, BoletoIcon].map((Icon, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "transition-all duration-500 hover:scale-110",
-                      footerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                    )}
-                    style={{ transitionDelay: `${400 + index * 100}ms` }}
-                  >
-                    <Icon />
-                  </div>
-                ))}
+              <div className="space-y-3">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/50 font-medium">
+                  Formas de Pagamento
+                </p>
+                <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                  {paymentMethods.map((method, index) => (
+                    <div
+                      key={method.name}
+                      className={cn(
+                        "transition-all duration-500 cursor-pointer",
+                        footerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                      )}
+                      style={{ transitionDelay: `${400 + index * 80}ms` }}
+                      title={method.name}
+                    >
+                      <method.Icon />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Security Badges */}
+              <div className="space-y-2">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/50 font-medium">
+                  Compra Segura
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <SecurityBadge 
+                    icon={Shield} 
+                    label="Site Protegido" 
+                    delay={700} 
+                    isVisible={footerVisible} 
+                  />
+                  <SecurityBadge 
+                    icon={Lock} 
+                    label="SSL Secure" 
+                    delay={800} 
+                    isVisible={footerVisible} 
+                  />
+                  <SecurityBadge 
+                    icon={BadgeCheck} 
+                    label="Loja Verificada" 
+                    delay={900} 
+                    isVisible={footerVisible} 
+                  />
+                </div>
               </div>
             </AnimatedSection>
 
