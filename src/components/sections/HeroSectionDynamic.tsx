@@ -123,24 +123,29 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
           </div>
 
           {/* CTA Button */}
-          <Button 
-            size="lg"
-            className="bg-white text-black hover:bg-white/90 font-semibold tracking-wide group/btn animate-fade-in h-9 sm:h-10 lg:h-11 text-xs sm:text-sm px-4 sm:px-6"
+          <div 
+            className="animate-fade-in"
             style={{ animationDelay: '300ms' }}
-            asChild={!!currentSlideData.button_link && currentSlideData.button_link !== '#'}
           >
             {currentSlideData.button_link && currentSlideData.button_link !== '#' ? (
-              <a href={currentSlideData.button_link}>
-                {currentSlideData.button_text}
-                <ArrowRight className="ml-1.5 sm:ml-2 w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:translate-x-1 transition-transform" />
+              <a 
+                href={currentSlideData.button_link}
+                className="group/btn relative inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3 bg-transparent border-2 border-white text-white font-semibold tracking-wide text-xs sm:text-sm overflow-hidden transition-all duration-300 hover:text-primary hover:border-white rounded-sm"
+              >
+                <span className="absolute inset-0 bg-white translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+                <span className="relative z-10">{currentSlideData.button_text}</span>
+                <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
               </a>
             ) : (
-              <>
-                {currentSlideData.button_text}
-                <ArrowRight className="ml-1.5 sm:ml-2 w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover/btn:translate-x-1 transition-transform" />
-              </>
+              <button 
+                className="group/btn relative inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3 bg-transparent border-2 border-white text-white font-semibold tracking-wide text-xs sm:text-sm overflow-hidden transition-all duration-300 hover:text-primary hover:border-white rounded-sm"
+              >
+                <span className="absolute inset-0 bg-white translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+                <span className="relative z-10">{currentSlideData.button_text}</span>
+                <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
+              </button>
             )}
-          </Button>
+          </div>
         </div>
       </div>
 
