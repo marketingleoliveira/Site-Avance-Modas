@@ -138,34 +138,34 @@ const VirtualFittingRoom = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) resetForm(); }}>
-      <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="sm:max-w-lg w-[95vw] max-w-[95vw] sm:max-w-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto p-0 rounded-xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 p-5 text-primary-foreground">
+        <div className="bg-gradient-to-r from-primary to-primary/80 p-4 sm:p-5 text-primary-foreground sticky top-0 z-10">
           <DialogHeader>
-            <DialogTitle className="text-center text-lg font-bold flex items-center justify-center gap-2 text-primary-foreground">
-              <Sparkles className="w-5 h-5" />
+            <DialogTitle className="text-center text-base sm:text-lg font-bold flex items-center justify-center gap-2 text-primary-foreground">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
               Provador Virtual Avance
             </DialogTitle>
-            <p className="text-center text-sm text-primary-foreground/80 mt-1">
+            <p className="text-center text-xs sm:text-sm text-primary-foreground/80 mt-1">
               Descubra seu tamanho ideal em poucos passos
             </p>
           </DialogHeader>
         </div>
 
         {/* Progress Bar */}
-        <div className="px-5 pt-4">
+        <div className="px-3 sm:px-5 pt-3 sm:pt-4">
           <div className="flex items-center justify-between mb-2">
             {[1, 2, 3, 4].map((s) => (
               <div key={s} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold transition-all ${
                   step >= s 
                     ? "bg-primary text-primary-foreground" 
                     : "bg-muted text-muted-foreground"
                 }`}>
-                  {step > s ? <Check className="w-4 h-4" /> : s}
+                  {step > s ? <Check className="w-3 h-3 sm:w-4 sm:h-4" /> : s}
                 </div>
                 {s < 4 && (
-                  <div className={`w-12 sm:w-16 h-1 mx-1 rounded ${
+                  <div className={`w-8 sm:w-12 md:w-16 h-0.5 sm:h-1 mx-0.5 sm:mx-1 rounded ${
                     step > s ? "bg-primary" : "bg-muted"
                   }`} />
                 )}
@@ -175,21 +175,21 @@ const VirtualFittingRoom = ({
         </div>
 
         {/* Content */}
-        <div className="p-5 pt-2">
+        <div className="p-3 sm:p-5 pt-2">
           {/* Step 1: Basic Info */}
           {step === 1 && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="text-center">
-                <User className="w-12 h-12 text-primary mx-auto mb-2" />
-                <h3 className="font-semibold text-lg">Suas Medidas Básicas</h3>
-                <p className="text-sm text-muted-foreground">Informe sua altura e peso</p>
+                <User className="w-10 h-10 sm:w-12 sm:h-12 text-primary mx-auto mb-2" />
+                <h3 className="font-semibold text-base sm:text-lg">Suas Medidas Básicas</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Informe sua altura e peso</p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <Label className="font-medium">Altura</Label>
-                    <span className="text-primary font-semibold">{height[0]} cm</span>
+                    <Label className="font-medium text-sm sm:text-base">Altura</Label>
+                    <span className="text-primary font-semibold text-sm sm:text-base">{height[0]} cm</span>
                   </div>
                   <Slider
                     value={height}
@@ -197,9 +197,9 @@ const VirtualFittingRoom = ({
                     min={140}
                     max={200}
                     step={1}
-                    className="w-full"
+                    className="w-full touch-pan-y"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground mt-1">
                     <span>140 cm</span>
                     <span>200 cm</span>
                   </div>
@@ -207,8 +207,8 @@ const VirtualFittingRoom = ({
 
                 <div>
                   <div className="flex justify-between mb-2">
-                    <Label className="font-medium">Peso</Label>
-                    <span className="text-primary font-semibold">{weight[0]} kg</span>
+                    <Label className="font-medium text-sm sm:text-base">Peso</Label>
+                    <span className="text-primary font-semibold text-sm sm:text-base">{weight[0]} kg</span>
                   </div>
                   <Slider
                     value={weight}
@@ -216,16 +216,16 @@ const VirtualFittingRoom = ({
                     min={40}
                     max={150}
                     step={1}
-                    className="w-full"
+                    className="w-full touch-pan-y"
                   />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground mt-1">
                     <span>40 kg</span>
                     <span>150 kg</span>
                   </div>
                 </div>
               </div>
 
-              <Button onClick={() => setStep(2)} className="w-full gap-2" size="lg">
+              <Button onClick={() => setStep(2)} className="w-full gap-2 h-10 sm:h-11 text-sm sm:text-base" size="lg">
                 Próximo
                 <ArrowRight className="w-4 h-4" />
               </Button>
@@ -234,17 +234,17 @@ const VirtualFittingRoom = ({
 
           {/* Step 2: Body Measurements */}
           {step === 2 && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="text-center">
-                <h3 className="font-semibold text-lg">Medidas do Corpo</h3>
-                <p className="text-sm text-muted-foreground">Use uma fita métrica para maior precisão</p>
+                <h3 className="font-semibold text-base sm:text-lg">Medidas do Corpo</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Use uma fita métrica para maior precisão</p>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <Label className="font-medium">Busto/Peito</Label>
-                    <span className="text-primary font-semibold">{bust[0]} cm</span>
+                    <Label className="font-medium text-sm sm:text-base">Busto/Peito</Label>
+                    <span className="text-primary font-semibold text-sm sm:text-base">{bust[0]} cm</span>
                   </div>
                   <Slider
                     value={bust}
@@ -252,14 +252,14 @@ const VirtualFittingRoom = ({
                     min={70}
                     max={140}
                     step={1}
-                    className="w-full"
+                    className="w-full touch-pan-y"
                   />
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-2">
-                    <Label className="font-medium">Cintura</Label>
-                    <span className="text-primary font-semibold">{waist[0]} cm</span>
+                    <Label className="font-medium text-sm sm:text-base">Cintura</Label>
+                    <span className="text-primary font-semibold text-sm sm:text-base">{waist[0]} cm</span>
                   </div>
                   <Slider
                     value={waist}
@@ -267,14 +267,14 @@ const VirtualFittingRoom = ({
                     min={55}
                     max={130}
                     step={1}
-                    className="w-full"
+                    className="w-full touch-pan-y"
                   />
                 </div>
 
                 <div>
                   <div className="flex justify-between mb-2">
-                    <Label className="font-medium">Quadril</Label>
-                    <span className="text-primary font-semibold">{hip[0]} cm</span>
+                    <Label className="font-medium text-sm sm:text-base">Quadril</Label>
+                    <span className="text-primary font-semibold text-sm sm:text-base">{hip[0]} cm</span>
                   </div>
                   <Slider
                     value={hip}
@@ -282,16 +282,16 @@ const VirtualFittingRoom = ({
                     min={75}
                     max={150}
                     step={1}
-                    className="w-full"
+                    className="w-full touch-pan-y"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
+              <div className="flex gap-2 sm:gap-3">
+                <Button variant="outline" onClick={() => setStep(1)} className="flex-1 h-10 sm:h-11 text-sm sm:text-base">
                   Voltar
                 </Button>
-                <Button onClick={() => setStep(3)} className="flex-1 gap-2">
+                <Button onClick={() => setStep(3)} className="flex-1 gap-2 h-10 sm:h-11 text-sm sm:text-base">
                   Próximo
                   <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -301,55 +301,55 @@ const VirtualFittingRoom = ({
 
           {/* Step 3: Body Type & Preference */}
           {step === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div className="text-center">
-                <h3 className="font-semibold text-lg">Preferências</h3>
-                <p className="text-sm text-muted-foreground">Selecione seu tipo de corpo e caimento preferido</p>
+                <h3 className="font-semibold text-base sm:text-lg">Preferências</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Selecione seu tipo de corpo e caimento preferido</p>
               </div>
 
-              <div className="space-y-4">
-                <Label className="font-medium">Tipo de Corpo</Label>
+              <div className="space-y-3 sm:space-y-4">
+                <Label className="font-medium text-sm sm:text-base">Tipo de Corpo</Label>
                 <RadioGroup 
                   value={bodyType} 
                   onValueChange={(v) => setBodyType(v as BodyType)}
-                  className="grid grid-cols-2 gap-2"
+                  className="grid grid-cols-2 gap-1.5 sm:gap-2"
                 >
                   {bodyTypes.map((type) => (
                     <Label
                       key={type.value}
-                      className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border-2 cursor-pointer transition-all ${
                         bodyType === type.value 
                           ? "border-primary bg-primary/5" 
                           : "border-border hover:border-primary/50"
                       }`}
                     >
                       <RadioGroupItem value={type.value} className="sr-only" />
-                      <span className="text-2xl">{type.icon}</span>
-                      <span className="font-medium">{type.label}</span>
+                      <span className="text-xl sm:text-2xl">{type.icon}</span>
+                      <span className="font-medium text-sm sm:text-base">{type.label}</span>
                     </Label>
                   ))}
                 </RadioGroup>
               </div>
 
-              <div className="space-y-4">
-                <Label className="font-medium">Preferência de Caimento</Label>
+              <div className="space-y-3 sm:space-y-4">
+                <Label className="font-medium text-sm sm:text-base">Preferência de Caimento</Label>
                 <RadioGroup 
                   value={fitPreference} 
                   onValueChange={(v) => setFitPreference(v as FitPreference)}
-                  className="space-y-2"
+                  className="space-y-1.5 sm:space-y-2"
                 >
                   {fitTypes.map((fit) => (
                     <Label
                       key={fit.value}
-                      className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`flex items-center justify-between p-2.5 sm:p-3 rounded-lg border-2 cursor-pointer transition-all ${
                         fitPreference === fit.value 
                           ? "border-primary bg-primary/5" 
                           : "border-border hover:border-primary/50"
                       }`}
                     >
                       <div>
-                        <span className="font-medium">{fit.label}</span>
-                        <p className="text-xs text-muted-foreground">{fit.desc}</p>
+                        <span className="font-medium text-sm sm:text-base">{fit.label}</span>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">{fit.desc}</p>
                       </div>
                       <RadioGroupItem value={fit.value} />
                     </Label>
@@ -357,13 +357,13 @@ const VirtualFittingRoom = ({
                 </RadioGroup>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
+              <div className="flex gap-2 sm:gap-3">
+                <Button variant="outline" onClick={() => setStep(2)} className="flex-1 h-10 sm:h-11 text-sm sm:text-base">
                   Voltar
                 </Button>
-                <Button onClick={calculateSize} className="flex-1 gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Descobrir Tamanho
+                <Button onClick={calculateSize} className="flex-1 gap-1.5 sm:gap-2 h-10 sm:h-11 text-sm sm:text-base">
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Descobrir</span> Tamanho
                 </Button>
               </div>
             </div>
@@ -371,27 +371,27 @@ const VirtualFittingRoom = ({
 
           {/* Step 4: Result */}
           {step === 4 && (
-            <div className="space-y-6 text-center">
-              <div className="py-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <Check className="w-10 h-10 text-primary-foreground" />
+            <div className="space-y-4 sm:space-y-6 text-center">
+              <div className="py-2 sm:py-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                  <Check className="w-8 h-8 sm:w-10 sm:h-10 text-primary-foreground" />
                 </div>
-                <h3 className="font-bold text-xl mb-2">Seu Tamanho Ideal</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-bold text-lg sm:text-xl mb-1 sm:mb-2">Seu Tamanho Ideal</h3>
+                <p className="text-muted-foreground text-xs sm:text-sm">
                   Com base nas suas medidas e preferências
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20">
-                <span className="text-6xl font-bold text-primary">{recommendedSize}</span>
-                <p className="text-sm text-muted-foreground mt-3">
+              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-primary/20">
+                <span className="text-5xl sm:text-6xl font-bold text-primary">{recommendedSize}</span>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3">
                   Recomendamos este tamanho para o melhor caimento
                 </p>
               </div>
 
-              <div className="bg-muted/50 rounded-lg p-4 text-left">
-                <h4 className="font-semibold text-sm mb-2">📏 Suas Medidas:</h4>
-                <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+              <div className="bg-muted/50 rounded-lg p-3 sm:p-4 text-left">
+                <h4 className="font-semibold text-xs sm:text-sm mb-2">📏 Suas Medidas:</h4>
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                   <span>Altura: {height[0]} cm</span>
                   <span>Peso: {weight[0]} kg</span>
                   <span>Busto: {bust[0]} cm</span>
@@ -402,16 +402,16 @@ const VirtualFittingRoom = ({
               </div>
 
               <div className="flex flex-col gap-2">
-                <Button onClick={handleSelectSize} className="w-full gap-2" size="lg">
+                <Button onClick={handleSelectSize} className="w-full gap-2 h-10 sm:h-11 text-sm sm:text-base" size="lg">
                   <Check className="w-4 h-4" />
                   Selecionar Tamanho {recommendedSize}
                 </Button>
                 <Button 
                   variant="ghost" 
                   onClick={resetForm}
-                  className="w-full gap-2 text-muted-foreground"
+                  className="w-full gap-2 text-muted-foreground h-9 sm:h-10 text-xs sm:text-sm"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Refazer Medição
                 </Button>
               </div>
