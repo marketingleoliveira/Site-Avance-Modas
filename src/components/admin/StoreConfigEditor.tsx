@@ -70,6 +70,10 @@ export interface LegalSettings {
   privacy_policy: string;
   terms_of_use: string;
   wholesale_policy: string;
+  exchange_policy_title: string;
+  exchange_policy_text: string;
+  exchange_days: number;
+  exchange_conditions: string;
 }
 
 interface StoreConfigEditorProps {
@@ -134,7 +138,11 @@ export default function StoreConfigEditor({
     cnpj: "",
     privacy_policy: "",
     terms_of_use: "",
-    wholesale_policy: ""
+    wholesale_policy: "",
+    exchange_policy_title: "Política de Troca",
+    exchange_policy_text: "Aceitamos trocas em até 7 dias após o recebimento, apenas em casos de defeito de fabricação.",
+    exchange_days: 7,
+    exchange_conditions: "O produto deve estar sem uso, com etiquetas originais e na embalagem."
   });
 
   // Auto-test connection on mount if credentials exist
@@ -772,45 +780,140 @@ export default function StoreConfigEditor({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5" />
-                Informações Legais
+                Informações Legais e Políticas
               </CardTitle>
               <CardDescription>
-                Configure razão social, CNPJ e políticas
+                Configure razão social, CNPJ e todas as políticas do site
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <Label>Razão Social</Label>
-                  <Input
-                    value={localLegal.company_name}
-                    onChange={(e) => setLocalLegal({ ...localLegal, company_name: e.target.value })}
-                    placeholder="Nome Empresarial LTDA"
+            <CardContent className="space-y-8">
+              {/* Company Info */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Dados da Empresa</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Razão Social</Label>
+                    <Input
+                      value={localLegal.company_name}
+                      onChange={(e) => setLocalLegal({ ...localLegal, company_name: e.target.value })}
+                      placeholder="Nome Empresarial LTDA"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>CNPJ</Label>
+                    <Input
+                      value={localLegal.cnpj}
+                      onChange={(e) => setLocalLegal({ ...localLegal, cnpj: e.target.value })}
+                      placeholder="00.000.000/0001-00"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Exchange Policy */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Política de Troca (Página de Produto)</h3>
+                <p className="text-sm text-muted-foreground">
+                  Esta política é exibida na página de cada produto, no accordion abaixo das características.
+                </p>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Prazo para Troca (dias)</Label>
+                    <Input
+                      type="number"
+                      value={localLegal.exchange_days}
+                      onChange={(e) => setLocalLegal({ ...localLegal, exchange_days: parseInt(e.target.value) || 7 })}
+                      min={1}
+                      max={90}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Título da Seção</Label>
+                    <Input
+                      value={localLegal.exchange_policy_title}
+                      onChange={(e) => setLocalLegal({ ...localLegal, exchange_policy_title: e.target.value })}
+                      placeholder="Política de Troca"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Texto Principal da Política</Label>
+                  <textarea
+                    value={localLegal.exchange_policy_text}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_policy_text: e.target.value })}
+                    placeholder="Aceitamos trocas em até 7 dias após o recebimento..."
+                    className="w-full min-h-[100px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
-
-                <div className="space-y-4">
-                  <Label>CNPJ</Label>
-                  <Input
-                    value={localLegal.cnpj}
-                    onChange={(e) => setLocalLegal({ ...localLegal, cnpj: e.target.value })}
-                    placeholder="00.000.000/0001-00"
+                
+                <div className="space-y-2">
+                  <Label>Condições para Troca</Label>
+                  <textarea
+                    value={localLegal.exchange_conditions}
+                    onChange={(e) => setLocalLegal({ ...localLegal, exchange_conditions: e.target.value })}
+                    placeholder="O produto deve estar sem uso, com etiquetas originais..."
+                    className="w-full min-h-[80px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
               </div>
 
+              {/* Privacy Policy */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Política de Privacidade</h3>
+                <p className="text-sm text-muted-foreground">
+                  Exibida no modal acessível pelo rodapé do site.
+                </p>
+                <textarea
+                  value={localLegal.privacy_policy}
+                  onChange={(e) => setLocalLegal({ ...localLegal, privacy_policy: e.target.value })}
+                  placeholder="Digite aqui a política de privacidade completa da sua loja..."
+                  className="w-full min-h-[200px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              {/* Terms of Use */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Termos de Uso</h3>
+                <p className="text-sm text-muted-foreground">
+                  Exibido no modal acessível pelo rodapé do site.
+                </p>
+                <textarea
+                  value={localLegal.terms_of_use}
+                  onChange={(e) => setLocalLegal({ ...localLegal, terms_of_use: e.target.value })}
+                  placeholder="Digite aqui os termos de uso completos da sua loja..."
+                  className="w-full min-h-[200px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              {/* Wholesale Policy */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Políticas de Atacado</h3>
+                <p className="text-sm text-muted-foreground">
+                  Exibida no modal acessível pelo rodapé e no modal de boas-vindas do atacado.
+                </p>
+                <textarea
+                  value={localLegal.wholesale_policy}
+                  onChange={(e) => setLocalLegal({ ...localLegal, wholesale_policy: e.target.value })}
+                  placeholder="Digite aqui as políticas específicas para clientes atacadistas..."
+                  className="w-full min-h-[200px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Políticas de Texto</AlertTitle>
+                <AlertTitle>Dica</AlertTitle>
                 <AlertDescription>
-                  As políticas de privacidade, termos de uso e atacado são exibidas nos modais do rodapé. 
-                  Você pode editar o conteúdo nos arquivos de componentes em src/components/legal/.
+                  Se você deixar os campos de políticas vazios, os modais usarão o conteúdo padrão definido nos componentes.
                 </AlertDescription>
               </Alert>
 
-              <Button onClick={() => saveSection('legal_settings', localLegal)} disabled={saving}>
+              <Button onClick={() => saveSection('legal_settings', localLegal)} disabled={saving} className="w-full sm:w-auto">
                 <Save className="w-4 h-4 mr-2" />
-                Salvar Informações Legais
+                Salvar Informações Legais e Políticas
               </Button>
             </CardContent>
           </Card>

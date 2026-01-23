@@ -47,7 +47,11 @@ const DEFAULT_LEGAL_SETTINGS: LegalSettings = {
   cnpj: '61.705.129/0001-90',
   privacy_policy: '',
   terms_of_use: '',
-  wholesale_policy: ''
+  wholesale_policy: '',
+  exchange_policy_title: 'Política de Troca',
+  exchange_policy_text: 'Aceitamos trocas em até 7 dias após o recebimento, apenas em casos de defeito de fabricação.',
+  exchange_days: 7,
+  exchange_conditions: 'O produto deve estar sem uso, com etiquetas originais e na embalagem.'
 };
 
 interface StoreConfig {
