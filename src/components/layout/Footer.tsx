@@ -5,6 +5,8 @@ import logo from "@/assets/logo-avance.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
 import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
+import { cn } from "@/lib/utils";
 
 // Payment method icons as simple SVG components
 const VisaIcon = () => (
@@ -59,17 +61,47 @@ const BoletoIcon = () => (
     <rect x="38" y="10" width="2" height="12" fill="currentColor" />
   </svg>
 );
+
+// Animated section component
+interface AnimatedSectionProps {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}
+
+const AnimatedSection = ({ children, delay = 0, className }: AnimatedSectionProps) => {
+  const { ref, isVisible } = useIntersectionObserver({ threshold: 0.1 });
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "transition-all duration-700 ease-out",
+        isVisible 
+          ? "opacity-100 translate-y-0" 
+          : "opacity-0 translate-y-8",
+        className
+      )}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
 const Footer = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showWholesale, setShowWholesale] = useState(false);
+  const { ref: footerRef, isVisible: footerVisible } = useIntersectionObserver({ threshold: 0.05 });
+  
   return (
     <>
-      <footer className="bg-primary text-primary-foreground overflow-hidden">
+      <footer ref={footerRef} className="bg-primary text-primary-foreground overflow-hidden">
         <div className="container px-4 sm:px-6 py-8 sm:py-10 lg:py-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
             {/* Brand */}
-            <div className="col-span-2 lg:col-span-1 flex flex-col gap-3 sm:gap-4 lg:gap-6">
+            <AnimatedSection delay={0} className="col-span-2 lg:col-span-1 flex flex-col gap-3 sm:gap-4 lg:gap-6">
               {/* Logo with premium effects */}
               <div className="relative group">
                 {/* Glow effect background */}
@@ -107,145 +139,123 @@ const Footer = () => {
               </p>
               {/* Payment Methods */}
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <VisaIcon />
-                <MastercardIcon />
-                <HipercardIcon />
-                <EloIcon />
-                <PixIcon />
-                <BoletoIcon />
+                {[VisaIcon, MastercardIcon, HipercardIcon, EloIcon, PixIcon, BoletoIcon].map((Icon, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "transition-all duration-500 hover:scale-110",
+                      footerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    )}
+                    style={{ transitionDelay: `${400 + index * 100}ms` }}
+                  >
+                    <Icon />
+                  </div>
+                ))}
               </div>
-            </div>
+            </AnimatedSection>
 
             {/* Quick Links */}
-            <div>
+            <AnimatedSection delay={100}>
               <h4 className="text-[11px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4 lg:mb-6">
                 Links Rápidos
               </h4>
               <ul className="flex flex-col gap-1.5 sm:gap-2 lg:gap-3">
-                <li>
-                  <a
-                    href="/"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                {[
+                  { href: "/", label: "Sobre Nós" },
+                  { href: "/#produtos", label: "Produtos" },
+                  { href: "/#produtos", label: "Lançamentos" },
+                  { href: "/#produtos", label: "Promoções" },
+                  { href: "/#contato", label: "Contato" },
+                ].map((link, index) => (
+                  <li
+                    key={link.label}
+                    className={cn(
+                      "transition-all duration-500",
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                    )}
+                    style={{ transitionDelay: `${200 + index * 50}ms` }}
                   >
-                    Sobre Nós
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Produtos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Lançamentos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Promoções
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#contato"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Contato
-                  </a>
-                </li>
-                <li>
+                    <a
+                      href={link.href}
+                      className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+                <li
+                  className={cn(
+                    "transition-all duration-500",
+                    footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                  )}
+                  style={{ transitionDelay: "450ms" }}
+                >
                   <Link
                     to="/rastreio"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5 sm:gap-2"
+                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5 sm:gap-2 hover:translate-x-1"
                   >
                     <Package className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     Rastrear Pedido
                   </Link>
                 </li>
               </ul>
-            </div>
+            </AnimatedSection>
 
             {/* Categories */}
-            <div>
+            <AnimatedSection delay={200}>
               <h4 className="text-[11px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4 lg:mb-6">
                 Categorias
               </h4>
               <ul className="flex flex-col gap-1.5 sm:gap-2 lg:gap-3">
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                {["Shorts", "Leggings", "Tops", "Conjuntos", "Acessórios"].map((category, index) => (
+                  <li
+                    key={category}
+                    className={cn(
+                      "transition-all duration-500",
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                    )}
+                    style={{ transitionDelay: `${300 + index * 50}ms` }}
                   >
-                    Shorts
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Leggings
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Tops
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Conjuntos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/#produtos"
-                    className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    Acessórios
-                  </a>
-                </li>
+                    <a
+                      href="/#produtos"
+                      className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:translate-x-1 inline-block"
+                    >
+                      {category}
+                    </a>
+                  </li>
+                ))}
               </ul>
-            </div>
+            </AnimatedSection>
 
             {/* Contact */}
-            <div className="col-span-2 sm:col-span-1">
+            <AnimatedSection delay={300} className="col-span-2 sm:col-span-1">
               <h4 className="text-[11px] sm:text-xs lg:text-sm font-bold uppercase tracking-wider mb-3 sm:mb-4 lg:mb-6">
                 Contato
               </h4>
               <ul className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
-                <li className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80">
-                  <Phone className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  (11) 9 8927-3818
-                </li>
-                <li className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 break-all">
-                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  contato@avance.com.br
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80">
-                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" />
-                  São Paulo, SP - Brasil
-                </li>
+                {[
+                  { icon: Phone, text: "(11) 9 8927-3818" },
+                  { icon: Mail, text: "contato@avance.com.br", className: "break-all" },
+                  { icon: MapPin, text: "São Paulo, SP - Brasil", iconClassName: "mt-0.5" },
+                ].map((item, index) => (
+                  <li
+                    key={item.text}
+                    className={cn(
+                      "flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 transition-all duration-500",
+                      item.className,
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                    )}
+                    style={{ transitionDelay: `${400 + index * 100}ms` }}
+                  >
+                    <item.icon className={cn("w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0", item.iconClassName)} />
+                    {item.text}
+                  </li>
+                ))}
               </ul>
-            </div>
+            </AnimatedSection>
           </div>
 
-          <div className="border-t border-primary-foreground/20 mt-6 sm:mt-8 lg:mt-12 pt-4 sm:pt-6 lg:pt-8 flex flex-col items-center gap-3 sm:gap-4">
+          <AnimatedSection delay={400} className="border-t border-primary-foreground/20 mt-6 sm:mt-8 lg:mt-12 pt-4 sm:pt-6 lg:pt-8 flex flex-col items-center gap-3 sm:gap-4">
             <div className="text-center">
               <p className="text-[10px] sm:text-xs lg:text-sm text-primary-foreground/60">
                 © 2026 Avance. Todos os direitos reservados.
@@ -255,32 +265,35 @@ const Footer = () => {
               </p>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-6 text-[10px] sm:text-xs lg:text-sm text-primary-foreground/60 flex-wrap justify-center">
-              <button
-                onClick={() => setShowPrivacy(true)}
-                className="hover:text-primary-foreground transition-colors whitespace-nowrap"
-              >
-                Política de Privacidade
-              </button>
-              <button
-                onClick={() => setShowTerms(true)}
-                className="hover:text-primary-foreground transition-colors whitespace-nowrap"
-              >
-                Termos de Uso
-              </button>
-              <button
-                onClick={() => setShowWholesale(true)}
-                className="hover:text-primary-foreground transition-colors whitespace-nowrap"
-              >
-                Políticas de Atacado
-              </button>
+              {[
+                { label: "Política de Privacidade", onClick: () => setShowPrivacy(true) },
+                { label: "Termos de Uso", onClick: () => setShowTerms(true) },
+                { label: "Políticas de Atacado", onClick: () => setShowWholesale(true) },
+              ].map((item, index) => (
+                <button
+                  key={item.label}
+                  onClick={item.onClick}
+                  className={cn(
+                    "hover:text-primary-foreground transition-all whitespace-nowrap hover:scale-105 duration-300",
+                    footerVisible ? "opacity-100" : "opacity-0"
+                  )}
+                  style={{ transitionDelay: `${500 + index * 50}ms` }}
+                >
+                  {item.label}
+                </button>
+              ))}
               <Link
                 to="/admin/login"
-                className="hover:text-primary-foreground transition-colors whitespace-nowrap"
+                className={cn(
+                  "hover:text-primary-foreground transition-all whitespace-nowrap hover:scale-105 duration-300",
+                  footerVisible ? "opacity-100" : "opacity-0"
+                )}
+                style={{ transitionDelay: "650ms" }}
               >
                 Painel Admin
               </Link>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </footer>
 
