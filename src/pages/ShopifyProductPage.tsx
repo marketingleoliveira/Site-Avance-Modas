@@ -1055,28 +1055,39 @@ const ShopifyProductPage = () => {
                     </AccordionContent>
                   </AccordionItem>
 
-                  {/* Exchange/Return Policy */}
-                  <AccordionItem value="exchange" className="border-b border-border">
-                    <AccordionTrigger className="py-4 hover:no-underline">
-                      <span className="flex items-center gap-2 font-semibold">
-                        <Package className="w-4 h-4" />
-                        Política de Troca
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <div className="space-y-3 text-sm text-muted-foreground">
-                        <p>
-                          <strong className="text-foreground">Trocas:</strong> Aceitamos trocas em até 7 dias após o recebimento, apenas em casos de defeito de fabricação.
-                        </p>
-                        <p>
-                          <strong className="text-foreground">Condições:</strong> O produto deve estar sem uso, com etiquetas originais e na embalagem.
-                        </p>
-                        <p>
-                          <strong className="text-foreground">Como solicitar:</strong> Entre em contato pelo SAC ou WhatsApp com o número do pedido.
-                        </p>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
+                  {/* Exchange/Return Policy - Dynamic based on product type */}
+                  {(() => {
+                    const isAtacado = product.title.toUpperCase().includes('ATACADO');
+                    const policyTitle = isAtacado ? 'Política de Troca Atacado' : 'Política de Troca Varejo';
+                    const policyText = isAtacado 
+                      ? 'Trocas somente em casos de defeito de fabricação. Prazo de 7 dias após o recebimento.'
+                      : 'Aceitamos trocas em até 7 dias após o recebimento.';
+                    const policyConditions = 'O produto deve estar sem uso, com etiquetas originais e na embalagem.';
+                    
+                    return (
+                      <AccordionItem value="exchange" className="border-b border-border">
+                        <AccordionTrigger className="py-4 hover:no-underline">
+                          <span className="flex items-center gap-2 font-semibold">
+                            <Package className="w-4 h-4" />
+                            {policyTitle}
+                          </span>
+                        </AccordionTrigger>
+                        <AccordionContent className="pb-4">
+                          <div className="space-y-3 text-sm text-muted-foreground">
+                            <p>
+                              <strong className="text-foreground">Trocas:</strong> {policyText}
+                            </p>
+                            <p>
+                              <strong className="text-foreground">Condições:</strong> {policyConditions}
+                            </p>
+                            <p>
+                              <strong className="text-foreground">Como solicitar:</strong> Entre em contato pelo SAC ou WhatsApp com o número do pedido.
+                            </p>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })()}
 
                 </Accordion>
               </div>

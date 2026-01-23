@@ -48,10 +48,12 @@ const DEFAULT_LEGAL_SETTINGS: LegalSettings = {
   privacy_policy: '',
   terms_of_use: '',
   wholesale_policy: '',
-  exchange_policy_title: 'Política de Troca',
-  exchange_policy_text: 'Aceitamos trocas em até 7 dias após o recebimento, apenas em casos de defeito de fabricação.',
-  exchange_days: 7,
-  exchange_conditions: 'O produto deve estar sem uso, com etiquetas originais e na embalagem.'
+  exchange_atacado_text: 'Trocas somente em casos de defeito de fabricação. Prazo de 7 dias após o recebimento.',
+  exchange_atacado_conditions: 'O produto deve estar sem uso, com etiquetas originais e na embalagem.',
+  exchange_atacado_days: 7,
+  exchange_varejo_text: 'Aceitamos trocas em até 7 dias após o recebimento.',
+  exchange_varejo_conditions: 'O produto deve estar sem uso, com etiquetas originais e na embalagem.',
+  exchange_varejo_days: 7
 };
 
 interface StoreConfig {
