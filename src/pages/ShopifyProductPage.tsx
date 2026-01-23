@@ -648,13 +648,6 @@ const ShopifyProductPage = () => {
                     {formatPrice(currentVariant?.price.amount || product.priceRange.minVariantPrice.amount, currentVariant?.price.currencyCode || 'BRL')}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Em até <span className="font-semibold text-foreground">6x sem juros</span> no cartão
-                </p>
-                <p className="text-sm text-green-600 font-medium flex items-center gap-1">
-                  <Check className="w-4 h-4" />
-                  5% de desconto no Pix
-                </p>
               </div>
 
               {/* Conjunto Size Selection - Separate Top/Bottom */}
@@ -1062,27 +1055,6 @@ const ShopifyProductPage = () => {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="shipping" className="border-b border-border">
-                    <AccordionTrigger className="py-4 hover:no-underline">
-                      <span className="flex items-center gap-2 font-semibold">
-                        <Truck className="w-4 h-4" />
-                        Entrega e Frete
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4">
-                      <div className="space-y-3 text-sm text-muted-foreground">
-                        <p>
-                          <strong className="text-foreground">Frete Grátis:</strong> Para compras acima de R$299 para todo o Brasil.
-                        </p>
-                        <p>
-                          <strong className="text-foreground">Prazo de Entrega:</strong> De 3 a 15 dias úteis, dependendo da região.
-                        </p>
-                        <p>
-                          <strong className="text-foreground">Rastreamento:</strong> Você receberá o código de rastreio por e-mail após o envio.
-                        </p>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
                 </Accordion>
               </div>
             </div>
