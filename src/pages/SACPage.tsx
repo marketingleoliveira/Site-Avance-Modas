@@ -37,8 +37,8 @@ import { cn } from "@/lib/utils";
 const sacSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter pelo menos 2 caracteres").max(100, "Nome muito longo"),
   email: z.string().trim().email("E-mail inválido").max(255, "E-mail muito longo"),
-  whatsapp: z.string().trim().max(20, "WhatsApp muito longo").optional(),
-  order_number: z.string().trim().max(50, "Número do pedido muito longo").optional(),
+  whatsapp: z.string().trim().min(8, "WhatsApp inválido").max(20, "WhatsApp muito longo"),
+  order_number: z.string().trim().min(1, "Número do pedido é obrigatório").max(50, "Número do pedido muito longo"),
   ticket_type: z.enum(["reclamacao", "sugestao", "elogio", "duvida"]),
   subject: z.string().trim().min(3, "Assunto deve ter pelo menos 3 caracteres").max(200, "Assunto muito longo"),
   message: z.string().trim().min(10, "Mensagem deve ter pelo menos 10 caracteres").max(2000, "Mensagem muito longa"),
@@ -89,7 +89,6 @@ const ticketTypes = [
   },
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [
   "image/jpeg",
   "image/png",
@@ -131,14 +130,6 @@ const SACPage = () => {
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         toast.error(`Tipo de arquivo não permitido: ${file.name}`);
         continue;
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error(`Arquivo muito grande (máx 5MB): ${file.name}`);
-        continue;
-      }
-      if (attachments.length + validFiles.length >= 5) {
-        toast.error("Máximo de 5 anexos permitidos");
-        break;
       }
       validFiles.push(file);
     }
@@ -336,7 +327,7 @@ const SACPage = () => {
                     name="whatsapp"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>WhatsApp</FormLabel>
+                        <FormLabel>WhatsApp *</FormLabel>
                         <FormControl>
                           <Input placeholder="(11) 99999-9999" {...field} />
                         </FormControl>
@@ -350,7 +341,7 @@ const SACPage = () => {
                     name="order_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Número do Pedido</FormLabel>
+                        <FormLabel>Número do Pedido *</FormLabel>
                         <FormControl>
                           <Input placeholder="Ex: #12345" {...field} />
                         </FormControl>
@@ -467,7 +458,7 @@ const SACPage = () => {
                   <div>
                     <Label className="text-sm font-medium">Anexos (opcional)</Label>
                     <p className="text-xs text-muted-foreground mb-3">
-                      Imagens (JPG, PNG, GIF, WebP) ou documentos (PDF, DOC, DOCX). Máx 5 arquivos, 5MB cada.
+                      Imagens (JPG, PNG, GIF, WebP) ou documentos (PDF, DOC, DOCX). Sem limite de quantidade ou tamanho.
                     </p>
                     
                     <input
@@ -479,17 +470,15 @@ const SACPage = () => {
                       className="hidden"
                     />
                     
-                    {attachments.length < 5 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full border-dashed"
-                      >
-                        <Paperclip className="w-4 h-4 mr-2" />
-                        Adicionar Anexo
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full border-dashed"
+                    >
+                      <Paperclip className="w-4 h-4 mr-2" />
+                      Adicionar Anexo {attachments.length > 0 && `(${attachments.length})`}
+                    </Button>
                     
                     {attachments.length > 0 && (
                       <div className="mt-3 space-y-2">
