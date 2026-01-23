@@ -44,6 +44,7 @@ export type Database = {
       sac_tickets: {
         Row: {
           admin_notes: string | null
+          attachments: string[] | null
           created_at: string
           email: string
           id: string
@@ -58,6 +59,7 @@ export type Database = {
         }
         Insert: {
           admin_notes?: string | null
+          attachments?: string[] | null
           created_at?: string
           email: string
           id?: string
@@ -72,6 +74,7 @@ export type Database = {
         }
         Update: {
           admin_notes?: string | null
+          attachments?: string[] | null
           created_at?: string
           email?: string
           id?: string

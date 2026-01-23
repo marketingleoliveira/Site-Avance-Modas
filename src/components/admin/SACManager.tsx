@@ -38,9 +38,26 @@ import {
   Search,
   RefreshCw,
   Download,
+  FileImage,
+  FileText,
+  ExternalLink,
+  Paperclip,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+const getAttachmentIcon = (url: string) => {
+  const extension = url.split(".").pop()?.toLowerCase();
+  if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || "")) {
+    return <FileImage className="w-4 h-4 text-blue-500" />;
+  }
+  return <FileText className="w-4 h-4 text-orange-500" />;
+};
+
+const getAttachmentName = (url: string) => {
+  const parts = url.split("/");
+  return parts[parts.length - 1];
+};
 
 interface SACTicket {
   id: string;
@@ -53,6 +70,7 @@ interface SACTicket {
   message: string;
   status: string;
   admin_notes: string | null;
+  attachments: string[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -412,6 +430,44 @@ const SACManager = () => {
                   </div>
                 )}
               </div>
+
+              {/* Attachments */}
+              {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <Paperclip className="w-4 h-4" />
+                    Anexos ({selectedTicket.attachments.length})
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedTicket.attachments.map((url, index) => {
+                      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                      return (
+                        <a
+                          key={index}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                        >
+                          {isImage ? (
+                            <img
+                              src={url}
+                              alt={`Anexo ${index + 1}`}
+                              className="w-10 h-10 object-cover rounded"
+                            />
+                          ) : (
+                            getAttachmentIcon(url)
+                          )}
+                          <span className="flex-1 text-xs truncate">
+                            {getAttachmentName(url)}
+                          </span>
+                          <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Message */}
               <div>
