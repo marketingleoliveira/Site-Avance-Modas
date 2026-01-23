@@ -242,6 +242,12 @@ const Footer = () => {
               >
                 Políticas de Atacado
               </button>
+              <Link
+                to="/admin/login"
+                className="hover:text-primary-foreground transition-colors whitespace-nowrap"
+              >
+                Painel Admin
+              </Link>
             </div>
           </div>
         </div>
