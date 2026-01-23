@@ -115,6 +115,14 @@ export interface AnnouncementSettings {
   interval: number;
 }
 
+export interface CountdownBannerSettings {
+  enabled: boolean;
+  promo_text: string;
+  button_text: string;
+  button_link: string;
+  end_time: string;
+}
+
 // Cache for settings to reduce DB calls
 const settingsCache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_TTL = 30000; // 30 seconds

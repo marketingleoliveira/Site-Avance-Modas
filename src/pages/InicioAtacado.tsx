@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import CountdownBanner from "@/components/sections/CountdownBanner";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -54,6 +55,7 @@ const InicioAtacado = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <CountdownBanner />
       <AnnouncementBar />
       <Header />
       

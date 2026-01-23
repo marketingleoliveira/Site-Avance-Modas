@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, ContactSettings, AnnouncementSettings, invalidateSettingsCache } from "@/lib/site-settings";
+import { getSiteSetting, HeroSettings, StoreSelectorSettings, FeaturesSettings, LayoutSettings, ProductSectionsSettings, InstagramSettings, VideosSettings, PromoBannerSettings, ContactSettings, AnnouncementSettings, CountdownBannerSettings, invalidateSettingsCache } from "@/lib/site-settings";
 
 export function useHeroSettings(type: 'ATACADO' | 'VAREJO') {
   const [settings, setSettings] = useState<HeroSettings | null>(null);
@@ -215,6 +215,31 @@ export function useAnnouncementSettings() {
         "ATÉ 6X SEM JUROS"
       ],
       interval: 4000
+    });
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { settings, loading, refetch };
+}
+
+export function useCountdownBannerSettings() {
+  const [settings, setSettings] = useState<CountdownBannerSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    invalidateSettingsCache('countdown_banner_settings');
+    const data = await getSiteSetting<CountdownBannerSettings>('countdown_banner_settings');
+    setSettings(data || {
+      enabled: false,
+      promo_text: "PROMO - FRETE EXPRESSO POR 14,90 PARA TODO O BRASIL!",
+      button_text: "APROVEITAR AGORA",
+      button_link: "/#produtos",
+      end_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     });
     setLoading(false);
   }, []);
