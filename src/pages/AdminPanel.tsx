@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, CountdownBannerSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -20,6 +20,7 @@ import DocumentationPage from "@/components/admin/DocumentationPage";
 import PrivateLabelEditor from "@/components/admin/PrivateLabelEditor";
 import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
 import SACManager from "@/components/admin/SACManager";
+import DashboardStats from "@/components/admin/DashboardStats";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -58,7 +59,7 @@ const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState("sac");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["estrutura", "conteudo", "atendimento"]);
   
   // Notification counts
@@ -131,6 +132,13 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Error loading notification counts:', error);
     }
+  };
+
+  // Dashboard item (standalone, always at top)
+  const dashboardItem: MenuItem = {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: <LayoutDashboard className="w-4 h-4" />
   };
 
   // Menu categories with dynamic badges
@@ -527,6 +535,9 @@ const AdminPanel = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "dashboard":
+        return <DashboardStats />;
+      
       case "store-config":
         return (
           <StoreConfigEditor
@@ -1846,6 +1857,21 @@ const AdminPanel = () => {
 
         {/* Sidebar Navigation */}
         <nav className="flex-1 overflow-y-auto py-4">
+          {/* Dashboard Button (standalone) */}
+          <button
+            onClick={() => setActiveTab("dashboard")}
+            className={cn(
+              "w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors mb-4",
+              activeTab === "dashboard"
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+              !sidebarOpen && "justify-center px-2"
+            )}
+          >
+            {dashboardItem.icon}
+            {sidebarOpen && <span>{dashboardItem.label}</span>}
+          </button>
+
           {menuCategories.map((category) => (
             <div key={category.id} className="mb-2">
               <button
