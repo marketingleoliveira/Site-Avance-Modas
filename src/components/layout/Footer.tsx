@@ -70,9 +70,40 @@ const Footer = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
             {/* Brand */}
             <div className="col-span-2 lg:col-span-1 flex flex-col gap-3 sm:gap-4 lg:gap-6">
-              <img src={logo} alt="Avance" className="h-10 sm:h-12 lg:h-16 w-auto object-contain brightness-0 invert" />
+              {/* Logo with premium effects */}
+              <div className="relative group">
+                {/* Glow effect background */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-white/20 via-white/30 to-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Logo container with glass effect */}
+                <div className="relative flex items-center gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10">
+                  {/* Logo icon */}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-white/20 rounded-lg blur-md animate-pulse" />
+                    <img 
+                      src={logo} 
+                      alt="Avance" 
+                      className="relative h-10 sm:h-12 lg:h-14 w-auto object-contain brightness-0 invert drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-transform duration-300 group-hover:scale-105" 
+                    />
+                  </div>
+                  
+                  {/* Brand name with gradient */}
+                  <div className="flex flex-col">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wider bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent drop-shadow-lg">
+                      AVANCE
+                    </span>
+                    <span className="text-[8px] sm:text-[9px] lg:text-[10px] uppercase tracking-[0.3em] text-white/60 font-medium">
+                      Moda Fitness
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Decorative line */}
+                <div className="mt-3 h-px w-full bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+              </div>
+              
               <p className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 leading-relaxed">
-                Moda fitness de qualidade para quem busca estilo e performance nos treinos e na moda praia..
+                Moda fitness de qualidade para quem busca estilo e performance nos treinos e na moda praia.
               </p>
               {/* Payment Methods */}
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
