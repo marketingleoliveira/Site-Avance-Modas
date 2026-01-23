@@ -8,6 +8,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { toast } from "sonner";
 import { ShoppingBag, ChevronRight } from "lucide-react";
+import logoAvance from "@/assets/logo-avance.png";
 
 // Mapping of filter categories to title keywords
 const categoryKeywords: Record<string, string[]> = {
@@ -204,6 +205,15 @@ const CategoryPage = () => {
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    
+                    {/* Logo Avance */}
+                    <div className="absolute right-2 top-2">
+                      <img 
+                        src={logoAvance} 
+                        alt="Avance Modas" 
+                        className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] object-contain"
+                      />
+                    </div>
                     
                     {/* Quick Add Button */}
                     <button 

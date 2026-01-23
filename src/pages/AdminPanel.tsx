@@ -18,6 +18,7 @@ import AnnouncementEditor from "@/components/admin/AnnouncementEditor";
 import StoreConfigEditor, { ShopifyConfigSettings, BrandSettings, ShippingSettings, SocialSettings, LegalSettings } from "@/components/admin/StoreConfigEditor";
 import MaintenanceEditor, { MaintenanceSettings } from "@/components/admin/MaintenanceEditor";
 import DocumentationPage from "@/components/admin/DocumentationPage";
+import PrivateLabelEditor from "@/components/admin/PrivateLabelEditor";
 
 interface NewsletterSubscriber {
   id: string;
@@ -452,6 +453,10 @@ const AdminPanel = () => {
             <TabsTrigger value="admins" className="text-xs">
               <Shield className="w-3 h-3 mr-1" />
               Admins
+            </TabsTrigger>
+            <TabsTrigger value="private-label" className="text-xs bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+              <Tag className="w-3 h-3 mr-1" />
+              Private Label
             </TabsTrigger>
             <TabsTrigger value="docs" className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
               <BookOpen className="w-3 h-3 mr-1" />
@@ -1656,6 +1661,11 @@ const AdminPanel = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Private Label */}
+          <TabsContent value="private-label">
+            <PrivateLabelEditor />
           </TabsContent>
 
           {/* Documentation */}

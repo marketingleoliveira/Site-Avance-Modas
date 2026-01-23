@@ -13,6 +13,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import SizeChartTable from "@/components/product/SizeChartTable";
 import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
+import logoAvance from "@/assets/logo-avance.png";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
@@ -546,6 +547,15 @@ const ShopifyProductPage = () => {
                     <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground" />
                   </div>
                 )}
+                
+                {/* Logo Avance */}
+                <div className="absolute right-3 top-3">
+                  <img 
+                    src={logoAvance} 
+                    alt="Avance Modas" 
+                    className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-contain"
+                  />
+                </div>
                 
                 {images.length > 1 && (
                   <>
