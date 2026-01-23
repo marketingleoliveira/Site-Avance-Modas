@@ -332,7 +332,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${highlightClass}`}
                   >
                     {/* Product Image with Color Swatches */}
-                    <div className="relative">
+                    <div className="relative overflow-hidden">
                       <div className="aspect-[3/4] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
@@ -343,7 +343,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       </div>
                       
                       {/* Logo - Top Right */}
-                      <div className="absolute right-2 top-2">
+                      <div className="absolute right-2 top-2 pointer-events-none">
                         <img 
                           src={logoAvance} 
                           alt="Avance Modas" 
@@ -351,10 +351,10 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
 
-                      {/* Color Swatches - Right Side (below logo) with hover/click banner animation */}
+                      {/* Color Swatches - Right Side (below logo) - limited to stay within image */}
                       {colors.length > 0 && (
-                        <div className="absolute right-2 top-16 flex flex-col gap-2">
-                          {colors.map((color, idx) => (
+                        <div className="absolute right-2 top-16 bottom-2 flex flex-col gap-2 overflow-hidden pointer-events-auto">
+                          {colors.slice(0, 4).map((color, idx) => (
                             <div
                               key={idx}
                               className="group/color relative h-7 md:h-5 flex items-center justify-end"
@@ -393,7 +393,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       )}
 
                       {/* Tags/Badges */}
-                      <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-1">
+                      <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-1 pointer-events-none">
                         {(isPromo || hasDiscount) && (
                           <span className="bg-red-600 text-white text-[10px] sm:text-xs min-w-[40px] sm:min-w-[50px] h-[24px] sm:h-[30px] px-2 sm:px-2.5 rounded font-bold uppercase animate-pulse flex items-center justify-center">
                             {hasDiscount ? `-${discountPercent}%` : 'PROMOÇÃO'}
