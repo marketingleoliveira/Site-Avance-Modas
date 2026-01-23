@@ -15,6 +15,7 @@ import ContactPage from "./pages/ContactPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import TrackingPage from "./pages/TrackingPage";
+import PrivateLabelPage from "./pages/PrivateLabelPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
@@ -54,6 +55,7 @@ const AppContent = () => {
         <Route path="/categoria/:category" element={<CategoryPage />} />
         <Route path="/contato" element={<ContactPage />} />
         <Route path="/rastreio" element={<TrackingPage />} />
+        <Route path="/private-label" element={<PrivateLabelPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />

@@ -18,7 +18,14 @@ const navLinks = [
       { name: "Conjuntos", href: "/categoria/conjuntos" },
     ]
   },
-  { name: "Lançamentos", href: "/categoria/lancamentos" },
+  { 
+    name: "Lançamentos", 
+    href: "/categoria/lancamentos",
+    submenu: [
+      { name: "Todos os Lançamentos", href: "/categoria/lancamentos" },
+      { name: "Private Label", href: "/private-label" },
+    ]
+  },
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Rastrear Pedido", href: "/rastreio" },
   { name: "Contato", href: "/contato" },

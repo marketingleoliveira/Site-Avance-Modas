@@ -6,6 +6,7 @@ import { ShopifyCollection, fetchCollectionsByType, getProductsFromCollections }
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import logoAvance from "@/assets/logo-avance.png";
 
 interface ShopifyProductGridFilteredProps {
   title?: string;
@@ -150,6 +151,15 @@ const ShopifyProductGridFiltered = ({
                       <ShoppingBag className="w-12 h-12 text-muted-foreground" />
                     </div>
                   )}
+                  
+                  {/* Logo Avance */}
+                  <div className="absolute right-2 top-2">
+                    <img 
+                      src={logoAvance} 
+                      alt="Avance Modas" 
+                      className="w-[50px] h-[50px] object-contain"
+                    />
+                  </div>
 
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
                     <button className="p-2 bg-card rounded-full shadow-soft hover:bg-accent hover:text-accent-foreground transition-colors">
