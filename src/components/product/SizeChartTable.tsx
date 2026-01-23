@@ -1,4 +1,4 @@
-import tabelaMedidas from "@/assets/tabela-medidas.png";
+import tabelaMedidas from "@/assets/tabela-medidas.jpg";
 
 const SizeChartTable = () => {
   return (
