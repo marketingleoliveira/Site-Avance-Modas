@@ -95,6 +95,12 @@ const AdminPanel = () => {
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [creatingAdmin, setCreatingAdmin] = useState(false);
+  
+  // Change password form
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Load notification counts
   const loadNotificationCounts = async () => {
@@ -381,6 +387,42 @@ const AdminPanel = () => {
       loadAdminUsers();
     } else {
       toast.error(result.error || "Erro ao criar administrador");
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Preencha todos os campos");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("A nova senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast.success("Senha alterada com sucesso!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      toast.error(error.message || "Erro ao alterar senha");
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -1657,7 +1699,41 @@ const AdminPanel = () => {
                 </Button>
               </div>
 
-              {/* Existing admins list */}
+              {/* Change own password */}
+              <div className="p-4 bg-secondary rounded-lg space-y-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Alterar sua senha
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Logado como: <strong>{user?.email}</strong>
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Nova Senha</Label>
+                    <Input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Confirmar Nova Senha</Label>
+                    <Input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Repita a nova senha"
+                    />
+                  </div>
+                </div>
+                <Button onClick={handleChangePassword} disabled={changingPassword}>
+                  <Shield className="w-4 h-4 mr-2" />
+                  {changingPassword ? "Alterando..." : "Alterar Senha"}
+                </Button>
+              </div>
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">Administradores existentes</h3>
