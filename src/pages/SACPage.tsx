@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -27,6 +27,10 @@ import {
   Loader2,
   CheckCircle2,
   MessageCircle,
+  Paperclip,
+  X,
+  FileImage,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -85,10 +89,24 @@ const ticketTypes = [
   },
 ];
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 const SACPage = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<SACFormData>({
     resolver: zodResolver(sacSchema),
@@ -105,9 +123,84 @@ const SACPage = () => {
 
   const selectedType = form.watch("ticket_type");
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles: File[] = [];
+    
+    for (const file of files) {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        toast.error(`Tipo de arquivo não permitido: ${file.name}`);
+        continue;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`Arquivo muito grande (máx 5MB): ${file.name}`);
+        continue;
+      }
+      if (attachments.length + validFiles.length >= 5) {
+        toast.error("Máximo de 5 anexos permitidos");
+        break;
+      }
+      validFiles.push(file);
+    }
+    
+    setAttachments((prev) => [...prev, ...validFiles]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadAttachments = async (): Promise<string[]> => {
+    const urls: string[] = [];
+    const totalFiles = attachments.length;
+    
+    for (let i = 0; i < attachments.length; i++) {
+      const file = attachments[i];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `tickets/${fileName}`;
+      
+      const { error } = await supabase.storage
+        .from("sac-attachments")
+        .upload(filePath, file);
+      
+      if (error) {
+        console.error("Error uploading file:", error);
+        throw new Error(`Erro ao enviar arquivo: ${file.name}`);
+      }
+      
+      const { data: urlData } = supabase.storage
+        .from("sac-attachments")
+        .getPublicUrl(filePath);
+      
+      urls.push(urlData.publicUrl);
+      setUploadProgress(((i + 1) / totalFiles) * 100);
+    }
+    
+    return urls;
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith("image/")) {
+      return <FileImage className="w-4 h-4 text-blue-500" />;
+    }
+    return <FileText className="w-4 h-4 text-orange-500" />;
+  };
+
   const onSubmit = async (data: SACFormData) => {
     setIsSubmitting(true);
+    setUploadProgress(0);
+    
     try {
+      // Upload attachments first
+      let attachmentUrls: string[] = [];
+      if (attachments.length > 0) {
+        attachmentUrls = await uploadAttachments();
+      }
+      
       const { error } = await supabase.from("sac_tickets").insert({
         name: data.name,
         email: data.email,
@@ -116,17 +209,20 @@ const SACPage = () => {
         ticket_type: data.ticket_type,
         subject: data.subject,
         message: data.message,
+        attachments: attachmentUrls,
       });
 
       if (error) throw error;
 
       setIsSubmitted(true);
+      setAttachments([]);
       toast.success("Solicitação enviada com sucesso!");
     } catch (error) {
       console.error("Error submitting SAC ticket:", error);
       toast.error("Erro ao enviar solicitação. Tente novamente.");
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -149,6 +245,7 @@ const SACPage = () => {
               </Button>
               <Button onClick={() => {
                 setIsSubmitted(false);
+                setAttachments([]);
                 form.reset();
               }}>
                 Nova Solicitação
@@ -365,6 +462,63 @@ const SACPage = () => {
                       </FormItem>
                     )}
                   />
+
+                  {/* Attachments */}
+                  <div>
+                    <Label className="text-sm font-medium">Anexos (opcional)</Label>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Imagens (JPG, PNG, GIF, WebP) ou documentos (PDF, DOC, DOCX). Máx 5 arquivos, 5MB cada.
+                    </p>
+                    
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    
+                    {attachments.length < 5 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full border-dashed"
+                      >
+                        <Paperclip className="w-4 h-4 mr-2" />
+                        Adicionar Anexo
+                      </Button>
+                    )}
+                    
+                    {attachments.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {attachments.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+                          >
+                            {getFileIcon(file)}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{file.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {(file.size / 1024).toFixed(1)} KB
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeAttachment(index)}
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -385,7 +539,9 @@ const SACPage = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enviando...
+                    {uploadProgress > 0 && uploadProgress < 100
+                      ? `Enviando anexos... ${Math.round(uploadProgress)}%`
+                      : "Enviando..."}
                   </>
                 ) : (
                   "Enviar Solicitação"
