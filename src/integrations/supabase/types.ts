@@ -41,6 +41,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sac_tickets: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          order_number: string | null
+          status: string
+          subject: string
+          ticket_type: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          order_number?: string | null
+          status?: string
+          subject: string
+          ticket_type?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          order_number?: string | null
+          status?: string
+          subject?: string
+          ticket_type?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           created_at: string

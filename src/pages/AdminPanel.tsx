@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, CountdownBannerSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -20,6 +20,7 @@ import MaintenanceEditor, { MaintenanceSettings } from "@/components/admin/Maint
 import DocumentationPage from "@/components/admin/DocumentationPage";
 import PrivateLabelEditor from "@/components/admin/PrivateLabelEditor";
 import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
+import SACManager from "@/components/admin/SACManager";
 
 interface NewsletterSubscriber {
   id: string;
@@ -467,6 +468,10 @@ const AdminPanel = () => {
             <TabsTrigger value="admins" className="text-xs">
               <Shield className="w-3 h-3 mr-1" />
               Admins
+            </TabsTrigger>
+            <TabsTrigger value="sac" className="text-xs bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+              <MessageSquare className="w-3 h-3 mr-1" />
+              SAC
             </TabsTrigger>
             <TabsTrigger value="private-label" className="text-xs bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
               <Tag className="w-3 h-3 mr-1" />
@@ -1703,6 +1708,24 @@ const AdminPanel = () => {
                     <strong>Nota:</strong> Novos administradores receberão um e-mail de confirmação antes de poderem acessar o painel.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* SAC Manager */}
+          <TabsContent value="sac">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Central de Atendimento (SAC)
+                </CardTitle>
+                <CardDescription>
+                  Gerencie as solicitações e reclamações dos clientes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SACManager />
               </CardContent>
             </Card>
           </TabsContent>

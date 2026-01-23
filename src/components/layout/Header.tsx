@@ -28,7 +28,14 @@ const navLinks = [
   },
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Rastrear Pedido", href: "/rastreio" },
-  { name: "Contato", href: "/contato" },
+  { 
+    name: "Contato", 
+    href: "/contato",
+    submenu: [
+      { name: "Fale Conosco", href: "/contato" },
+      { name: "SAC - Atendimento", href: "/sac" },
+    ]
+  },
 ];
 
 // Ripple effect hook
