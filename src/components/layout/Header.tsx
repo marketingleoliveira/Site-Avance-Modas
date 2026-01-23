@@ -22,7 +22,7 @@ const navLinks = [
     name: "Lançamentos", 
     href: "/categoria/lancamentos",
     submenu: [
-      { name: "Todos os Lançamentos", href: "/categoria/lancamentos" },
+      { name: "2026", href: "/categoria/lancamentos" },
       { name: "Private Label", href: "/private-label" },
     ]
   },
