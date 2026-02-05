@@ -149,25 +149,7 @@ const ShopifyProductPage = () => {
     };
   }, [product]);
 
-  // Pre-compute color availability map (memoized)
-  const colorAvailabilityMap = useMemo(() => {
-    if (!product) return new Map<string, boolean>();
-    
-    const map = new Map<string, boolean>();
-    colors.forEach(color => {
-      const isAvailable = product.variants.edges.some(({ node }) => {
-        if (!node.availableForSale) return false;
-        return node.selectedOptions?.some(opt => {
-          const nameLower = opt.name.toLowerCase();
-          return (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color;
-        });
-      });
-      map.set(color, isAvailable);
-    });
-    return map;
-  }, [product, colors]);
-
-  // Pre-compute size availability maps based on selected color (memoized)
+  // Pre-compute size availability maps (general availability, not filtered by color)
   const sizeAvailabilityMaps = useMemo(() => {
     if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
     
@@ -176,7 +158,6 @@ const ShopifyProductPage = () => {
         if (!node.availableForSale) return false;
         
         let sizeMatch = false;
-        let colorMatch = selectedColor ? false : true;
         
         node.selectedOptions?.forEach(opt => {
           const nameLower = opt.name.toLowerCase();
@@ -194,13 +175,9 @@ const ShopifyProductPage = () => {
               sizeMatch = true;
             }
           }
-          
-          if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === selectedColor) {
-            colorMatch = true;
-          }
         });
         
-        return sizeMatch && colorMatch;
+        return sizeMatch;
       });
     };
 
@@ -213,7 +190,79 @@ const ShopifyProductPage = () => {
     bottomSizes.forEach(size => bottomMap.set(size, checkAvailability(size, 'bottom')));
     
     return { regular: regularMap, top: topMap, bottom: bottomMap };
-  }, [product, sizes, topSizes, bottomSizes, selectedColor]);
+  }, [product, sizes, topSizes, bottomSizes]);
+
+  // Pre-compute color availability map based on selected size (memoized)
+  const colorAvailabilityMap = useMemo(() => {
+    if (!product) return new Map<string, boolean>();
+    
+    const map = new Map<string, boolean>();
+    
+    // For conjunto products, check both top and bottom sizes
+    const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
+    
+    colors.forEach(color => {
+      const isAvailable = product.variants.edges.some(({ node }) => {
+        if (!node.availableForSale) return false;
+        
+        let colorMatch = false;
+        let sizeMatch = false;
+        
+        // If no size selected, show all available colors
+        const hasSelectedSize = hasConjuntoSizes 
+          ? (selectedTopSize || selectedBottomSize) 
+          : selectedSize;
+        
+        if (!hasSelectedSize) {
+          // No size selected - check if color is available at all
+          return node.selectedOptions?.some(opt => {
+            const nameLower = opt.name.toLowerCase();
+            return (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color;
+          });
+        }
+        
+        node.selectedOptions?.forEach(opt => {
+          const nameLower = opt.name.toLowerCase();
+          
+          // Check color match
+          if ((nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === color) {
+            colorMatch = true;
+          }
+          
+          // Check size match based on product type
+          if (hasConjuntoSizes) {
+            // For conjunto, match if top OR bottom matches (flexible matching)
+            const isTopOption = nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta');
+            const isBottomOption = nameLower.includes('inferior') || nameLower.includes('bottom') || nameLower.includes('shorts') || nameLower.includes('calça') || nameLower.includes('bermuda') || nameLower.includes('legging');
+            
+            if (isTopOption && selectedTopSize && opt.value === selectedTopSize) {
+              sizeMatch = true;
+            }
+            if (isBottomOption && selectedBottomSize && opt.value === selectedBottomSize) {
+              sizeMatch = true;
+            }
+            // If only one size is selected, match on that
+            if (!selectedTopSize && !selectedBottomSize) {
+              sizeMatch = true;
+            } else if (!selectedTopSize && isBottomOption) {
+              sizeMatch = true;
+            } else if (!selectedBottomSize && isTopOption) {
+              sizeMatch = true;
+            }
+          } else {
+            // Regular product - match on size
+            if ((nameLower.includes('tamanho') || nameLower.includes('size') || nameLower === 'tam') && opt.value === selectedSize) {
+              sizeMatch = true;
+            }
+          }
+        });
+        
+        return colorMatch && sizeMatch;
+      });
+      map.set(color, isAvailable);
+    });
+    return map;
+  }, [product, colors, selectedSize, selectedTopSize, selectedBottomSize, topSizes, bottomSizes]);
 
   // Fast lookup functions using pre-computed maps
   const isColorAvailable = useCallback((color: string): boolean => {
@@ -876,12 +925,20 @@ const ShopifyProductPage = () => {
                 </div>
               )}
 
-              {/* Color Selection - ALWAYS VISIBLE */}
+              {/* Color Selection - Shown after size selection */}
               {colors.length > 0 && (
                 <div className="space-y-3">
-                  <p className="font-semibold text-foreground">
-                    Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-foreground">
+                      Cor: {selectedColor && <span className="text-primary">{selectedColor}</span>}
+                    </p>
+                    {/* Show hint when size is selected */}
+                    {(selectedSize || selectedTopSize || selectedBottomSize) && (
+                      <span className="text-xs text-muted-foreground">
+                        (disponíveis no tamanho)
+                      </span>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                     {colors.map((color) => {
                       const isAvailable = isColorAvailable(color);
