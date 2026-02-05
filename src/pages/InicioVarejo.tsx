@@ -9,6 +9,7 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
+import NewsletterPopup from "@/components/newsletter/NewsletterPopup";
 import { useStoreContext } from "@/stores/storeContextStore";
 
 const InicioVarejo = () => {
@@ -36,6 +37,9 @@ const InicioVarejo = () => {
       </main>
       
       <Footer />
+      
+      {/* Newsletter Popup - appears after 5 seconds */}
+      <NewsletterPopup delayMs={5000} />
     </div>
   );
 };
