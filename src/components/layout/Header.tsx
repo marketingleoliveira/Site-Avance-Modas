@@ -7,13 +7,14 @@ import SearchModal from "@/components/search/SearchModal";
 
 const navLinks = [
   { name: "Início", href: "/" },
-  { 
+{ 
     name: "Produtos", 
     href: "#",
     submenu: [
       { name: "Shorts", href: "/categoria/shorts" },
       { name: "Bermudas", href: "/categoria/bermudas" },
       { name: "Leggings", href: "/categoria/leggings" },
+      { name: "Tops", href: "/categoria/tops" },
       { name: "Blusas", href: "/categoria/blusas" },
       { name: "Conjuntos", href: "/categoria/conjuntos" },
     ]
