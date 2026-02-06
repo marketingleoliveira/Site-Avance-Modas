@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, ArrowLeft, Ruler, Check, Package, Sparkles, User, Lock, CreditCard, BadgeCheck } from "lucide-react";
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Minus, Plus, Truck, ArrowLeft, Ruler, Check, Package, Sparkles, User, Lock, CreditCard, BadgeCheck, HeadphonesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import SizeChartTable from "@/components/product/SizeChartTable";
 import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
 import logoAvance from "@/assets/logo-avance.png";
+import SupportTicketModal from "@/components/support/SupportTicketModal";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
@@ -31,6 +32,7 @@ const ShopifyProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [sizeTableOpen, setSizeTableOpen] = useState(false);
   const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
   const addItem = useCartStore(state => state.addItem);
   const { addToRecentlyViewed } = useRecentlyViewed();
 
@@ -1014,6 +1016,16 @@ const ShopifyProductPage = () => {
                 </Button>
               </div>
 
+              {/* Support Button */}
+              <Button 
+                variant="ghost" 
+                className="w-full gap-2 text-muted-foreground hover:text-primary"
+                onClick={() => setSupportModalOpen(true)}
+              >
+                <HeadphonesIcon className="w-4 h-4" />
+                Precisa de ajuda? Solicite suporte
+              </Button>
+
               {/* Payment & Security Badges */}
               <div className="pt-4 space-y-3 sm:space-y-4">
                 {/* Security Badge */}
@@ -1166,6 +1178,14 @@ const ShopifyProductPage = () => {
       </main>
       
       <Footer />
+
+      {/* Support Modal */}
+      <SupportTicketModal
+        open={supportModalOpen}
+        onOpenChange={setSupportModalOpen}
+        productHandle={handle}
+        productTitle={product?.title}
+      />
     </div>
   );
 };

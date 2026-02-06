@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, CountdownBannerSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard, HeadphonesIcon } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -20,6 +20,7 @@ import DocumentationPage from "@/components/admin/DocumentationPage";
 import PrivateLabelEditor from "@/components/admin/PrivateLabelEditor";
 import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
 import SACManager from "@/components/admin/SACManager";
+import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import DashboardStats from "@/components/admin/DashboardStats";
 import { cn } from "@/lib/utils";
 
@@ -65,6 +66,7 @@ const AdminPanel = () => {
   // Notification counts
   const [pendingSacCount, setPendingSacCount] = useState(0);
   const [newSubscribersCount, setNewSubscribersCount] = useState(0);
+  const [openSupportCount, setOpenSupportCount] = useState(0);
   
   const [heroAtacado, setHeroAtacado] = useState<HeroSettings | null>(null);
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
@@ -129,6 +131,16 @@ const AdminPanel = () => {
       if (!subscriberError && subscriberCount !== null) {
         setNewSubscribersCount(subscriberCount);
       }
+
+      // Get open support tickets count
+      const { count: supportCount, error: supportError } = await supabase
+        .from('support_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'aberto');
+      
+      if (!supportError && supportCount !== null) {
+        setOpenSupportCount(supportCount);
+      }
     } catch (error) {
       console.error('Error loading notification counts:', error);
     }
@@ -179,12 +191,13 @@ const AdminPanel = () => {
       icon: <MessageSquare className="w-4 h-4" />,
       items: [
         { id: "sac", label: "SAC - Atendimento", icon: <MessageSquare className="w-4 h-4" />, badge: pendingSacCount > 0 ? String(pendingSacCount) : undefined, badgeType: 'warning' as const },
+        { id: "support-tickets", label: "Suporte em Tempo Real", icon: <HeadphonesIcon className="w-4 h-4" />, badge: openSupportCount > 0 ? String(openSupportCount) : undefined, badgeType: 'warning' as const },
         { id: "newsletter", label: "Newsletter", icon: <Mail className="w-4 h-4" />, badge: newSubscribersCount > 0 ? `+${newSubscribersCount}` : undefined, badgeType: 'info' as const },
         { id: "admins", label: "Administradores", icon: <Shield className="w-4 h-4" /> },
         { id: "docs", label: "Documentação", icon: <BookOpen className="w-4 h-4" /> },
       ]
     }
-  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount]);
+  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount, openSupportCount]);
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
@@ -1814,6 +1827,24 @@ const AdminPanel = () => {
             </CardHeader>
             <CardContent>
               <SACManager />
+            </CardContent>
+          </Card>
+        );
+
+      case "support-tickets":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HeadphonesIcon className="w-5 h-5" />
+                Suporte em Tempo Real
+              </CardTitle>
+              <CardDescription>
+                Gerencie as solicitações de ajuda dos clientes em tempo real
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SupportTicketsManager />
             </CardContent>
           </Card>
         );
