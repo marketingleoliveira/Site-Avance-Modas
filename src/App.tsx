@@ -17,6 +17,7 @@ import AdminPanel from "./pages/AdminPanel";
 import TrackingPage from "./pages/TrackingPage";
 import PrivateLabelPage from "./pages/PrivateLabelPage";
 import SACPage from "./pages/SACPage";
+import SupportPage from "./pages/SupportPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
@@ -58,6 +59,7 @@ const AppContent = () => {
         <Route path="/rastreio" element={<TrackingPage />} />
         <Route path="/private-label" element={<PrivateLabelPage />} />
         <Route path="/sac" element={<SACPage />} />
+        <Route path="/suporte" element={<SupportPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />

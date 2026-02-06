@@ -35,6 +35,7 @@ const navLinks = [
     submenu: [
       { name: "Fale Conosco", href: "/contato" },
       { name: "SAC - Atendimento", href: "/sac" },
+      { name: "Suporte em Tempo Real", href: "/suporte" },
     ]
   },
 ];
