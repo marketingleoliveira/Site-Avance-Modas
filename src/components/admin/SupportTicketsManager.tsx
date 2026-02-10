@@ -178,11 +178,60 @@ const SupportTicketsManager = () => {
     };
   }, []);
 
+  const fetchNotes = useCallback(async (ticketId: string) => {
+    setLoadingNotes(true);
+    try {
+      const { data, error } = await supabase
+        .from("support_ticket_notes")
+        .select("*")
+        .eq("ticket_id", ticketId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setTicketNotes((data as TicketNote[]) || []);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    } finally {
+      setLoadingNotes(false);
+    }
+  }, []);
+
+  const handleAddNote = async () => {
+    if (!selectedTicket || !newNote.trim() || !user) return;
+
+    try {
+      const actionDesc = newStatus !== selectedTicket.status
+        ? `Status alterado: ${statusLabels[selectedTicket.status] || selectedTicket.status} → ${statusLabels[newStatus] || newStatus}`
+        : null;
+
+      const { error } = await supabase
+        .from("support_ticket_notes")
+        .insert({
+          ticket_id: selectedTicket.id,
+          author_id: user.id,
+          author_email: user.email || "admin",
+          content: newNote.trim(),
+          action_taken: actionDesc,
+        });
+
+      if (error) throw error;
+
+      setNewNote("");
+      fetchNotes(selectedTicket.id);
+      toast.success("Comentário adicionado!");
+    } catch (error) {
+      console.error("Error adding note:", error);
+      toast.error("Erro ao adicionar comentário");
+    }
+  };
+
   const openTicketDetails = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
     setAdminResponse(ticket.admin_response || "");
     setNewStatus(ticket.status);
+    setNewNote("");
     setIsDialogOpen(true);
+    fetchNotes(ticket.id);
   };
 
   const handleUpdateTicket = async () => {
