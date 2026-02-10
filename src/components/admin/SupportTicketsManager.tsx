@@ -107,6 +107,7 @@ const issueTypeLabels: Record<string, string> = {
 };
 
 const SupportTicketsManager = () => {
+  const { user } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
@@ -117,6 +118,9 @@ const SupportTicketsManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [newTicketsCount, setNewTicketsCount] = useState(0);
+  const [ticketNotes, setTicketNotes] = useState<TicketNote[]>([]);
+  const [newNote, setNewNote] = useState("");
+  const [loadingNotes, setLoadingNotes] = useState(false);
 
   const fetchTickets = async () => {
     setLoading(true);
