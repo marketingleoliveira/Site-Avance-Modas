@@ -283,15 +283,14 @@ const ShopifyProductPage = () => {
     const imageToColor = new Map<number, string>();
     const colorToImage = new Map<string, number>();
     
-    // Build a comprehensive list of search terms for each color
+    // Build search terms for each color - ONLY use word boundary matching
     const getSearchTermsForColor = (color: string): string[] => {
       const normalized = normalizeForMatch(color);
       const terms = new Set<string>();
       
-      // Add the normalized color itself
       terms.add(normalized);
       
-      // Add variations from dictionary (try multiple key formats)
+      // Add variations from dictionary
       const keysToTry = [normalized, color.toLowerCase(), color];
       for (const key of keysToTry) {
         const variations = COLOR_VARIATIONS[key];
@@ -300,51 +299,43 @@ const ShopifyProductPage = () => {
         }
       }
       
-      // For compound colors, add individual significant parts
+      // For compound colors, add the MOST SPECIFIC part only (min 5 chars to avoid false positives)
       const parts = normalized.split(/[\s\-]+/);
-      parts.forEach(part => {
-        if (part.length >= 4) { // Minimum 4 chars to avoid false positives
-          terms.add(part);
-          // Also add feminine/masculine variants for Portuguese
-          if (part.endsWith('o')) terms.add(part.slice(0, -1) + 'a');
-          if (part.endsWith('a')) terms.add(part.slice(0, -1) + 'o');
-        }
-      });
-      
-      // Add common abbreviations
-      if (normalized.includes('verde agua') || normalized.includes('verde água')) {
-        terms.add('v.agua');
-        terms.add('vagua');
-        terms.add('v agua');
-      }
-      if (normalized.includes('azul marinho') || normalized.includes('azul-marinho')) {
-        terms.add('marinho');
-        terms.add('marinha');
+      if (parts.length > 1) {
+        // Add the distinguishing part (not the generic base like "verde", "azul", "rosa")
+        const genericBases = ['verde', 'azul', 'rosa', 'amarelo', 'cinza', 'marrom', 'vermelho', 'roxo', 'laranja'];
+        parts.forEach(part => {
+          if (part.length >= 5 && !genericBases.includes(part)) {
+            terms.add(part);
+          }
+        });
       }
       
       return Array.from(terms);
     };
     
-    // Check if filename contains any of the color search terms
+    // STRICT word-boundary-only matching - no substring fallback
     const filenameMatchesColor = (filename: string, color: string): boolean => {
       const normalizedFilename = normalizeForMatch(filename);
       const searchTerms = getSearchTermsForColor(color);
       
       return searchTerms.some(term => {
-        // Check for exact word boundary match or substring
         const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const wordBoundaryRegex = new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, 'i');
-        return wordBoundaryRegex.test(normalizedFilename) || normalizedFilename.includes(term);
+        return wordBoundaryRegex.test(normalizedFilename);
       });
     };
     
-    // First pass: match images to colors
+    // Sort colors by specificity (longest first) to avoid "rosa" matching before "rosa bebê"
+    const sortedColors = [...colors].sort((a, b) => b.length - a.length);
+    
+    // First pass: match images to colors using strict word boundary matching
     images.forEach((img, idx) => {
       const url = img.node.url || '';
       const filename = decodeURIComponent(url.split('/').pop() || '');
       const altText = img.node.altText || '';
       
-      for (const color of colors) {
+      for (const color of sortedColors) {
         if (filenameMatchesColor(filename, color) || filenameMatchesColor(altText, color)) {
           imageToColor.set(idx, color);
           if (!colorToImage.has(color)) {
@@ -355,12 +346,10 @@ const ShopifyProductPage = () => {
       }
     });
     
-    // Second pass: for unmatched colors, try a more aggressive search
-    colors.forEach((color) => {
+    // Second pass: for unmatched colors, try searching all images again
+    sortedColors.forEach((color) => {
       if (!colorToImage.has(color)) {
         for (let idx = 0; idx < images.length; idx++) {
-          if (colorToImage.has(color)) break;
-          
           const url = images[idx].node.url || '';
           const filename = decodeURIComponent(url.split('/').pop() || '');
           const altText = images[idx].node.altText || '';
@@ -370,22 +359,26 @@ const ShopifyProductPage = () => {
             if (!imageToColor.has(idx)) {
               imageToColor.set(idx, color);
             }
+            break;
           }
         }
       }
     });
     
-    // Third pass: fallback to index-based mapping for still unmatched
-    colors.forEach((color, idx) => {
-      if (!colorToImage.has(color) && idx < images.length) {
-        colorToImage.set(color, idx);
-        if (!imageToColor.has(idx)) {
-          imageToColor.set(idx, color);
-        }
+    // Third pass: ONLY use positional fallback for colors that truly have NO match
+    // AND only if there are unmatched images available
+    const unmatchedImageIndices = Array.from({ length: images.length }, (_, i) => i)
+      .filter(i => !imageToColor.has(i));
+    let fallbackIdx = 0;
+    
+    colors.forEach((color) => {
+      if (!colorToImage.has(color) && fallbackIdx < unmatchedImageIndices.length) {
+        const imgIdx = unmatchedImageIndices[fallbackIdx++];
+        colorToImage.set(color, imgIdx);
+        imageToColor.set(imgIdx, color);
       }
     });
     
-    // Debug logging
     console.log('Color mapping result:', {
       colorToImage: Object.fromEntries(colorToImage),
       colors,
@@ -401,8 +394,8 @@ const ShopifyProductPage = () => {
   }, [imageColorMapping]);
 
   const findColorForImageIndex = useCallback((imageIndex: number): string | null => {
-    return imageColorMapping.imageToColor.get(imageIndex) ?? (imageIndex < colors.length ? colors[imageIndex] : null);
-  }, [imageColorMapping, colors]);
+    return imageColorMapping.imageToColor.get(imageIndex) ?? null;
+  }, [imageColorMapping]);
 
   // Handle color selection and navigate to corresponding image (memoized)
   const handleColorSelect = useCallback((color: string) => {
