@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,16 @@ interface SupportTicket {
   session_id: string | null;
 }
 
+interface TicketNote {
+  id: string;
+  ticket_id: string;
+  author_id: string;
+  author_email: string;
+  content: string;
+  action_taken: string | null;
+  created_at: string;
+}
+
 const statusColors: Record<string, string> = {
   aberto: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   em_atendimento: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
@@ -96,6 +107,7 @@ const issueTypeLabels: Record<string, string> = {
 };
 
 const SupportTicketsManager = () => {
+  const { user } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
@@ -106,6 +118,9 @@ const SupportTicketsManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [newTicketsCount, setNewTicketsCount] = useState(0);
+  const [ticketNotes, setTicketNotes] = useState<TicketNote[]>([]);
+  const [newNote, setNewNote] = useState("");
+  const [loadingNotes, setLoadingNotes] = useState(false);
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -163,15 +178,64 @@ const SupportTicketsManager = () => {
     };
   }, []);
 
+  const fetchNotes = useCallback(async (ticketId: string) => {
+    setLoadingNotes(true);
+    try {
+      const { data, error } = await supabase
+        .from("support_ticket_notes")
+        .select("*")
+        .eq("ticket_id", ticketId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setTicketNotes((data as TicketNote[]) || []);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    } finally {
+      setLoadingNotes(false);
+    }
+  }, []);
+
+  const handleAddNote = async () => {
+    if (!selectedTicket || !newNote.trim() || !user) return;
+
+    try {
+      const actionDesc = newStatus !== selectedTicket.status
+        ? `Status alterado: ${statusLabels[selectedTicket.status] || selectedTicket.status} → ${statusLabels[newStatus] || newStatus}`
+        : null;
+
+      const { error } = await supabase
+        .from("support_ticket_notes")
+        .insert({
+          ticket_id: selectedTicket.id,
+          author_id: user.id,
+          author_email: user.email || "admin",
+          content: newNote.trim(),
+          action_taken: actionDesc,
+        });
+
+      if (error) throw error;
+
+      setNewNote("");
+      fetchNotes(selectedTicket.id);
+      toast.success("Comentário adicionado!");
+    } catch (error) {
+      console.error("Error adding note:", error);
+      toast.error("Erro ao adicionar comentário");
+    }
+  };
+
   const openTicketDetails = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
     setAdminResponse(ticket.admin_response || "");
     setNewStatus(ticket.status);
+    setNewNote("");
     setIsDialogOpen(true);
+    fetchNotes(ticket.id);
   };
 
   const handleUpdateTicket = async () => {
-    if (!selectedTicket) return;
+    if (!selectedTicket || !user) return;
 
     setIsSaving(true);
     try {
@@ -190,6 +254,17 @@ const SupportTicketsManager = () => {
         .eq("id", selectedTicket.id);
 
       if (error) throw error;
+
+      // Auto-add note if status changed
+      if (newStatus !== selectedTicket.status) {
+        await supabase.from("support_ticket_notes").insert({
+          ticket_id: selectedTicket.id,
+          author_id: user.id,
+          author_email: user.email || "admin",
+          content: `Status alterado para "${statusLabels[newStatus] || newStatus}"`,
+          action_taken: `${statusLabels[selectedTicket.status] || selectedTicket.status} → ${statusLabels[newStatus] || newStatus}`,
+        });
+      }
 
       toast.success("Ticket atualizado com sucesso!");
       setIsDialogOpen(false);
@@ -462,6 +537,50 @@ const SupportTicketsManager = () => {
                 <div className="p-4 bg-muted/50 rounded-lg whitespace-pre-wrap text-sm">
                   {selectedTicket.description}
                 </div>
+              </div>
+
+              {/* Notes History */}
+              <div className="space-y-3 border-t pt-4">
+                <p className="text-sm font-medium">Histórico de Ações</p>
+                {loadingNotes ? (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : ticketNotes.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhum registro de ação ainda.</p>
+                ) : (
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    {ticketNotes.map((note) => (
+                      <div key={note.id} className="p-3 bg-muted/50 rounded-lg text-sm">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-xs text-primary">{note.author_email}</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(new Date(note.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </span>
+                        </div>
+                        {note.action_taken && (
+                          <p className="text-[11px] text-muted-foreground mb-1 italic">
+                            ⚡ {note.action_taken}
+                          </p>
+                        )}
+                        <p className="whitespace-pre-wrap">{note.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add new note */}
+                <div className="flex gap-2">
+                  <Textarea
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Adicionar comentário sobre ações tomadas..."
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={handleAddNote} disabled={!newNote.trim()}>
+                  Adicionar Comentário
+                </Button>
               </div>
 
               {/* Admin Actions */}
