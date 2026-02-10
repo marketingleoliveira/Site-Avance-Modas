@@ -394,8 +394,8 @@ const ShopifyProductPage = () => {
   }, [imageColorMapping]);
 
   const findColorForImageIndex = useCallback((imageIndex: number): string | null => {
-    return imageColorMapping.imageToColor.get(imageIndex) ?? (imageIndex < colors.length ? colors[imageIndex] : null);
-  }, [imageColorMapping, colors]);
+    return imageColorMapping.imageToColor.get(imageIndex) ?? null;
+  }, [imageColorMapping]);
 
   // Handle color selection and navigate to corresponding image (memoized)
   const handleColorSelect = useCallback((color: string) => {
