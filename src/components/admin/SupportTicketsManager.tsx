@@ -235,7 +235,7 @@ const SupportTicketsManager = () => {
   };
 
   const handleUpdateTicket = async () => {
-    if (!selectedTicket) return;
+    if (!selectedTicket || !user) return;
 
     setIsSaving(true);
     try {
@@ -254,6 +254,17 @@ const SupportTicketsManager = () => {
         .eq("id", selectedTicket.id);
 
       if (error) throw error;
+
+      // Auto-add note if status changed
+      if (newStatus !== selectedTicket.status) {
+        await supabase.from("support_ticket_notes").insert({
+          ticket_id: selectedTicket.id,
+          author_id: user.id,
+          author_email: user.email || "admin",
+          content: `Status alterado para "${statusLabels[newStatus] || newStatus}"`,
+          action_taken: `${statusLabels[selectedTicket.status] || selectedTicket.status} → ${statusLabels[newStatus] || newStatus}`,
+        });
+      }
 
       toast.success("Ticket atualizado com sucesso!");
       setIsDialogOpen(false);
