@@ -64,6 +64,16 @@ interface SupportTicket {
   session_id: string | null;
 }
 
+interface TicketNote {
+  id: string;
+  ticket_id: string;
+  author_id: string;
+  author_email: string;
+  content: string;
+  action_taken: string | null;
+  created_at: string;
+}
+
 const statusColors: Record<string, string> = {
   aberto: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   em_atendimento: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
