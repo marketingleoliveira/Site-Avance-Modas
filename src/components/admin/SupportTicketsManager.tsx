@@ -539,6 +539,50 @@ const SupportTicketsManager = () => {
                 </div>
               </div>
 
+              {/* Notes History */}
+              <div className="space-y-3 border-t pt-4">
+                <p className="text-sm font-medium">Histórico de Ações</p>
+                {loadingNotes ? (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : ticketNotes.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhum registro de ação ainda.</p>
+                ) : (
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    {ticketNotes.map((note) => (
+                      <div key={note.id} className="p-3 bg-muted/50 rounded-lg text-sm">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-xs text-primary">{note.author_email}</span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(new Date(note.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </span>
+                        </div>
+                        {note.action_taken && (
+                          <p className="text-[11px] text-muted-foreground mb-1 italic">
+                            ⚡ {note.action_taken}
+                          </p>
+                        )}
+                        <p className="whitespace-pre-wrap">{note.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add new note */}
+                <div className="flex gap-2">
+                  <Textarea
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Adicionar comentário sobre ações tomadas..."
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={handleAddNote} disabled={!newNote.trim()}>
+                  Adicionar Comentário
+                </Button>
+              </div>
+
               {/* Admin Actions */}
               <div className="space-y-4 border-t pt-4">
                 <div>
