@@ -166,6 +166,7 @@ const AdminPanel = () => {
         { id: "layout", label: "Layout & Grades", icon: <Layout className="w-4 h-4" /> },
         { id: "sections", label: "Seções de Produtos", icon: <Grid className="w-4 h-4" /> },
         { id: "features", label: "Barra de Benefícios", icon: <Settings className="w-4 h-4" /> },
+        { id: "size-charts", label: "Tabelas de Medidas", icon: <FileText className="w-4 h-4" /> },
       ]
     },
     {
