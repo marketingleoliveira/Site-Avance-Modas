@@ -22,6 +22,7 @@ import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
 import SACManager from "@/components/admin/SACManager";
 import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import DashboardStats from "@/components/admin/DashboardStats";
+import SizeChartManager from "@/components/admin/SizeChartManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
