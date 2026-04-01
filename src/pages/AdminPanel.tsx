@@ -1857,6 +1857,24 @@ const AdminPanel = () => {
       case "docs":
         return <DocumentationPage />;
 
+      case "size-charts":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Tabelas de Medidas por Produto
+              </CardTitle>
+              <CardDescription>
+                Envie uma tabela de medidas personalizada para cada produto. Produtos sem tabela usarão a tabela padrão.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SizeChartManager />
+            </CardContent>
+          </Card>
+        );
+
       default:
         return null;
     }
