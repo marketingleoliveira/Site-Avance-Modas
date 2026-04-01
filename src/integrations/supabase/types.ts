@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      product_size_charts: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          product_handle: string
+          product_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          product_handle: string
+          product_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          product_handle?: string
+          product_title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sac_tickets: {
         Row: {
           admin_notes: string | null

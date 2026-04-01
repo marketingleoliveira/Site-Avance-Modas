@@ -795,7 +795,7 @@ className="w-full h-full object-contain bg-white"
                           </DialogTitle>
                         </DialogHeader>
                         <div className="mt-4">
-                          <SizeChartTable />
+                          <SizeChartTable productHandle={handle} />
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -886,7 +886,7 @@ className="w-full h-full object-contain bg-white"
                           </DialogTitle>
                         </DialogHeader>
                         <div className="mt-4">
-                          <SizeChartTable />
+                          <SizeChartTable productHandle={handle} />
                         </div>
                       </DialogContent>
                     </Dialog>

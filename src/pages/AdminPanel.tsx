@@ -22,6 +22,7 @@ import CountdownBannerEditor from "@/components/admin/CountdownBannerEditor";
 import SACManager from "@/components/admin/SACManager";
 import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import DashboardStats from "@/components/admin/DashboardStats";
+import SizeChartManager from "@/components/admin/SizeChartManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -166,6 +167,7 @@ const AdminPanel = () => {
         { id: "layout", label: "Layout & Grades", icon: <Layout className="w-4 h-4" /> },
         { id: "sections", label: "Seções de Produtos", icon: <Grid className="w-4 h-4" /> },
         { id: "features", label: "Barra de Benefícios", icon: <Settings className="w-4 h-4" /> },
+        { id: "size-charts", label: "Tabelas de Medidas", icon: <FileText className="w-4 h-4" /> },
       ]
     },
     {
@@ -1854,6 +1856,24 @@ const AdminPanel = () => {
 
       case "docs":
         return <DocumentationPage />;
+
+      case "size-charts":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Tabelas de Medidas por Produto
+              </CardTitle>
+              <CardDescription>
+                Envie uma tabela de medidas personalizada para cada produto. Produtos sem tabela usarão a tabela padrão.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SizeChartManager />
+            </CardContent>
+          </Card>
+        );
 
       default:
         return null;
