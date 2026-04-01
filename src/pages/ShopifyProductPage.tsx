@@ -584,7 +584,7 @@ const ShopifyProductPage = () => {
                   <img 
                     src={images[currentImage].node.url} 
                     alt={images[currentImage].node.altText || product.title}
-                    className="w-full h-full object-cover"
+className="w-full h-full object-contain bg-white"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
@@ -655,7 +655,7 @@ const ShopifyProductPage = () => {
                             : "border-transparent hover:border-muted-foreground/30"
                         }`}
                       >
-                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} loading="lazy" className="w-full h-full object-contain bg-white" />
                         {/* Color badge on top-right corner */}
                         {detectedColor && colorStyle && (
                           <span 
