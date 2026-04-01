@@ -655,7 +655,7 @@ className="w-full h-full object-contain bg-white"
                             : "border-transparent hover:border-muted-foreground/30"
                         }`}
                       >
-                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                        <img src={img.node.url} alt={img.node.altText || `Imagem ${i + 1}`} loading="lazy" className="w-full h-full object-contain bg-white" />
                         {/* Color badge on top-right corner */}
                         {detectedColor && colorStyle && (
                           <span 
