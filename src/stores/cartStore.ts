@@ -246,6 +246,20 @@ export const useCartStore = create<CartStore>()(
         const { items, cartId, clearCart } = get();
         const existingItem = items.find(i => i.variantId === item.variantId);
         
+        // Check if this is an atacado product (skip Shopify cart for wholesale)
+        const isAtacadoProduct = item.product.node.title?.toUpperCase().includes('ATACADO');
+        
+        if (isAtacadoProduct) {
+          // For atacado: store locally only, no Shopify cart
+          if (existingItem) {
+            const newQuantity = existingItem.quantity + item.quantity;
+            set({ items: items.map(i => i.variantId === item.variantId ? { ...i, quantity: newQuantity } : i) });
+          } else {
+            set({ items: [...items, { ...item, lineId: 'local-' + Date.now() }] });
+          }
+          return;
+        }
+        
         set({ isLoading: true });
         try {
           if (!cartId) {
@@ -318,7 +332,15 @@ export const useCartStore = create<CartStore>()(
         
         const { items, cartId, clearCart } = get();
         const item = items.find(i => i.variantId === variantId);
-        if (!item?.lineId || !cartId) return;
+        if (!item) return;
+        
+        // Local-only item (atacado) - update locally
+        if (item.lineId?.startsWith('local-')) {
+          set({ items: items.map(i => i.variantId === variantId ? { ...i, quantity } : i) });
+          return;
+        }
+        
+        if (!item.lineId || !cartId) return;
 
         set({ isLoading: true });
         try {
@@ -339,9 +361,11 @@ export const useCartStore = create<CartStore>()(
       removeItem: async (variantId) => {
         const { items, cartId, clearCart } = get();
         const item = items.find(i => i.variantId === variantId);
-        if (!item?.lineId || !cartId) {
-          // Just remove locally if no lineId
-          set({ items: items.filter(i => i.variantId !== variantId) });
+        
+        // Local-only item (atacado) - remove locally
+        if (!item?.lineId || item.lineId.startsWith('local-') || !cartId) {
+          const newItems = items.filter(i => i.variantId !== variantId);
+          set({ items: newItems });
           return;
         }
 
@@ -379,7 +403,12 @@ export const useCartStore = create<CartStore>()(
       },
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart } = get();
+        const { cartId, items, isSyncing, clearCart } = get();
+        
+        // If all items are local (atacado), skip Shopify sync entirely
+        const hasShopifyItems = items.some(i => i.lineId && !i.lineId.startsWith('local-'));
+        if (!hasShopifyItems) return;
+        
         if (!cartId || isSyncing) return;
 
         set({ isSyncing: true });
@@ -389,7 +418,13 @@ export const useCartStore = create<CartStore>()(
           
           const cart = data?.data?.cart;
           if (!cart || cart.totalQuantity === 0) {
-            clearCart();
+            // Only clear Shopify-linked items, keep local atacado items
+            const localItems = get().items.filter(i => i.lineId?.startsWith('local-'));
+            if (localItems.length > 0) {
+              set({ items: localItems, cartId: null, checkoutUrl: null });
+            } else {
+              clearCart();
+            }
           }
         } catch (error) {
           console.error('Failed to sync cart with Shopify:', error);
