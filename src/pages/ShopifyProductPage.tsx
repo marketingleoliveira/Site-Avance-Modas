@@ -208,7 +208,7 @@ const ShopifyProductPage = () => {
     
     colors.forEach(color => {
       const isAvailable = product.variants.edges.some(({ node }) => {
-        if (!node.availableForSale) return false;
+        if (!isAtacadoProduct && !node.availableForSale) return false;
         
         let colorMatch = false;
         let sizeMatch = false;
