@@ -239,7 +239,7 @@ const WholesaleCheckout = () => {
       </main>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
           <AlertDialogHeader>
             <div className="mb-2 flex items-center justify-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
