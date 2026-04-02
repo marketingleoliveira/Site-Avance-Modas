@@ -69,6 +69,7 @@ const AdminPanel = () => {
   const [pendingSacCount, setPendingSacCount] = useState(0);
   const [newSubscribersCount, setNewSubscribersCount] = useState(0);
   const [openSupportCount, setOpenSupportCount] = useState(0);
+  const [pendingWholesaleCount, setPendingWholesaleCount] = useState(0);
   
   const [heroAtacado, setHeroAtacado] = useState<HeroSettings | null>(null);
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
