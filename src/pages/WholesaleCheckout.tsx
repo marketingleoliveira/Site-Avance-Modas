@@ -183,7 +183,7 @@ const WholesaleCheckout = () => {
             </CardContent>
           </Card>
 
-          <Card className="order-first md:order-last">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
