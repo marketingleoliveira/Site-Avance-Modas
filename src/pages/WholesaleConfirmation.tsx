@@ -37,18 +37,6 @@ const steps = [
   },
 ];
 
-const highlights = [
-  {
-    icon: Clock,
-    title: "Retorno em até 48h úteis",
-    description: "Você não precisa reenviar a solicitação. Agora é com a nossa equipe.",
-  },
-  {
-    icon: Mail,
-    title: "Atualização pelos seus contatos",
-    description: "Usaremos os dados preenchidos no formulário para falar com você.",
-  },
-];
 
 const WholesaleConfirmation = () => {
   const navigate = useNavigate();
