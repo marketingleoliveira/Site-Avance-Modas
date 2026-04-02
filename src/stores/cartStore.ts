@@ -246,6 +246,20 @@ export const useCartStore = create<CartStore>()(
         const { items, cartId, clearCart } = get();
         const existingItem = items.find(i => i.variantId === item.variantId);
         
+        // Check if this is an atacado product (skip Shopify cart for wholesale)
+        const isAtacadoProduct = item.product.node.title?.toUpperCase().includes('ATACADO');
+        
+        if (isAtacadoProduct) {
+          // For atacado: store locally only, no Shopify cart
+          if (existingItem) {
+            const newQuantity = existingItem.quantity + item.quantity;
+            set({ items: items.map(i => i.variantId === item.variantId ? { ...i, quantity: newQuantity } : i) });
+          } else {
+            set({ items: [...items, { ...item, lineId: 'local-' + Date.now() }] });
+          }
+          return;
+        }
+        
         set({ isLoading: true });
         try {
           if (!cartId) {
