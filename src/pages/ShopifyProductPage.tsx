@@ -152,12 +152,15 @@ const ShopifyProductPage = () => {
   }, [product]);
 
   // Pre-compute size availability maps (general availability, not filtered by color)
+  // Detect if product is ATACADO - if so, all variants are considered available
+  const isAtacadoProduct = product?.title?.toUpperCase().includes('ATACADO') || false;
+
   const sizeAvailabilityMaps = useMemo(() => {
     if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
     
     const checkAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
       return product.variants.edges.some(({ node }) => {
-        if (!node.availableForSale) return false;
+        if (!isAtacadoProduct && !node.availableForSale) return false;
         
         let sizeMatch = false;
         
@@ -205,7 +208,7 @@ const ShopifyProductPage = () => {
     
     colors.forEach(color => {
       const isAvailable = product.variants.edges.some(({ node }) => {
-        if (!node.availableForSale) return false;
+        if (!isAtacadoProduct && !node.availableForSale) return false;
         
         let colorMatch = false;
         let sizeMatch = false;
@@ -555,7 +558,7 @@ const ShopifyProductPage = () => {
 
   const hasConjuntoSizesGlobal = topSizes.length > 0 && bottomSizes.length > 0;
   
-  const canAddToCart = currentVariant?.availableForSale && 
+  const canAddToCart = (isAtacadoProduct || currentVariant?.availableForSale) && 
     (hasConjuntoSizesGlobal 
       ? (selectedTopSize && selectedBottomSize)
       : (sizes.length === 0 || selectedSize)
@@ -986,7 +989,7 @@ className="w-full h-full object-contain bg-white"
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  {currentVariant?.availableForSale === false && (
+                  {!isAtacadoProduct && currentVariant?.availableForSale === false && (
                     <span className="text-sm text-destructive font-medium">Esgotado</span>
                   )}
                 </div>
