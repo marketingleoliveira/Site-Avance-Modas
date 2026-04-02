@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   // Use persistent store context instead of URL-based detection
   const isAtacado = useStoreContext(state => state.isAtacado());
