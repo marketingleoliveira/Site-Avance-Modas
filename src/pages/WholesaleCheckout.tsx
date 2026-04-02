@@ -8,7 +8,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle, Loader2, Package, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Package, Send } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
