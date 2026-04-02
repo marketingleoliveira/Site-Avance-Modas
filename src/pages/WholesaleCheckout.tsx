@@ -253,12 +253,6 @@ const WholesaleCheckout = () => {
 
             <AlertDialogDescription asChild>
               <div className="space-y-4 text-center">
-                <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>
-                    Nossa equipe entrará em contato em até <strong className="text-foreground">48 horas úteis</strong>
-                  </span>
-                </div>
 
                 <p className="text-sm text-muted-foreground">
                   Ao enviar esta solicitação, analisaremos seu pedido e entraremos em contato pelo

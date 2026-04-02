@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   CheckCircle,
+  Clock,
   MessageCircle,
   Package,
   ShieldCheck,
@@ -57,7 +58,11 @@ const WholesaleConfirmation = () => {
       <Header />
 
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
-        <div className="w-full max-w-xl space-y-8">
+        <div className="w-full max-w-xl space-y-6">
+          <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm text-foreground">
+            <Clock className="h-5 w-5 flex-shrink-0 text-primary" />
+            <span>Nossa equipe entrará em contato em até <strong>48 horas úteis</strong> pelos dados informados.</span>
+          </div>
           <div className="text-center space-y-4">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
               <CheckCircle className="h-10 w-10" />
