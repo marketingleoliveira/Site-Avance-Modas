@@ -228,6 +228,60 @@ const WholesaleCheckout = () => {
           </Card>
         </div>
       </main>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center justify-center mb-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center text-xl">
+              Confirmar Solicitação de Atacado
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4 text-center">
+                <div className="flex items-center gap-2 justify-center text-muted-foreground">
+                  <Clock className="w-4 h-4" />
+                  <span>Nossa equipe entrará em contato em até <strong className="text-foreground">48 horas úteis</strong></span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Ao enviar esta solicitação, um consultor especializado analisará seu pedido e 
+                  entrará em contato pelo WhatsApp ou e-mail informados para finalizar as condições comerciais.
+                </p>
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50 border border-border/50 text-left">
+                  <Checkbox
+                    id="accept-rules"
+                    checked={acceptedRules}
+                    onCheckedChange={(checked) => setAcceptedRules(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="accept-rules" className="text-sm cursor-pointer leading-relaxed">
+                    Li e aceito as <strong>regras e políticas de atacado</strong>, e desejo enviar esta solicitação de pedido.
+                  </label>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel disabled={sending}>Cancelar</AlertDialogCancel>
+            <Button
+              onClick={handleConfirmSubmit}
+              disabled={!acceptedRules || sending}
+              className="w-full sm:w-auto"
+            >
+              {sending ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>
+              ) : (
+                <><Send className="w-4 h-4 mr-2" /> Confirmar e Enviar</>
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );
