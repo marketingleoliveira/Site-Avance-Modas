@@ -38,10 +38,12 @@ export const CartDrawer = () => {
   
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
+  const hasWholesaleItems = items.some((item) => item.lineId?.startsWith('local-'));
+  const useWholesaleFlow = isAtacado || hasWholesaleItems;
   
   // Only apply minimum order validation for atacado when settings are loaded
   const minimumOrder = atacadoSettings.minimum_order;
-  const isBelowMinimum = isAtacado && !settingsLoading && totalPrice < minimumOrder;
+  const isBelowMinimum = useWholesaleFlow && !settingsLoading && totalPrice < minimumOrder;
   const remainingForMinimum = Math.max(0, minimumOrder - totalPrice);
 
   // Sync cart with Shopify when drawer opens
@@ -53,7 +55,7 @@ export const CartDrawer = () => {
 
   const handleCheckout = () => {
     // Atacado: redirect to wholesale checkout form
-    if (isAtacado) {
+    if (useWholesaleFlow) {
       if (!settingsLoading && totalPrice < minimumOrder) {
         toast.error("Pedido mínimo não atingido", {
           description: `No atacado, o pedido mínimo é de ${formatPrice(minimumOrder)}. Faltam ${formatPrice(remainingForMinimum)} para finalizar.`,
@@ -203,7 +205,7 @@ export const CartDrawer = () => {
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
                 {/* Minimum order progress indicator for atacado - only show when settings loaded */}
-                {isAtacado && items.length > 0 && !settingsLoading && (
+                {useWholesaleFlow && items.length > 0 && !settingsLoading && (
                   <div className={`rounded-xl p-4 space-y-3 ${
                     isBelowMinimum 
                       ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800' 
@@ -341,7 +343,7 @@ export const CartDrawer = () => {
                       <AlertTriangle className="w-5 h-5 mr-2" />
                       Adicione mais itens
                     </>
-                  ) : isAtacado ? (
+                  ) : useWholesaleFlow ? (
                     <>
                       <Send className="w-5 h-5 mr-2" />
                       Solicitar Pedido Atacado
@@ -355,7 +357,7 @@ export const CartDrawer = () => {
                 </Button>
                 
                 <p className="text-xs text-center text-muted-foreground">
-                  {isAtacado ? "Nosso time entrará em contato em até 48h úteis 📋" : "Pagamento seguro via Shopify 🔒"}
+                  {useWholesaleFlow ? "Nosso time entrará em contato em até 48h úteis 📋" : "Pagamento seguro via Shopify 🔒"}
                 </p>
               </div>
             </>

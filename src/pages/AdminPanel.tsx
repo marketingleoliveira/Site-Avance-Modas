@@ -63,7 +63,7 @@ const AdminPanel = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(["vendas"]);
   
   // Notification counts
   const [pendingSacCount, setPendingSacCount] = useState(0);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,7 @@ const WholesaleCheckout = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const isAtacado = useStoreContext(state => state.isAtacado());
   const [sending, setSending] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -25,20 +26,20 @@ const WholesaleCheckout = () => {
   });
 
   const totalPrice = getTotalPrice();
+  const hasWholesaleItems = items.some(item => item.lineId?.startsWith("local-"));
+  const canAccessCheckout = isAtacado || hasWholesaleItems;
 
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount);
   };
 
   // Redirect if not atacado or cart empty
-  if (!isAtacado) {
-    navigate("/atacado");
-    return null;
+  if (!canAccessCheckout) {
+    return <Navigate to="/atacado" replace />;
   }
 
-  if (items.length === 0) {
-    navigate("/atacado");
-    return null;
+  if (items.length === 0 && !hasSubmitted) {
+    return <Navigate to="/atacado" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +79,8 @@ const WholesaleCheckout = () => {
 
       if (error) throw error;
 
-      navigate("/atacado/confirmacao");
+      setHasSubmitted(true);
+      navigate("/atacado/confirmacao", { replace: true });
       clearCart();
       toast.success("Solicitação enviada com sucesso!");
     } catch (error) {
