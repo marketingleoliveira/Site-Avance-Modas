@@ -97,6 +97,7 @@ const WholesaleCheckout = () => {
 
       if (error) throw error;
 
+      setShowConfirmDialog(false);
       setHasSubmitted(true);
       navigate("/atacado/confirmacao", { replace: true });
       clearCart();
