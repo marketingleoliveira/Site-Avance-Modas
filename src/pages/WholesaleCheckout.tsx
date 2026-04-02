@@ -28,6 +28,8 @@ const WholesaleCheckout = () => {
   const isAtacado = useStoreContext(state => state.isAtacado());
   const [sending, setSending] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [acceptedRules, setAcceptedRules] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
