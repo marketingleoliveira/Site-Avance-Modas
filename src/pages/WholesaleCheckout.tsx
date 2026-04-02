@@ -31,12 +31,12 @@ const WholesaleCheckout = () => {
   };
 
   // Redirect if not atacado or cart empty
-  if (!isAtacado && !sent) {
+  if (!isAtacado) {
     navigate("/atacado");
     return null;
   }
 
-  if (items.length === 0 && !sent) {
+  if (items.length === 0) {
     navigate("/atacado");
     return null;
   }
