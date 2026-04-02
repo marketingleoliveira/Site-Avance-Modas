@@ -403,7 +403,12 @@ export const useCartStore = create<CartStore>()(
       },
 
       syncCart: async () => {
-        const { cartId, isSyncing, clearCart } = get();
+        const { cartId, items, isSyncing, clearCart } = get();
+        
+        // If all items are local (atacado), skip Shopify sync entirely
+        const hasShopifyItems = items.some(i => i.lineId && !i.lineId.startsWith('local-'));
+        if (!hasShopifyItems) return;
+        
         if (!cartId || isSyncing) return;
 
         set({ isSyncing: true });
@@ -413,7 +418,13 @@ export const useCartStore = create<CartStore>()(
           
           const cart = data?.data?.cart;
           if (!cart || cart.totalQuantity === 0) {
-            clearCart();
+            // Only clear Shopify-linked items, keep local atacado items
+            const localItems = get().items.filter(i => i.lineId?.startsWith('local-'));
+            if (localItems.length > 0) {
+              set({ items: localItems, cartId: null, checkoutUrl: null });
+            } else {
+              clearCart();
+            }
           }
         } catch (error) {
           console.error('Failed to sync cart with Shopify:', error);
