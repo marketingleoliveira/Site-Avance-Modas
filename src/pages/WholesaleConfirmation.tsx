@@ -1,166 +1,198 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Clock, MessageCircle, Mail, Phone, Sparkles, ShieldCheck, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Clock,
+  Mail,
+  MessageCircle,
+  Package,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { useCartStore } from "@/stores/cartStore";
+
+const steps = [
+  {
+    icon: Package,
+    label: "Passo 1",
+    title: "Análise da solicitação",
+    description:
+      "Vamos revisar os itens do seu pedido, disponibilidade e condições comerciais para montar o melhor atendimento para você.",
+  },
+  {
+    icon: MessageCircle,
+    label: "Passo 2",
+    title: "Contato personalizado",
+    description:
+      "Nossa equipe entrará em contato pelo WhatsApp ou e-mail informados para dar continuidade ao seu atendimento exclusivo.",
+  },
+  {
+    icon: ShieldCheck,
+    label: "Passo 3",
+    title: "Fechamento do pedido",
+    description:
+      "Depois do alinhamento, seguimos com a finalização do pedido atacado de forma segura, clara e personalizada.",
+  },
+];
+
+const highlights = [
+  {
+    icon: Clock,
+    title: "Retorno em até 48h úteis",
+    description: "Você não precisa reenviar a solicitação. Agora é com a nossa equipe.",
+  },
+  {
+    icon: Mail,
+    title: "Atualização pelos seus contatos",
+    description: "Usaremos os dados preenchidos no formulário para falar com você.",
+  },
+];
 
 const WholesaleConfirmation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const clearCart = useCartStore((state) => state.clearCart);
+  const fromWholesaleSubmission = Boolean(
+    (location.state as { fromWholesaleSubmission?: boolean } | null)?.fromWholesaleSubmission,
+  );
+
+  useEffect(() => {
+    if (fromWholesaleSubmission) {
+      clearCart();
+    }
+  }, [clearCart, fromWholesaleSubmission]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
-          {/* Decorative circles */}
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-accent/10 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-primary-foreground/5" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-primary-foreground/5" />
 
-          <div className="relative z-10 container mx-auto px-4 py-16 md:py-24 text-center">
-            {/* Animated check icon */}
-            <div className="relative mx-auto w-28 h-28 mb-8">
-              <div className="absolute inset-0 rounded-full bg-accent/20 animate-ping" style={{ animationDuration: '2s' }} />
-              <div className="relative w-full h-full rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center shadow-2xl">
-                <CheckCircle className="w-14 h-14 text-accent-foreground" />
+      <main className="flex-1 overflow-hidden">
+        <section className="relative isolate">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
+          <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute right-0 top-24 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+
+          <div className="relative container mx-auto max-w-6xl px-4 pb-10 pt-10 sm:pb-12 sm:pt-14 md:pt-20">
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/95 px-4 py-2 text-sm font-semibold text-foreground shadow-sm backdrop-blur">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                Solicitação recebida com sucesso
               </div>
+
+              <div className="mx-auto mt-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg sm:h-24 sm:w-24">
+                <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12" />
+              </div>
+
+              <h1 className="mt-6 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Recebemos o seu pedido de atacado
+              </h1>
+
+              <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base md:text-lg">
+                Vamos analisar sua solicitação e entrar em contato pelos dados informados para oferecer
+                um atendimento exclusivo e personalizado.
+              </p>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-4 font-['Playfair_Display']">
-              Solicitação Enviada!
-            </h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto leading-relaxed">
-              Sua solicitação de pedido atacado foi recebida com sucesso. 
-              Agora é com a gente!
-            </p>
-          </div>
-        </section>
-
-        {/* Steps Section */}
-        <section className="container mx-auto px-4 -mt-8 relative z-20 max-w-4xl">
-          <div className="bg-card rounded-2xl shadow-xl border border-border/50 overflow-hidden">
-            <div className="p-6 md:p-10">
-              <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-4">
-                  <Sparkles className="w-4 h-4" />
-                  O que acontece agora?
+            <div className="mt-8 grid gap-6 lg:mt-12 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-xl backdrop-blur sm:p-8">
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                  <Sparkles className="h-4 w-4" />
+                  O que acontece agora
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground font-['Playfair_Display']">
-                  Próximos Passos
-                </h2>
+
+                <div className="mt-6 space-y-4 sm:space-y-5">
+                  {steps.map((step) => {
+                    const Icon = step.icon;
+
+                    return (
+                      <div
+                        key={step.title}
+                        className="flex gap-4 rounded-2xl border border-border/50 bg-secondary/30 p-4 sm:p-5"
+                      >
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+                          <Icon className="h-5 w-5" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
+                            {step.label}
+                          </div>
+                          <h2 className="mt-1 text-lg font-semibold text-foreground">{step.title}</h2>
+                          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-                {/* Step 1 */}
-                <div className="relative group">
-                  <div className="bg-secondary/50 rounded-xl p-6 h-full border border-border/30 hover:border-accent/30 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Clock className="w-6 h-6 text-primary-foreground" />
+              <div className="space-y-4 sm:space-y-5">
+                <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-lg sm:p-6">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <Clock className="h-5 w-5" />
                     </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">PASSO 1</span>
+                    <div>
+                      <h2 className="text-lg font-semibold text-foreground">Prazo de retorno</h2>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        Nossa equipe entrará em contato em até <strong className="text-foreground">48 horas úteis</strong>.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Análise do Pedido</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Nossa equipe irá analisar todos os itens da sua solicitação, verificando disponibilidade e condições especiais para o seu pedido.
-                    </p>
+                  </div>
+
+                  <div className="mt-4 rounded-2xl bg-secondary/40 p-4 text-sm leading-6 text-muted-foreground">
+                    Você não precisa reenviar o pedido. Sua solicitação já está em análise.
                   </div>
                 </div>
 
-                {/* Step 2 */}
-                <div className="relative group">
-                  <div className="bg-secondary/50 rounded-xl p-6 h-full border border-border/30 hover:border-accent/30 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <MessageCircle className="w-6 h-6 text-primary-foreground" />
-                    </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">PASSO 2</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Contato Personalizado</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Entraremos em contato pelos dados informados — WhatsApp ou e-mail — para oferecer um atendimento exclusivo e personalizado.
-                    </p>
+                <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-lg sm:p-6">
+                  <h2 className="text-lg font-semibold text-foreground">Atendimento exclusivo</h2>
+
+                  <div className="mt-4 space-y-4">
+                    {highlights.map((item) => {
+                      const Icon = item.icon;
+
+                      return (
+                        <div key={item.title} className="flex items-start gap-3">
+                          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Step 3 */}
-                <div className="relative group">
-                  <div className="bg-secondary/50 rounded-xl p-6 h-full border border-border/30 hover:border-accent/30 transition-all duration-300 hover:shadow-lg">
-                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <ShieldCheck className="w-6 h-6 text-primary-foreground" />
-                    </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">PASSO 3</span>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Fechamento do Pedido</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Após alinhamento de detalhes, finalizaremos seu pedido com condições exclusivas de atacado, garantindo o melhor custo-benefício.
-                    </p>
-                  </div>
+                <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                  <Button onClick={() => navigate("/atacado")} size="lg" className="h-12 w-full gap-2">
+                    <ArrowLeft className="h-5 w-5" />
+                    Voltar para o atacado
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/contato")}
+                    size="lg"
+                    variant="outline"
+                    className="h-12 w-full"
+                  >
+                    Falar com a equipe
+                  </Button>
                 </div>
               </div>
             </div>
-
-            {/* Timeline bar */}
-            <div className="bg-primary/5 border-t border-border/30 px-6 md:px-10 py-6">
-              <div className="flex items-center justify-center gap-3 text-center">
-                <Clock className="w-5 h-5 text-accent flex-shrink-0" />
-                <p className="text-sm text-muted-foreground">
-                  Prazo de retorno: até <strong className="text-foreground">48 horas úteis</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Trust Section */}
-        <section className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
-                <Star className="w-7 h-7 text-accent" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground">Atendimento VIP</h4>
-                <p className="text-xs text-muted-foreground mt-1">Cada cliente atacado recebe atenção exclusiva da nossa equipe</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
-                <Phone className="w-7 h-7 text-accent" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground">Suporte Dedicado</h4>
-                <p className="text-xs text-muted-foreground mt-1">Acompanhamento direto via WhatsApp do início ao fim</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center">
-                <Mail className="w-7 h-7 text-accent" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground">Confirmação por E-mail</h4>
-                <p className="text-xs text-muted-foreground mt-1">Você receberá todos os detalhes e atualizações por e-mail</p>
-              </div>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center mt-12">
-            <Button onClick={() => navigate("/atacado")} size="lg" className="gap-2 px-8 h-12 text-base font-semibold">
-              <ArrowLeft className="w-5 h-5" />
-              Continuar Comprando
-            </Button>
-            <p className="text-xs text-muted-foreground mt-3">
-              Enquanto isso, explore mais produtos e monte novos pedidos!
-            </p>
           </div>
         </section>
       </main>
+
       <Footer />
     </div>
   );
