@@ -152,12 +152,15 @@ const ShopifyProductPage = () => {
   }, [product]);
 
   // Pre-compute size availability maps (general availability, not filtered by color)
+  // Detect if product is ATACADO - if so, all variants are considered available
+  const isAtacadoProduct = product?.title?.toUpperCase().includes('ATACADO') || false;
+
   const sizeAvailabilityMaps = useMemo(() => {
     if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
     
     const checkAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
       return product.variants.edges.some(({ node }) => {
-        if (!node.availableForSale) return false;
+        if (!isAtacadoProduct && !node.availableForSale) return false;
         
         let sizeMatch = false;
         
