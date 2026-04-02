@@ -17,7 +17,6 @@ const WholesaleCheckout = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const isAtacado = useStoreContext(state => state.isAtacado());
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
