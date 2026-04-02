@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   CheckCircle,
-  Clock,
-  Mail,
   MessageCircle,
   Package,
   ShieldCheck,
