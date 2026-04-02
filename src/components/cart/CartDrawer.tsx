@@ -341,6 +341,11 @@ export const CartDrawer = () => {
                       <AlertTriangle className="w-5 h-5 mr-2" />
                       Adicione mais itens
                     </>
+                  ) : isAtacado ? (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      Solicitar Pedido Atacado
+                    </>
                   ) : (
                     <>
                       <ExternalLink className="w-5 h-5 mr-2" />
