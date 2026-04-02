@@ -23,6 +23,7 @@ import SACManager from "@/components/admin/SACManager";
 import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import DashboardStats from "@/components/admin/DashboardStats";
 import SizeChartManager from "@/components/admin/SizeChartManager";
+import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -68,6 +69,7 @@ const AdminPanel = () => {
   const [pendingSacCount, setPendingSacCount] = useState(0);
   const [newSubscribersCount, setNewSubscribersCount] = useState(0);
   const [openSupportCount, setOpenSupportCount] = useState(0);
+  const [pendingWholesaleCount, setPendingWholesaleCount] = useState(0);
   
   const [heroAtacado, setHeroAtacado] = useState<HeroSettings | null>(null);
   const [heroVarejo, setHeroVarejo] = useState<HeroSettings | null>(null);
@@ -142,6 +144,16 @@ const AdminPanel = () => {
       if (!supportError && supportCount !== null) {
         setOpenSupportCount(supportCount);
       }
+
+      // Get pending wholesale orders count
+      const { count: wholesaleCount, error: wholesaleError } = await supabase
+        .from('wholesale_orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente');
+      
+      if (!wholesaleError && wholesaleCount !== null) {
+        setPendingWholesaleCount(wholesaleCount);
+      }
     } catch (error) {
       console.error('Error loading notification counts:', error);
     }
@@ -188,6 +200,14 @@ const AdminPanel = () => {
       ]
     },
     {
+      id: "vendas",
+      label: "Vendas",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      items: [
+        { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
+      ]
+    },
+    {
       id: "atendimento",
       label: "Atendimento & Gestão",
       icon: <MessageSquare className="w-4 h-4" />,
@@ -199,7 +219,7 @@ const AdminPanel = () => {
         { id: "docs", label: "Documentação", icon: <BookOpen className="w-4 h-4" /> },
       ]
     }
-  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount, openSupportCount]);
+  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount, openSupportCount, pendingWholesaleCount]);
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
@@ -1832,6 +1852,9 @@ const AdminPanel = () => {
             </CardContent>
           </Card>
         );
+
+      case "wholesale-orders":
+        return <WholesaleOrdersManager />;
 
       case "support-tickets":
         return (

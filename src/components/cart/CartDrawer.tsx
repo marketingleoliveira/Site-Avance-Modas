@@ -9,8 +9,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store, Send } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   // Use persistent store context instead of URL-based detection
   const isAtacado = useStoreContext(state => state.isAtacado());
@@ -51,20 +52,21 @@ export const CartDrawer = () => {
   }, [isOpen, syncCart]);
 
   const handleCheckout = () => {
-    // Block checkout if atacado and below minimum order (only if settings loaded)
-    if (isAtacado && !settingsLoading && totalPrice < minimumOrder) {
-      toast.error("Pedido mínimo não atingido", {
-        description: `No atacado, o pedido mínimo é de ${formatPrice(minimumOrder)}. Faltam ${formatPrice(remainingForMinimum)} para finalizar. Considere nossa loja Varejo para compras menores.`,
-      });
+    // Atacado: redirect to wholesale checkout form
+    if (isAtacado) {
+      if (!settingsLoading && totalPrice < minimumOrder) {
+        toast.error("Pedido mínimo não atingido", {
+          description: `No atacado, o pedido mínimo é de ${formatPrice(minimumOrder)}. Faltam ${formatPrice(remainingForMinimum)} para finalizar.`,
+        });
+        return;
+      }
+      setIsOpen(false);
+      navigate("/atacado/checkout");
       return;
     }
     
-    // Use validated checkout URL with minimum order check
-    const checkoutUrl = getCheckoutUrl({
-      validateMinimum: true,
-      minimumOrder: minimumOrder,
-      isAtacado: isAtacado
-    });
+    // Varejo: normal Shopify checkout
+    const checkoutUrl = getCheckoutUrl();
     
     if (checkoutUrl) {
       window.open(checkoutUrl, '_blank');
@@ -73,16 +75,9 @@ export const CartDrawer = () => {
         description: "Complete seu pedido na nova aba.",
       });
     } else {
-      // Double-check: if atacado and below minimum, show specific error
-      if (isAtacado && totalPrice < minimumOrder) {
-        toast.error("Checkout bloqueado", {
-          description: `Valor mínimo de ${formatPrice(minimumOrder)} não atingido para atacado.`,
-        });
-      } else {
-        toast.error("Erro ao abrir checkout", {
-          description: "Tente adicionar um produto novamente.",
-        });
-      }
+      toast.error("Erro ao abrir checkout", {
+        description: "Tente adicionar um produto novamente.",
+      });
     }
   };
 
@@ -346,6 +341,11 @@ export const CartDrawer = () => {
                       <AlertTriangle className="w-5 h-5 mr-2" />
                       Adicione mais itens
                     </>
+                  ) : isAtacado ? (
+                    <>
+                      <Send className="w-5 h-5 mr-2" />
+                      Solicitar Pedido Atacado
+                    </>
                   ) : (
                     <>
                       <ExternalLink className="w-5 h-5 mr-2" />
@@ -355,7 +355,7 @@ export const CartDrawer = () => {
                 </Button>
                 
                 <p className="text-xs text-center text-muted-foreground">
-                  Pagamento seguro via Shopify 🔒
+                  {isAtacado ? "Nosso time entrará em contato em até 48h úteis 📋" : "Pagamento seguro via Shopify 🔒"}
                 </p>
               </div>
             </>

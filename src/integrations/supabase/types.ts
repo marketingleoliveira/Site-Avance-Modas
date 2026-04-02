@@ -250,6 +250,48 @@ export type Database = {
         }
         Relationships: []
       }
+      wholesale_orders: {
+        Row: {
+          admin_notes: string | null
+          cart_items: Json
+          created_at: string
+          currency_code: string
+          customer_email: string
+          customer_name: string
+          customer_whatsapp: string
+          id: string
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          cart_items?: Json
+          created_at?: string
+          currency_code?: string
+          customer_email: string
+          customer_name: string
+          customer_whatsapp: string
+          id?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          cart_items?: Json
+          created_at?: string
+          currency_code?: string
+          customer_email?: string
+          customer_name?: string
+          customer_whatsapp?: string
+          id?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
