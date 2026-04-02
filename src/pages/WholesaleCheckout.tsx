@@ -107,15 +107,15 @@ const WholesaleCheckout = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 container mx-auto max-w-4xl px-4 py-8">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
+      <main className="flex-1 container mx-auto max-w-4xl px-4 py-6 sm:py-8">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4 sm:mb-6 -ml-2">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar
         </Button>
 
-        <h1 className="mb-6 text-2xl font-bold md:text-3xl">Finalizar Pedido Atacado</h1>
+        <h1 className="mb-4 sm:mb-6 text-xl font-bold sm:text-2xl md:text-3xl">Finalizar Pedido Atacado</h1>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
