@@ -144,6 +144,16 @@ const AdminPanel = () => {
       if (!supportError && supportCount !== null) {
         setOpenSupportCount(supportCount);
       }
+
+      // Get pending wholesale orders count
+      const { count: wholesaleCount, error: wholesaleError } = await supabase
+        .from('wholesale_orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente');
+      
+      if (!wholesaleError && wholesaleCount !== null) {
+        setPendingWholesaleCount(wholesaleCount);
+      }
     } catch (error) {
       console.error('Error loading notification counts:', error);
     }
