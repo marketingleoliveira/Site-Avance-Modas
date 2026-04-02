@@ -558,7 +558,7 @@ const ShopifyProductPage = () => {
 
   const hasConjuntoSizesGlobal = topSizes.length > 0 && bottomSizes.length > 0;
   
-  const canAddToCart = currentVariant?.availableForSale && 
+  const canAddToCart = (isAtacadoProduct || currentVariant?.availableForSale) && 
     (hasConjuntoSizesGlobal 
       ? (selectedTopSize && selectedBottomSize)
       : (sizes.length === 0 || selectedSize)
