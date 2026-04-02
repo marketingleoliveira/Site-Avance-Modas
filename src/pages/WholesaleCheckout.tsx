@@ -54,7 +54,7 @@ const WholesaleCheckout = () => {
     return <Navigate to="/atacado" replace />;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!form.name.trim() || !form.email.trim() || !form.whatsapp.trim()) {
@@ -67,6 +67,12 @@ const WholesaleCheckout = () => {
       toast.error("E-mail inválido");
       return;
     }
+
+    setAcceptedRules(false);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmSubmit = async () => {
 
     setSending(true);
     try {
