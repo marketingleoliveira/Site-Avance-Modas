@@ -989,7 +989,7 @@ className="w-full h-full object-contain bg-white"
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  {currentVariant?.availableForSale === false && (
+                  {!isAtacadoProduct && currentVariant?.availableForSale === false && (
                     <span className="text-sm text-destructive font-medium">Esgotado</span>
                   )}
                 </div>
