@@ -19,6 +19,7 @@ import PrivateLabelPage from "./pages/PrivateLabelPage";
 import SACPage from "./pages/SACPage";
 import SupportPage from "./pages/SupportPage";
 import MaintenancePage from "./pages/MaintenancePage";
+import WholesaleCheckout from "./pages/WholesaleCheckout";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
