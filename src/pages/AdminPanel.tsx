@@ -1853,6 +1853,9 @@ const AdminPanel = () => {
           </Card>
         );
 
+      case "wholesale-orders":
+        return <WholesaleOrdersManager />;
+
       case "support-tickets":
         return (
           <Card>
