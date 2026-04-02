@@ -80,7 +80,7 @@ const WholesaleCheckout = () => {
       if (error) throw error;
 
       clearCart();
-      setSent(true);
+      navigate("/atacado/confirmacao");
       toast.success("Solicitação enviada com sucesso!");
     } catch (error) {
       console.error("Error submitting wholesale order:", error);

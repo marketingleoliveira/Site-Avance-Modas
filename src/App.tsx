@@ -63,6 +63,7 @@ const AppContent = () => {
         <Route path="/sac" element={<SACPage />} />
         <Route path="/suporte" element={<SupportPage />} />
         <Route path="/atacado/checkout" element={<WholesaleCheckout />} />
+        <Route path="/atacado/confirmacao" element={<WholesaleConfirmation />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
