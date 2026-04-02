@@ -355,7 +355,7 @@ export const CartDrawer = () => {
                 </Button>
                 
                 <p className="text-xs text-center text-muted-foreground">
-                  Pagamento seguro via Shopify 🔒
+                  {isAtacado ? "Nosso time entrará em contato em até 48h úteis 📋" : "Pagamento seguro via Shopify 🔒"}
                 </p>
               </div>
             </>
