@@ -61,6 +61,7 @@ const AppContent = () => {
         <Route path="/private-label" element={<PrivateLabelPage />} />
         <Route path="/sac" element={<SACPage />} />
         <Route path="/suporte" element={<SupportPage />} />
+        <Route path="/atacado/checkout" element={<WholesaleCheckout />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
