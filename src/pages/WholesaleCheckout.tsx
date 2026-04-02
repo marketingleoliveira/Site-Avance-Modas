@@ -89,34 +89,6 @@ const WholesaleCheckout = () => {
     }
   };
 
-  if (sent) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-lg w-full text-center">
-            <CardContent className="pt-8 pb-8 space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-foreground">Solicitação Enviada!</h2>
-                <p className="text-muted-foreground">
-                  Recebemos sua solicitação de pedido atacado. Nossa equipe entrará em contato pelo WhatsApp ou e-mail informado em até <strong>48 horas úteis</strong> para tratar sobre seu pedido.
-                </p>
-              </div>
-              <Button onClick={() => navigate("/atacado")} size="lg">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar à Loja
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
