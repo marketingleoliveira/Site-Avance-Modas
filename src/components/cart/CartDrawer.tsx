@@ -177,7 +177,25 @@ export const CartDrawer = () => {
                           >
                             <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
-                          <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-medium">{item.quantity}</span>
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val) && val >= 1) {
+                                updateQuantity(item.variantId, val);
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (isNaN(val) || val < 1) {
+                                updateQuantity(item.variantId, 1);
+                              }
+                            }}
+                            className="w-10 sm:w-12 text-center text-xs sm:text-sm font-medium border border-border rounded-md bg-background h-6 sm:h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            disabled={isLoading}
+                          />
                           <Button
                             variant="outline"
                             size="icon"
