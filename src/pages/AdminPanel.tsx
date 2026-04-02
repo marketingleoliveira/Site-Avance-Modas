@@ -200,6 +200,14 @@ const AdminPanel = () => {
       ]
     },
     {
+      id: "vendas",
+      label: "Vendas",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      items: [
+        { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
+      ]
+    },
+    {
       id: "atendimento",
       label: "Atendimento & Gestão",
       icon: <MessageSquare className="w-4 h-4" />,
@@ -211,7 +219,7 @@ const AdminPanel = () => {
         { id: "docs", label: "Documentação", icon: <BookOpen className="w-4 h-4" /> },
       ]
     }
-  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount, openSupportCount]);
+  ], [maintenanceSettings?.enabled, pendingSacCount, newSubscribersCount, openSupportCount, pendingWholesaleCount]);
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
