@@ -8,7 +8,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle, Loader2, Package, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Package, Send } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -17,7 +17,6 @@ const WholesaleCheckout = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const isAtacado = useStoreContext(state => state.isAtacado());
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -32,12 +31,12 @@ const WholesaleCheckout = () => {
   };
 
   // Redirect if not atacado or cart empty
-  if (!isAtacado && !sent) {
+  if (!isAtacado) {
     navigate("/atacado");
     return null;
   }
 
-  if (items.length === 0 && !sent) {
+  if (items.length === 0) {
     navigate("/atacado");
     return null;
   }
@@ -80,7 +79,7 @@ const WholesaleCheckout = () => {
       if (error) throw error;
 
       clearCart();
-      setSent(true);
+      navigate("/atacado/confirmacao");
       toast.success("Solicitação enviada com sucesso!");
     } catch (error) {
       console.error("Error submitting wholesale order:", error);
@@ -89,34 +88,6 @@ const WholesaleCheckout = () => {
       setSending(false);
     }
   };
-
-  if (sent) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Header />
-        <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-lg w-full text-center">
-            <CardContent className="pt-8 pb-8 space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-foreground">Solicitação Enviada!</h2>
-                <p className="text-muted-foreground">
-                  Recebemos sua solicitação de pedido atacado. Nossa equipe entrará em contato pelo WhatsApp ou e-mail informado em até <strong>48 horas úteis</strong> para tratar sobre seu pedido.
-                </p>
-              </div>
-              <Button onClick={() => navigate("/atacado")} size="lg">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar à Loja
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
