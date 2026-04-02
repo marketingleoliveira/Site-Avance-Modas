@@ -172,7 +172,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     e.stopPropagation();
     
     const firstVariant = product.node.variants.edges[0]?.node;
-    if (!firstVariant || !firstVariant.availableForSale) {
+    const isAtacadoProduct = product.node.title?.toUpperCase().includes('ATACADO');
+    if (!firstVariant || (!isAtacadoProduct && !firstVariant.availableForSale)) {
       toast.error("Produto indisponível");
       return;
     }
