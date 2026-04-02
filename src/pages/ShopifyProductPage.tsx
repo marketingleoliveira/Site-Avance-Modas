@@ -981,7 +981,20 @@ className="w-full h-full object-contain bg-white"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="w-14 text-center font-semibold text-lg">{quantity}</span>
+                    <input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val) && val >= 1) setQuantity(val);
+                      }}
+                      onBlur={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (isNaN(val) || val < 1) setQuantity(1);
+                      }}
+                      className="w-14 text-center font-semibold text-lg bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <button
                       onClick={() => setQuantity(quantity + 1)}
                       className="p-3 hover:bg-secondary transition-colors"
