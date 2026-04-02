@@ -332,7 +332,15 @@ export const useCartStore = create<CartStore>()(
         
         const { items, cartId, clearCart } = get();
         const item = items.find(i => i.variantId === variantId);
-        if (!item?.lineId || !cartId) return;
+        if (!item) return;
+        
+        // Local-only item (atacado) - update locally
+        if (item.lineId?.startsWith('local-')) {
+          set({ items: items.map(i => i.variantId === variantId ? { ...i, quantity } : i) });
+          return;
+        }
+        
+        if (!item.lineId || !cartId) return;
 
         set({ isLoading: true });
         try {
@@ -353,9 +361,11 @@ export const useCartStore = create<CartStore>()(
       removeItem: async (variantId) => {
         const { items, cartId, clearCart } = get();
         const item = items.find(i => i.variantId === variantId);
-        if (!item?.lineId || !cartId) {
-          // Just remove locally if no lineId
-          set({ items: items.filter(i => i.variantId !== variantId) });
+        
+        // Local-only item (atacado) - remove locally
+        if (!item?.lineId || item.lineId.startsWith('local-') || !cartId) {
+          const newItems = items.filter(i => i.variantId !== variantId);
+          set({ items: newItems });
           return;
         }
 
