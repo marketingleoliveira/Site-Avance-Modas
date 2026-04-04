@@ -462,9 +462,9 @@ const ShopifyProductPage = () => {
         <AnnouncementBar />
         <Header />
         <main className="flex-1 py-12 bg-background">
-          <div className="container">
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="aspect-square bg-muted rounded-lg animate-pulse" />
+          <div className="container px-3 sm:px-4 lg:px-6">
+            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+              <div className="aspect-[4/5] bg-muted rounded-lg animate-pulse" />
               <div className="space-y-4">
                 <div className="h-8 bg-muted rounded w-3/4 animate-pulse" />
                 <div className="h-6 bg-muted rounded w-1/2 animate-pulse" />
