@@ -570,19 +570,19 @@ const ShopifyProductPage = () => {
       <AnnouncementBar />
       <Header />
       
-      <main className="flex-1 py-8 lg:py-12 bg-background">
-        <div className="container">
+      <main className="flex-1 py-4 sm:py-8 lg:py-12 bg-background">
+        <div className="container px-3 sm:px-4 lg:px-6">
           {/* Breadcrumb */}
-          <nav className="text-sm text-muted-foreground mb-6">
+          <nav className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 truncate">
             <Link to="/" className="hover:text-foreground transition-colors">Início</Link>
-            <span className="mx-2">/</span>
+            <span className="mx-1.5 sm:mx-2">/</span>
             <span className="text-foreground font-medium">{product.title}</span>
           </nav>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
             {/* Image Gallery */}
-            <div className="space-y-3 sm:space-y-4 overflow-hidden">
-              <div className="relative aspect-[4/5] sm:aspect-square bg-card rounded-xl sm:rounded-2xl overflow-hidden shadow-sm max-h-[50vh] sm:max-h-none mx-auto w-full">
+            <div className="space-y-2 sm:space-y-4 overflow-hidden">
+              <div className="relative aspect-[4/5] bg-card rounded-lg sm:rounded-2xl overflow-hidden shadow-sm mx-auto w-full">
                 {images.length > 0 ? (
                   <img 
                     src={images[currentImage].node.url} 
@@ -680,10 +680,10 @@ className="w-full h-full object-contain bg-white"
             </div>
 
             {/* Product Info */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Title */}
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-foreground leading-tight">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">
                   {product.title}
                 </h1>
               </div>
@@ -691,7 +691,7 @@ className="w-full h-full object-contain bg-white"
               {/* Price */}
               <div className="space-y-1">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-3xl lg:text-4xl font-bold text-primary">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
                     {formatPrice(currentVariant?.price.amount || product.priceRange.minVariantPrice.amount, currentVariant?.price.currencyCode || 'BRL')}
                   </span>
                 </div>
@@ -971,9 +971,9 @@ className="w-full h-full object-contain bg-white"
               )}
 
               {/* Quantity */}
-              <div className="space-y-3">
-                <p className="font-semibold text-foreground">Quantidade:</p>
-                <div className="flex items-center gap-4">
+              <div className="space-y-2 sm:space-y-3">
+                <p className="font-semibold text-sm sm:text-base text-foreground">Quantidade:</p>
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div className="inline-flex items-center border-2 border-border rounded-lg overflow-hidden bg-card">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -1013,14 +1013,14 @@ className="w-full h-full object-contain bg-white"
                 <Button 
                   variant="hero" 
                   size="xl" 
-                  className="flex-1 gap-1.5 sm:gap-2 h-12 sm:h-14 text-sm sm:text-base px-3 sm:px-6"
+                  className="flex-1 gap-1.5 sm:gap-2 h-11 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base px-2 sm:px-4 md:px-6"
                   onClick={handleAddToCart}
                   disabled={!canAddToCart}
                 >
                   <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">{!canAddToCart ? "Selecione opções" : "Adicionar ao Carrinho"}</span>
                 </Button>
-                <Button variant="outline" size="xl" className="h-12 w-12 sm:h-14 sm:w-14 flex-shrink-0">
+                <Button variant="outline" size="xl" className="h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 flex-shrink-0">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
@@ -1036,44 +1036,44 @@ className="w-full h-full object-contain bg-white"
               </Button>
 
               {/* Payment & Security Badges */}
-              <div className="pt-4 space-y-3 sm:space-y-4">
+              <div className="pt-3 sm:pt-4 space-y-2.5 sm:space-y-4">
                 {/* Security Badge */}
-                <div className="flex items-center gap-2 p-2.5 sm:p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
+                <div className="flex items-center gap-2 p-2 sm:p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <Lock className="w-4 h-4 text-green-600 flex-shrink-0" />
                   <div className="min-w-0">
-                    <span className="text-xs sm:text-sm font-medium text-green-700">Compra 100% Segura</span>
-                    <span className="text-[10px] sm:text-xs text-green-600 ml-1 sm:ml-2 hidden xs:inline">Dados criptografados</span>
+                    <span className="text-[11px] sm:text-sm font-medium text-green-700">Compra 100% Segura</span>
+                    <span className="text-[10px] sm:text-xs text-green-600 ml-1 sm:ml-2">· Dados criptografados</span>
                   </div>
                 </div>
                 
                 {/* Payment Methods */}
-                <div className="p-3 bg-secondary/30 rounded-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CreditCard className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Formas de Pagamento</span>
+                <div className="p-2.5 sm:p-3 bg-secondary/30 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                    <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">Formas de Pagamento</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-blue-800">VISA</div>
-                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-red-600">Mastercard</div>
-                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-orange-500">Elo</div>
-                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-yellow-600">Hipercard</div>
-                    <div className="bg-[#32BCAD] px-2 py-1.5 rounded text-[10px] font-bold text-white">PIX</div>
-                    <div className="bg-white px-2 py-1.5 rounded border text-[10px] font-bold text-gray-700">Boleto</div>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <div className="bg-white px-1.5 sm:px-2 py-1 sm:py-1.5 rounded border text-[9px] sm:text-[10px] font-bold text-blue-800">VISA</div>
+                    <div className="bg-white px-1.5 sm:px-2 py-1 sm:py-1.5 rounded border text-[9px] sm:text-[10px] font-bold text-red-600">Mastercard</div>
+                    <div className="bg-white px-1.5 sm:px-2 py-1 sm:py-1.5 rounded border text-[9px] sm:text-[10px] font-bold text-orange-500">Elo</div>
+                    <div className="bg-white px-1.5 sm:px-2 py-1 sm:py-1.5 rounded border text-[9px] sm:text-[10px] font-bold text-yellow-600">Hipercard</div>
+                    <div className="bg-[#32BCAD] px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[9px] sm:text-[10px] font-bold text-white">PIX</div>
+                    <div className="bg-white px-1.5 sm:px-2 py-1 sm:py-1.5 rounded border text-[9px] sm:text-[10px] font-bold text-gray-700">Boleto</div>
                   </div>
                 </div>
 
                 {/* Certifications */}
-                <div className="flex items-center justify-between gap-3 py-2">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <BadgeCheck className="w-4 h-4 text-primary" />
+                <div className="flex items-center justify-between gap-2 py-1.5 sm:py-2">
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+                    <BadgeCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
                     <span>Loja Verificada</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Lock className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+                    <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
                     <span>SSL Seguro</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <BadgeCheck className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+                    <BadgeCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
                     <span>CNPJ Ativo</span>
                   </div>
                 </div>
