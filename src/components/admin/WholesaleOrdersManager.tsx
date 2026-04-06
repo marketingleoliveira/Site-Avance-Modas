@@ -191,9 +191,14 @@ const WholesaleOrdersManager = () => {
                     {formatDate(order.created_at)} • {(order.cart_items as CartItemData[]).length} itens • {formatPrice(order.total_amount, order.currency_code)}
                   </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
-                  <Eye className="w-4 h-4 mr-1" /> Ver
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
+                    <Eye className="w-4 h-4 mr-1" /> Ver
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
