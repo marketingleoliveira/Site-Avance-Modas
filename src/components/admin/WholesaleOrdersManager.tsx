@@ -56,6 +56,7 @@ const WholesaleOrdersManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     setLoading(true);
