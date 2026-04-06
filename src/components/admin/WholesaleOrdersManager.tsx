@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2 } from "lucide-react";
+import { Package, Eye, RefreshCw, Loader2, Trash2 } from "lucide-react";
 
 interface CartItemData {
   title: string;
@@ -55,6 +56,7 @@ const WholesaleOrdersManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -105,6 +107,21 @@ const WholesaleOrdersManager = () => {
       toast.error("Erro ao atualizar solicitação");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteOrder = async () => {
+    if (!deleteOrderId) return;
+    try {
+      const { error } = await supabase.from("wholesale_orders").delete().eq("id", deleteOrderId);
+      if (error) throw error;
+      toast.success("Pedido excluído com sucesso!");
+      setDeleteOrderId(null);
+      if (selectedOrder?.id === deleteOrderId) setSelectedOrder(null);
+      fetchOrders();
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      toast.error("Erro ao excluir pedido");
     }
   };
 
@@ -174,9 +191,14 @@ const WholesaleOrdersManager = () => {
                     {formatDate(order.created_at)} • {(order.cart_items as CartItemData[]).length} itens • {formatPrice(order.total_amount, order.currency_code)}
                   </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
-                  <Eye className="w-4 h-4 mr-1" /> Ver
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
+                    <Eye className="w-4 h-4 mr-1" /> Ver
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -265,15 +287,38 @@ const WholesaleOrdersManager = () => {
                     rows={3}
                   />
                 </div>
-                <Button onClick={handleUpdateOrder} disabled={saving} className="w-full">
-                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  Salvar Alterações
-                </Button>
+                <div className="flex gap-2">
+                  <Button onClick={handleUpdateOrder} disabled={saving} className="flex-1">
+                    {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                    Salvar Alterações
+                  </Button>
+                  <Button variant="destructive" onClick={() => { setDeleteOrderId(selectedOrder.id); }}>
+                    <Trash2 className="w-4 h-4 mr-1" /> Excluir
+                  </Button>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteOrderId} onOpenChange={(open) => !open && setDeleteOrderId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pedido?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido será removido permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteOrder} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
