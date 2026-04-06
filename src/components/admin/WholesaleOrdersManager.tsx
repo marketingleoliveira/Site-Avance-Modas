@@ -110,6 +110,21 @@ const WholesaleOrdersManager = () => {
     }
   };
 
+  const handleDeleteOrder = async () => {
+    if (!deleteOrderId) return;
+    try {
+      const { error } = await supabase.from("wholesale_orders").delete().eq("id", deleteOrderId);
+      if (error) throw error;
+      toast.success("Pedido excluído com sucesso!");
+      setDeleteOrderId(null);
+      if (selectedOrder?.id === deleteOrderId) setSelectedOrder(null);
+      fetchOrders();
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      toast.error("Erro ao excluir pedido");
+    }
+  };
+
   const formatPrice = (amount: number, currency = "BRL") => {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(amount);
   };
