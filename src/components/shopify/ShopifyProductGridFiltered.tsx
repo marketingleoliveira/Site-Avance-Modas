@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, ShoppingBag, Eye } from "lucide-react";
+import { Heart, ShoppingBag, Eye, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShopifyProduct } from "@/lib/shopify-api";
 import { ShopifyCollection, fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
@@ -7,6 +7,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
+import { cn } from "@/lib/utils";
 
 interface ShopifyProductGridFilteredProps {
   title?: string;
@@ -70,19 +71,41 @@ const ShopifyProductGridFiltered = ({
     }).format(parseFloat(amount));
   };
 
+  // Check if product has compare-at price (on sale)
+  const getComparePrice = (product: ShopifyProduct) => {
+    const variants = product.node.variants.edges;
+    if (variants.length > 0) {
+      const firstVariant = variants[0].node;
+      const currentPrice = parseFloat(firstVariant.price.amount);
+      const minPrice = parseFloat(product.node.priceRange.minVariantPrice.amount);
+      if (currentPrice > minPrice && minPrice > 0) {
+        return { original: currentPrice, sale: minPrice };
+      }
+    }
+    return null;
+  };
+
+  // Get available color options
+  const getColorOptions = (product: ShopifyProduct) => {
+    const colorOption = product.node.options?.find(
+      opt => opt.name.toLowerCase() === 'cor' || opt.name.toLowerCase() === 'color'
+    );
+    return colorOption?.values?.slice(0, 5) || [];
+  };
+
   if (loading) {
     return (
-      <section className="py-20 bg-background">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{title}</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
+      <section className="py-10 sm:py-16 lg:py-20 bg-background">
+        <div className="container px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground mb-3">{title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-card rounded-lg overflow-hidden animate-pulse">
-                <div className="aspect-square bg-muted" />
-                <div className="p-4 space-y-2">
+              <div key={i} className="bg-card rounded-xl overflow-hidden animate-pulse">
+                <div className="aspect-[3/4] bg-muted" />
+                <div className="p-3 sm:p-4 space-y-2">
                   <div className="h-4 bg-muted rounded w-3/4" />
                   <div className="h-4 bg-muted rounded w-1/2" />
                 </div>
@@ -96,16 +119,16 @@ const ShopifyProductGridFiltered = ({
 
   if (products.length === 0) {
     return (
-      <section className="py-20 bg-background">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{title}</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
+      <section className="py-10 sm:py-16 lg:py-20 bg-background">
+        <div className="container px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground mb-3">{title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">{subtitle}</p>
           </div>
-          <div className="text-center py-16 bg-card rounded-lg">
-            <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Nenhum produto encontrado</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
+          <div className="text-center py-16 bg-card rounded-xl border border-border">
+            <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold mb-2">Nenhum produto encontrado</h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto px-4">
               Ainda não há produtos de {type.toLowerCase()} cadastrados.
             </p>
           </div>
@@ -115,81 +138,114 @@ const ShopifyProductGridFiltered = ({
   }
 
   return (
-    <section id="produtos" className="py-20 bg-background">
-      <div className="container">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
+    <section id="produtos" className="py-10 sm:py-16 lg:py-20 bg-background">
+      <div className="container px-4 sm:px-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mb-8 sm:mb-12">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{title}</h2>
-            <p className="text-muted-foreground max-w-xl">{subtitle}</p>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-[3px] bg-accent rounded-full" />
+              <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-accent">
+                {type}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground">{title}</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 max-w-xl">{subtitle}</p>
           </div>
           {showViewAll && (
-            <Button variant="outline">Ver Todos</Button>
+            <Button variant="outline" size="sm" className="hidden sm:flex border-foreground/20 hover:bg-foreground hover:text-background font-semibold">
+              Ver Todos
+            </Button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => {
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+          {products.map((product, index) => {
             const firstImage = product.node.images.edges[0]?.node;
             const price = product.node.priceRange.minVariantPrice;
+            const colors = getColorOptions(product);
             
             return (
               <Link
                 key={product.node.id}
                 to={`/produto/${product.node.handle}`}
-                className="group bg-card rounded-lg overflow-hidden hover-lift shadow-card block"
+                className="group relative bg-card rounded-xl overflow-hidden transition-all duration-500 hover:shadow-[0_16px_48px_-12px_hsl(0_0%_0%/0.15)] hover:-translate-y-1 block border border-transparent hover:border-accent/20"
               >
-                <div className="relative aspect-square overflow-hidden">
+                {/* Image Container */}
+                <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
                   {firstImage ? (
                     <img 
                       src={firstImage.url} 
                       alt={firstImage.altText || product.node.title}
                       loading="lazy"
-                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 product-image-vibrant"
+                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 product-image-vibrant"
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+                      <ShoppingBag className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground" />
                     </div>
                   )}
-                  
-                  {/* Logo Avance */}
-                  <div className="absolute right-2 top-2">
+
+                  {/* Logo Avance - top right */}
+                  <div className="absolute right-2 top-2 z-10">
                     <img 
                       src={logoAvance} 
                       alt="Avance Modas" 
-                      className="w-[50px] h-[50px] object-contain"
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain opacity-80"
                     />
                   </div>
 
-                  <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                    <button className="p-2 bg-card rounded-full shadow-soft hover:bg-accent hover:text-accent-foreground transition-colors">
-                      <Heart className="w-4 h-4" />
+                  {/* Color swatches overlay - top left */}
+                  {colors.length > 0 && (
+                    <div className="absolute left-2 top-2 flex flex-col gap-1 z-10">
+                      {colors.map((color, i) => (
+                        <div
+                          key={i}
+                          className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-background shadow-sm"
+                          style={{ backgroundColor: getColorHex(color) }}
+                          title={color}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Quick actions */}
+                  <div className="absolute top-12 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 z-10">
+                    <button className="p-1.5 sm:p-2 bg-background/90 backdrop-blur-sm rounded-full shadow-md hover:bg-accent hover:text-accent-foreground transition-colors">
+                      <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
-                    <button className="p-2 bg-card rounded-full shadow-soft hover:bg-accent hover:text-accent-foreground transition-colors">
-                      <Eye className="w-4 h-4" />
+                    <button className="p-1.5 sm:p-2 bg-background/90 backdrop-blur-sm rounded-full shadow-md hover:bg-accent hover:text-accent-foreground transition-colors">
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-300">
+                  {/* Add to cart overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-300 z-10">
                     <Button 
-                      variant="shop" 
+                      variant="default"
                       size="sm" 
-                      className="w-full gap-2"
+                      className="w-full gap-2 bg-foreground text-background hover:bg-accent hover:text-accent-foreground font-semibold text-xs sm:text-sm h-9 sm:h-10 rounded-lg shadow-lg"
                       onClick={(e) => handleAddToCart(product, e)}
                     >
-                      <ShoppingBag className="w-4 h-4" />
-                      Adicionar
+                      <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Adicionar ao Carrinho</span>
+                      <span className="sm:hidden">Adicionar</span>
                     </Button>
                   </div>
+
+                  {/* Bottom gradient */}
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
-                <div className="p-4">
-                  <h3 className="font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-colors">
+                {/* Product Info */}
+                <div className="p-3 sm:p-4">
+                  <h3 className="font-bold text-foreground mb-1.5 line-clamp-2 group-hover:text-accent transition-colors text-xs sm:text-sm leading-snug">
                     {product.node.title}
                   </h3>
                   
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-foreground">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-base sm:text-lg font-black text-foreground">
                       {formatPrice(price.amount, price.currencyCode)}
                     </span>
                   </div>
@@ -198,9 +254,65 @@ const ShopifyProductGridFiltered = ({
             );
           })}
         </div>
+
+        {showViewAll && (
+          <div className="mt-8 sm:hidden text-center">
+            <Button variant="outline" size="sm" className="border-foreground/20 hover:bg-foreground hover:text-background font-semibold">
+              Ver Todos os Produtos
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
 };
+
+// Helper to map color names to hex values
+function getColorHex(colorName: string): string {
+  const colorMap: Record<string, string> = {
+    'preto': '#1a1a1a',
+    'black': '#1a1a1a',
+    'branco': '#f5f5f5',
+    'white': '#f5f5f5',
+    'vermelho': '#dc2626',
+    'red': '#dc2626',
+    'azul': '#2563eb',
+    'blue': '#2563eb',
+    'verde': '#16a34a',
+    'green': '#16a34a',
+    'rosa': '#ec4899',
+    'pink': '#ec4899',
+    'amarelo': '#eab308',
+    'yellow': '#eab308',
+    'laranja': '#ea580c',
+    'orange': '#ea580c',
+    'roxo': '#9333ea',
+    'purple': '#9333ea',
+    'cinza': '#6b7280',
+    'gray': '#6b7280',
+    'grey': '#6b7280',
+    'bege': '#d4a574',
+    'beige': '#d4a574',
+    'marrom': '#78350f',
+    'brown': '#78350f',
+    'bordo': '#881337',
+    'burgundy': '#881337',
+    'vinho': '#881337',
+    'nude': '#dbb89c',
+    'navy': '#1e3a5f',
+    'marinho': '#1e3a5f',
+    'coral': '#f97316',
+    'lilás': '#a78bfa',
+    'lilac': '#a78bfa',
+    'creme': '#fef3c7',
+    'cream': '#fef3c7',
+    'off white': '#faf5ef',
+    'off-white': '#faf5ef',
+    'marsala': '#7c2d12',
+  };
+  
+  const normalized = colorName.toLowerCase().trim();
+  return colorMap[normalized] || '#9ca3af';
+}
 
 export default ShopifyProductGridFiltered;
