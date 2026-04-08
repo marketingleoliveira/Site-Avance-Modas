@@ -80,7 +80,7 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
             <img 
               src={slide.image_url || heroFallback}
               alt={slide.promo_subtitle || `Slide ${index + 1}`}
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover object-top product-image-vibrant"
             />
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
