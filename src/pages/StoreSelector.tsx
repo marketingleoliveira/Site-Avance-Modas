@@ -56,7 +56,7 @@ const StoreSelector = () => {
           <Link 
             to="/varejo"
             onClick={() => setStoreType('varejo')}
-            className="group relative bg-background text-foreground rounded-2xl p-8 sm:p-10 border-2 border-foreground/10 transition-all duration-500 hover:border-accent hover:shadow-[0_20px_60px_-15px_hsl(340_100%_50%/0.2)] hover:-translate-y-2 overflow-hidden"
+            className="group relative bg-background text-foreground rounded-2xl p-8 sm:p-10 border-2 border-foreground/10 transition-all duration-500 hover:border-accent hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] hover:-translate-y-2 overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-full -translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-700" />
             

@@ -27,8 +27,8 @@
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 35%;
 
-    /* Rosa vibrante e vivo como accent */
-    --accent: 340 100% 50%;
+    /* Vermelho vibrante como accent */
+    --accent: 0 85% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 90% 55%;
