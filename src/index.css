@@ -6,56 +6,56 @@
 
 @layer base {
   :root {
-    /* Cores principais - Tons neutros elegantes */
-    --background: 40 20% 96%;
-    --foreground: 0 0% 8%;
+    /* Cores principais - Fundo branco limpo */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 5%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card-foreground: 0 0% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover-foreground: 0 0% 5%;
 
     /* Preto como cor principal da marca */
-    --primary: 0 0% 8%;
+    --primary: 0 0% 5%;
     --primary-foreground: 0 0% 100%;
 
-    /* Bege/areia como secundário */
-    --secondary: 40 25% 92%;
-    --secondary-foreground: 0 0% 8%;
+    /* Cinza claro como secundário */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 5%;
 
-    --muted: 40 15% 90%;
-    --muted-foreground: 0 0% 40%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 35%;
 
-    /* Rosa vibrante como accent */
-    --accent: 340 82% 52%;
+    /* Rosa vibrante e vivo como accent */
+    --accent: 340 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 15% 85%;
-    --input: 40 15% 85%;
-    --ring: 0 0% 8%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 5%;
 
     --radius: 0.25rem;
 
-    /* Cores customizadas */
-    --sand: 40 25% 92%;
-    --sand-dark: 35 20% 85%;
-    --coral: 12 85% 60%;
-    --mint: 160 45% 45%;
-    --gold: 45 80% 50%;
+    /* Cores customizadas vibrantes */
+    --sand: 0 0% 96%;
+    --sand-dark: 0 0% 90%;
+    --coral: 5 95% 58%;
+    --mint: 160 70% 42%;
+    --gold: 42 100% 50%;
 
-    /* Gradientes */
-    --gradient-hero: linear-gradient(135deg, hsl(40 25% 92%) 0%, hsl(35 20% 88%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(340 82% 52%) 0%, hsl(12 85% 60%) 100%);
-    --gradient-dark: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 15%) 100%);
+    /* Gradientes vibrantes */
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 97%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(340 100% 50%) 0%, hsl(5 95% 58%) 100%);
+    --gradient-dark: linear-gradient(180deg, hsl(0 0% 5%) 0%, hsl(0 0% 12%) 100%);
 
     /* Sombras */
-    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.08);
-    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.06);
-    --shadow-hover: 0 8px 30px -8px hsl(0 0% 0% / 0.12);
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.1);
+    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
+    --shadow-hover: 0 8px 30px -8px hsl(0 0% 0% / 0.15);
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -264,4 +264,14 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
+}
+
+/* Filtro vibrante para imagens de produtos */
+.product-image-vibrant {
+  filter: saturate(1.2) contrast(1.05) brightness(1.02);
+  transition: filter 0.3s ease;
+}
+
+.product-image-vibrant:hover {
+  filter: saturate(1.35) contrast(1.08) brightness(1.03);
 }
