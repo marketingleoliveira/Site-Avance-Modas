@@ -144,7 +144,7 @@ const ShopifyProductGridFiltered = ({
                       src={firstImage.url} 
                       alt={firstImage.altText || product.node.title}
                       loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 product-image-vibrant"
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
