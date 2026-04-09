@@ -333,11 +333,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${highlightClass}`}
+                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[560px] mx-auto flex flex-col ${highlightClass}`}
                   >
                     {/* Product Image */}
-                    <div className="relative overflow-hidden">
-                      <div className="aspect-[3/4] overflow-hidden bg-secondary">
+                    <div className="relative overflow-hidden flex-shrink-0">
+                      <div className="h-[330px] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
