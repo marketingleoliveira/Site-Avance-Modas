@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import { useHeroSettings } from "@/hooks/useSiteSettings";
 import heroFallback from "@/assets/hero-model.jpg";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeroSlide } from "@/lib/site-settings";
 
@@ -15,7 +14,6 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Convert legacy single slide to slides array
   const slides: HeroSlide[] = settings?.slides?.length 
     ? settings.slides 
     : [{
@@ -23,9 +21,9 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
         image_url: settings?.image_url || heroFallback,
         title: settings?.title || '',
         subtitle: settings?.subtitle || '',
-        promo_text: settings?.promo_text || 'ATÉ 30% OFF',
+        promo_text: settings?.promo_text || 'Nova Coleção',
         promo_subtitle: settings?.promo_subtitle || type,
-        button_text: settings?.button_text || 'VER COLEÇÃO',
+        button_text: settings?.button_text || 'APROVEITE AGORA',
         button_link: settings?.button_link || '#',
       }];
 
@@ -43,35 +41,30 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
     setIsAutoPlaying(false);
-    // Resume autoplay after 10 seconds of inactivity
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  // Autoplay
   useEffect(() => {
     if (!shouldAutoplay || !isAutoPlaying) return;
-
     const interval = setInterval(nextSlide, autoplayInterval);
     return () => clearInterval(interval);
   }, [shouldAutoplay, isAutoPlaying, autoplayInterval, nextSlide]);
 
   if (loading) {
-    return (
-      <section className="relative h-[300px] bg-secondary animate-pulse" />
-    );
+    return <section className="relative h-[50vh] sm:h-[60vh] lg:h-[85vh] bg-secondary animate-pulse" />;
   }
 
   const currentSlideData = slides[currentSlide];
 
   return (
-    <section className="relative h-[300px] overflow-hidden group">
-      {/* Slides Container */}
+    <section className="relative h-[50vh] sm:h-[60vh] lg:h-[85vh] overflow-hidden group">
+      {/* Slides */}
       <div className="absolute inset-0">
         {slides.map((slide, index) => (
           <div
             key={slide.id || index}
             className={cn(
-              "absolute inset-0 transition-all duration-700 ease-in-out",
+              "absolute inset-0 transition-all duration-1000 ease-in-out",
               index === currentSlide 
                 ? "opacity-100 scale-100" 
                 : "opacity-0 scale-105"
@@ -80,136 +73,93 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
             <img 
               src={slide.image_url || heroFallback}
               alt={slide.promo_subtitle || `Slide ${index + 1}`}
-              className="w-full h-full object-cover object-top product-image-vibrant"
+              className="w-full h-full object-cover object-top"
             />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+            {/* Subtle gradient for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-l from-black/40 via-black/10 to-transparent" />
           </div>
         ))}
       </div>
 
-      {/* Content */}
-      <div className="container px-4 sm:px-6 relative h-full flex items-center">
-        <div className="max-w-lg space-y-3 sm:space-y-4 lg:space-y-6 text-white">
-          {/* Badge */}
-          <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm text-white text-[10px] sm:text-xs font-semibold tracking-widest uppercase rounded-full animate-fade-in">
-            {type === 'ATACADO' ? 'Atacado' : 'Varejo'}
-          </span>
-
-          {/* Main Text */}
-          <div className="space-y-1 sm:space-y-2">
-            <p 
-              key={`promo-${currentSlide}`}
-              className="text-accent font-bold text-lg sm:text-xl lg:text-3xl animate-fade-in"
-            >
-              {currentSlideData.promo_text}
-            </p>
-            <h1 
-              key={`subtitle-${currentSlide}`}
-              className="text-2xl sm:text-3xl lg:text-6xl font-black tracking-tight leading-none animate-fade-in"
-              style={{ animationDelay: '100ms' }}
-            >
-              {currentSlideData.promo_subtitle}
-            </h1>
-            {currentSlideData.title && (
-              <h2 
-                key={`title-${currentSlide}`}
-                className="text-sm sm:text-lg lg:text-2xl font-medium text-white/90 animate-fade-in"
-                style={{ animationDelay: '200ms' }}
-              >
-                {currentSlideData.title}
-              </h2>
-            )}
-          </div>
-
-          {/* CTA Button */}
-          <div 
-            className="animate-fade-in"
-            style={{ animationDelay: '300ms' }}
+      {/* Content - Right aligned like Vestem */}
+      <div className="container px-4 sm:px-6 relative h-full flex items-center justify-end">
+        <div className="text-right max-w-lg space-y-4 sm:space-y-6 text-white pr-4 sm:pr-8 lg:pr-0">
+          {/* Script-style title */}
+          <h1 
+            key={`promo-${currentSlide}`}
+            className="font-serif text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-light italic animate-fade-in leading-none"
+            style={{ fontFamily: "'Playfair Display', serif" }}
           >
+            {currentSlideData.promo_text}
+          </h1>
+
+          {/* Subtitle */}
+          <p 
+            key={`subtitle-${currentSlide}`}
+            className="text-xs sm:text-sm lg:text-base tracking-[0.2em] sm:tracking-[0.3em] uppercase text-white/90 animate-fade-in"
+            style={{ animationDelay: '100ms' }}
+          >
+            {currentSlideData.promo_subtitle}
+          </p>
+
+          {/* CTA Button - Outlined like Vestem */}
+          <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
             {currentSlideData.button_link && currentSlideData.button_link !== '#' ? (
               <a 
                 href={currentSlideData.button_link}
-                className="group/btn relative inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3 bg-transparent border-2 border-white text-white font-semibold tracking-wide text-xs sm:text-sm overflow-hidden transition-all duration-300 hover:text-primary hover:border-white rounded-sm"
+                className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
               >
-                <span className="absolute inset-0 bg-white translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
-                <span className="relative z-10">{currentSlideData.button_text}</span>
-                <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                {currentSlideData.button_text}
               </a>
             ) : (
               <button 
-                className="group/btn relative inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3 bg-transparent border-2 border-white text-white font-semibold tracking-wide text-xs sm:text-sm overflow-hidden transition-all duration-300 hover:text-primary hover:border-white rounded-sm"
+                className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
               >
-                <span className="absolute inset-0 bg-white translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
-                <span className="relative z-10">{currentSlideData.button_text}</span>
-                <ArrowRight className="relative z-10 w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                {currentSlideData.button_text}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Navigation Arrows - Edge aligned like Vestem */}
       {slides.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-3 sm:p-4 text-white/70 hover:text-white transition-colors"
             aria-label="Slide anterior"
           >
-            <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
+            <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-full bg-white/10 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 hover:scale-110"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-3 sm:p-4 text-white/70 hover:text-white transition-colors"
             aria-label="Próximo slide"
           >
-            <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
+            <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
         </>
       )}
 
-      {/* Dots Navigation */}
+      {/* Dots - Bottom center like Vestem */}
       {slides.length > 1 && (
-        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2">
+        <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-3">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               className={cn(
-                "transition-all duration-300 rounded-full",
+                "rounded-full transition-all duration-300",
                 index === currentSlide 
-                  ? "w-6 sm:w-8 h-1.5 sm:h-2 bg-white" 
-                  : "w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80"
+                  ? "w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white" 
+                  : "w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/50 hover:bg-white/80"
               )}
               aria-label={`Ir para slide ${index + 1}`}
             />
           ))}
         </div>
       )}
-
-      {/* Progress Bar */}
-      {slides.length > 1 && shouldAutoplay && isAutoPlaying && (
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-          <div 
-            key={currentSlide}
-            className="h-full bg-white animate-progress"
-            style={{ 
-              animationDuration: `${autoplayInterval}ms`,
-            }}
-          />
-        </div>
-      )}
-
-      <style>{`
-        @keyframes progress {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-        .animate-progress {
-          animation: progress linear forwards;
-        }
-      `}</style>
     </section>
   );
 };
