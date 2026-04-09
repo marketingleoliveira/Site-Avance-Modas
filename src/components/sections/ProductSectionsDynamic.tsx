@@ -280,19 +280,12 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   ? Math.round((1 - parseFloat(currentPrice) / parseFloat(compareAtPrice)) * 100)
                   : 0;
                 
-                // Determine highlight style
-                const hasHighlight = isNew || isPromo || hasDiscount;
-                const highlightClass = isPromo || hasDiscount 
-                  ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-background' 
-                  : isNew 
-                    ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background' 
-                    : '';
                 
                 return (
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[560px] mx-auto flex flex-col ${highlightClass}`}
+                    className="group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[560px] mx-auto flex flex-col"
                   >
                     {/* Product Image */}
                     <div className="relative overflow-hidden flex-shrink-0">
@@ -315,29 +308,34 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       </div>
 
 
-                      {/* Tags/Badges */}
-                      <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-1 pointer-events-none">
-                        {(isPromo || hasDiscount) && (
-                          <span className="bg-red-600 text-white text-[10px] sm:text-xs min-w-[40px] sm:min-w-[50px] h-[24px] sm:h-[30px] px-2 sm:px-2.5 rounded font-bold uppercase animate-pulse flex items-center justify-center">
-                            {hasDiscount ? `-${discountPercent}%` : 'PROMOÇÃO'}
+                      {/* Discount Banner - Top of image */}
+                      {(isPromo || hasDiscount) && (
+                        <div className="absolute top-0 left-0 right-0 bg-foreground/85 backdrop-blur-sm py-1.5 px-3 flex items-center justify-center gap-1.5 pointer-events-none z-10">
+                          <span className="text-background text-xs font-bold uppercase tracking-wider">
+                            {hasDiscount ? `-${discountPercent}% OFF` : 'PROMOÇÃO'}
                           </span>
-                        )}
-                        {isNew && !isPromo && !hasDiscount && (
-                          <span className="bg-emerald-500 text-white text-[10px] sm:text-xs min-w-[40px] sm:min-w-[50px] h-[24px] sm:h-[30px] px-2 sm:px-2.5 rounded font-bold uppercase animate-pulse flex items-center justify-center">
-                            NOVO
-                          </span>
-                        )}
+                        </div>
+                      )}
+
+                      {/* New Badge */}
+                      {isNew && !isPromo && !hasDiscount && (
+                        <div className="absolute top-0 left-0 right-0 bg-emerald-600/90 backdrop-blur-sm py-1.5 px-3 flex items-center justify-center pointer-events-none z-10">
+                          <span className="text-white text-xs font-bold uppercase tracking-wider">NOVO</span>
+                        </div>
+                      )}
+                      {/* Material Tags */}
+                      <div className="absolute left-2 bottom-2 flex flex-col gap-1 pointer-events-none">
                         {tags.slice(0, 2).map((tag, idx) => {
                           if (tag.toLowerCase().includes('lycra')) {
                             return (
-                              <span key={idx} className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">
+                              <span key={idx} className="bg-foreground/80 text-background text-[8px] px-1.5 py-0.5 rounded font-bold uppercase backdrop-blur-sm">
                                 LYCRA
                               </span>
                             );
                           }
                           if (tag.toLowerCase().includes('uv')) {
                             return (
-                              <span key={idx} className="bg-orange-500 text-white text-[8px] px-1.5 py-0.5 rounded font-bold">
+                              <span key={idx} className="bg-foreground/80 text-background text-[8px] px-1.5 py-0.5 rounded font-bold backdrop-blur-sm">
                                 UV 50+
                               </span>
                             );
