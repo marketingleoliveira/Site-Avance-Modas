@@ -14,7 +14,7 @@ const StoreSelector = () => {
           <img
             src={logoAvance}
             alt="Avance Modas"
-            className="h-16 sm:h-20 mx-auto mb-5 object-contain"
+            className="h-24 sm:h-32 mx-auto mb-5 object-contain"
           />
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2">
             Avance <span className="text-accent">Modas</span>
@@ -60,7 +60,7 @@ const StoreSelector = () => {
           <Link
             to="/varejo"
             onClick={() => setStoreType("varejo")}
-            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] transition-all duration-500 hover:-translate-y-2 border border-border/50 animate-fade-in [animation-delay:400ms] [animation-fill-mode:both]"
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] transition-all duration-500 hover:-translate-y-2 border border-border/50 animate-fade-in [animation-delay:400ms] [animation-fill-mode:both] animate-[pulse_2.5s_ease-in-out_infinite] hover:animate-none"
           >
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
