@@ -34,8 +34,8 @@ const StoreSelector = () => {
             <div className="absolute top-0 right-0 w-40 h-40 bg-background/5 rounded-full -translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-700" />
             
             <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 rounded-xl bg-background/10 flex items-center justify-center group-hover:bg-background/20 transition-colors duration-300">
-                <Store className="w-7 h-7" />
+              <div className="w-16 h-16 mb-6 rounded-2xl bg-background/15 flex items-center justify-center group-hover:bg-background/25 transition-colors duration-300 border border-background/10">
+                <Store className="w-8 h-8 text-background" />
               </div>
               
               <h2 className="text-2xl sm:text-3xl font-black mb-2 tracking-tight">
