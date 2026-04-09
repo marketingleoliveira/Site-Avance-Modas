@@ -246,35 +246,38 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
           {/* Category Filters */}
           <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <div className="flex items-center justify-start sm:justify-center gap-4 sm:gap-6 md:gap-10 py-4 border-t border-b border-border/50 min-w-max sm:min-w-0">
-              {categoryFilters.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveFilter(category.id)}
-                  className={`flex flex-col items-center gap-1.5 sm:gap-2 transition-all duration-200 group flex-shrink-0 ${
-                    activeFilter === category.id 
-                      ? 'text-foreground' 
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <div className={`relative w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center ${
-                    activeFilter === category.id 
-                      ? 'text-foreground' 
-                      : 'text-muted-foreground group-hover:text-foreground'
-                  }`}>
-                    <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full">
-                      {categoryIcons[category.id] || categoryIcons.todos}
+            <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-8 md:gap-12 py-5 min-w-max sm:min-w-0">
+              {categoryFilters.map((category) => {
+                const isActive = activeFilter === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveFilter(category.id)}
+                    className="flex flex-col items-center gap-2 sm:gap-2.5 transition-all duration-300 group flex-shrink-0"
+                  >
+                    <div className={`relative w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full transition-all duration-300 ${
+                      isActive 
+                        ? 'bg-foreground text-background shadow-lg scale-110' 
+                        : 'bg-secondary text-muted-foreground group-hover:bg-foreground/10 group-hover:text-foreground group-hover:scale-105'
+                    }`}>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 [&>svg]:w-full [&>svg]:h-full">
+                        {categoryIcons[category.id] || categoryIcons.todos}
+                      </div>
                     </div>
-                  </div>
-                  <span className={`text-[9px] sm:text-[10px] md:text-xs font-medium tracking-wide sm:tracking-wider uppercase whitespace-nowrap ${
-                    activeFilter === category.id 
-                      ? 'border-b-2 border-foreground pb-0.5 sm:pb-1' 
-                      : ''
-                  }`}>
-                    {category.label}
-                  </span>
-                </button>
-              ))}
+                    <span className={`text-[9px] sm:text-[10px] md:text-xs font-semibold tracking-wider uppercase whitespace-nowrap transition-colors duration-300 ${
+                      isActive 
+                        ? 'text-foreground' 
+                        : 'text-muted-foreground group-hover:text-foreground'
+                    }`}>
+                      {category.label}
+                    </span>
+                    {/* Active indicator line */}
+                    <div className={`h-0.5 rounded-full transition-all duration-300 ${
+                      isActive ? 'w-6 sm:w-8 bg-accent' : 'w-0 bg-transparent'
+                    }`} />
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
