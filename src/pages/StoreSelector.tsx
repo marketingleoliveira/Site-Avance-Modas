@@ -61,8 +61,8 @@ const StoreSelector = () => {
             <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-full -translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-700" />
             
             <div className="relative z-10">
-              <div className="w-14 h-14 mb-6 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
-                <ShoppingBag className="w-7 h-7 text-accent" />
+              <div className="w-16 h-16 mb-6 rounded-2xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300 border border-accent/20">
+                <ShoppingBag className="w-8 h-8 text-accent" />
               </div>
               
               <h2 className="text-2xl sm:text-3xl font-black mb-2 tracking-tight">
