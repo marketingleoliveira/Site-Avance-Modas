@@ -65,8 +65,8 @@ const Header = () => {
       <div className="container px-4 sm:px-6">
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-[72px]">
           {/* Logo */}
-          <Link to="/" className="flex items-center flex-shrink-0">
-            <img src={logo} alt="Avance" className="h-8 sm:h-10 lg:h-12 w-auto object-contain" />
+          <Link to="/" className="flex items-center flex-shrink-0 group/logo">
+            <img src={logo} alt="Avance" className="h-10 sm:h-12 lg:h-14 max-h-[calc(theme(height.14)-16px)] lg:max-h-[calc(72px-16px)] w-auto object-contain transition-all duration-300 group-hover/logo:scale-105 group-hover/logo:brightness-110" />
           </Link>
 
           {/* Desktop Navigation - Centered */}
