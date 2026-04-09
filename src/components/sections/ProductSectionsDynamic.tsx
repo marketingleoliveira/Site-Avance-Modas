@@ -391,7 +391,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                             {sizes.map(size => (
                               <span
                                 key={size}
-                                className="text-[9px] sm:text-[10px] font-semibold text-muted-foreground border border-border rounded px-1.5 py-0.5 leading-none"
+                                className="text-[10px] sm:text-xs font-semibold text-muted-foreground border border-border rounded px-2 py-1 leading-none"
                               >
                                 {size}
                               </span>
