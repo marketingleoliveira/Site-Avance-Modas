@@ -389,7 +389,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     </div>
                     
                     {/* Product Info */}
-                    <div className="p-3 sm:p-4 text-center space-y-2.5">
+                    <div className="p-3 sm:p-4 text-center space-y-2.5 flex-1 flex flex-col justify-center">
                       <h3 className="text-[11px] sm:text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight">
                         {product.node.title}
                       </h3>
