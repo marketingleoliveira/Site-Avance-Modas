@@ -308,19 +308,21 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       </div>
 
 
-                      {/* Discount Banner - Top of image */}
+                      {/* Discount Ribbon - Diagonal flag */}
                       {(isPromo || hasDiscount) && (
-                        <div className="absolute top-0 left-0 right-0 bg-foreground/85 backdrop-blur-sm py-1.5 px-3 flex items-center justify-center gap-1.5 pointer-events-none z-10">
-                          <span className="text-background text-xs font-bold uppercase tracking-wider">
-                            {hasDiscount ? `-${discountPercent}% OFF` : 'PROMOÇÃO'}
-                          </span>
+                        <div className="absolute -left-[34px] top-[18px] z-10 pointer-events-none rotate-[-45deg] w-[140px]">
+                          <div className="bg-foreground text-background text-sm font-black uppercase tracking-wide text-center py-1 shadow-lg">
+                            {hasDiscount ? `-${discountPercent}%` : 'PROMO'}
+                          </div>
                         </div>
                       )}
 
-                      {/* New Badge */}
+                      {/* New Ribbon - Diagonal flag */}
                       {isNew && !isPromo && !hasDiscount && (
-                        <div className="absolute top-0 left-0 right-0 bg-emerald-600/90 backdrop-blur-sm py-1.5 px-3 flex items-center justify-center pointer-events-none z-10">
-                          <span className="text-white text-xs font-bold uppercase tracking-wider">NOVO</span>
+                        <div className="absolute -left-[34px] top-[18px] z-10 pointer-events-none rotate-[-45deg] w-[140px]">
+                          <div className="bg-emerald-600 text-white text-sm font-black uppercase tracking-wide text-center py-1 shadow-lg">
+                            NOVO
+                          </div>
                         </div>
                       )}
                       {/* Material Tags */}
