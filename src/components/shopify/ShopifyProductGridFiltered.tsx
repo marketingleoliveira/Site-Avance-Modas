@@ -239,13 +239,13 @@ const ShopifyProductGridFiltered = ({
                 </div>
 
                 {/* Product Info */}
-                <div className="p-3 sm:p-4">
-                  <h3 className="font-bold text-foreground mb-1.5 line-clamp-2 group-hover:text-accent transition-colors text-xs sm:text-sm leading-snug">
+                <div className="p-3 sm:p-4 space-y-2">
+                  <h3 className="font-extrabold text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 text-[11px] sm:text-sm leading-tight uppercase tracking-wide">
                     {product.node.title}
                   </h3>
                   
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-base sm:text-lg font-black text-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg sm:text-xl font-black text-accent">
                       {formatPrice(price.amount, price.currencyCode)}
                     </span>
                   </div>
