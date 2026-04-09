@@ -311,7 +311,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       {/* Discount Ribbon - Diagonal flag */}
                       {(isPromo || hasDiscount) && (
                         <div className="absolute -left-[34px] top-[18px] z-10 pointer-events-none rotate-[-45deg] w-[140px]">
-                          <div className="bg-foreground text-background text-sm font-black uppercase tracking-wide text-center py-1 shadow-lg">
+                          <div className="bg-red-600 text-white text-sm font-black uppercase tracking-wide text-center py-1 shadow-lg">
                             {hasDiscount ? `-${discountPercent}%` : 'PROMO'}
                           </div>
                         </div>
