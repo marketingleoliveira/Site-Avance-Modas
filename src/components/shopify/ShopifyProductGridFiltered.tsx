@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, ShoppingBag, Eye, Zap } from "lucide-react";
+import { Heart, ShoppingBag, Eye, Zap, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShopifyProduct } from "@/lib/shopify-api";
 import { ShopifyCollection, fetchCollectionsByType, getProductsFromCollections } from "@/lib/shopify-collections";
@@ -196,17 +196,13 @@ const ShopifyProductGridFiltered = ({
                     />
                   </div>
 
-                  {/* Color swatches overlay - top left */}
+                  {/* Colors badge */}
                   {colors.length > 0 && (
-                    <div className="absolute left-2 top-2 flex flex-col gap-1 z-10">
-                      {colors.map((color, i) => (
-                        <div
-                          key={i}
-                          className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-background shadow-sm"
-                          style={{ backgroundColor: getColorHex(color) }}
-                          title={color}
-                        />
-                      ))}
+                    <div className="absolute left-2 bottom-2 z-10">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-background/90 backdrop-blur-sm rounded-full shadow-md text-[10px] sm:text-xs font-semibold text-foreground">
+                        <Palette className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent" />
+                        <span>{colors.length} {colors.length === 1 ? 'cor' : 'cores'}</span>
+                      </div>
                     </div>
                   )}
 
@@ -239,16 +235,14 @@ const ShopifyProductGridFiltered = ({
                 </div>
 
                 {/* Product Info */}
-                <div className="p-3 sm:p-4 space-y-2">
-                  <h3 className="font-extrabold text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 text-[11px] sm:text-sm leading-tight uppercase tracking-wide">
+                <div className="p-3 sm:p-4 text-center space-y-1.5">
+                  <h3 className="font-bold text-foreground line-clamp-2 group-hover:text-accent transition-colors duration-300 text-[11px] sm:text-sm leading-tight uppercase tracking-wider">
                     {product.node.title}
                   </h3>
                   
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg sm:text-xl font-black text-accent">
-                      {formatPrice(price.amount, price.currencyCode)}
-                    </span>
-                  </div>
+                  <p className="text-lg sm:text-xl font-black text-accent tracking-tight">
+                    {formatPrice(price.amount, price.currencyCode)}
+                  </p>
                 </div>
               </Link>
             );
