@@ -7,69 +7,68 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen bg-foreground relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-accent/20 blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-accent/10 blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.02] blur-2xl" />
-      </div>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #fff0f0 0%, #ffffff 40%, #fff5f5 70%, #ffe8e8 100%)' }}>
+      {/* Decorative blobs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl opacity-30" style={{ background: 'radial-gradient(circle, hsl(0 85% 60% / 0.3), transparent 70%)' }} />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle, hsl(340 80% 60% / 0.3), transparent 70%)' }} />
+      <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] rounded-full blur-3xl opacity-15" style={{ background: 'radial-gradient(circle, hsl(20 90% 60% / 0.25), transparent 70%)' }} />
 
       <div className="relative z-10 w-full max-w-4xl">
         {/* Logo & Title */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 mb-6">
-            <img
-              src={logoAvance}
-              alt="Avance Modas"
-              className="h-12 w-auto object-contain brightness-0 invert"
-            />
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-3">
-            Avance Modas
+        <div className="text-center mb-14">
+          <img
+            src={logoAvance}
+            alt="Avance Modas"
+            className="h-16 sm:h-20 mx-auto mb-5 object-contain"
+          />
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2">
+            Avance <span className="text-accent">Modas</span>
           </h1>
-          <p className="text-white/50 text-sm sm:text-base tracking-widest uppercase">
-            Escolha como deseja comprar
+          <p className="text-muted-foreground text-sm sm:text-base mt-3 tracking-wide">
+            Moda fitness que transforma seu estilo ✨
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 bg-accent/10 text-accent text-xs font-semibold px-4 py-2 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            Escolha como deseja comprar
+          </div>
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7">
           {/* Atacado */}
           <Link
             to="/atacado"
             onClick={() => setStoreType("atacado")}
-            className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.2)] transition-all duration-500 hover:-translate-y-2 border border-border/50"
           >
-            {/* Gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.12] to-white/[0.04] group-hover:from-white/[0.18] group-hover:to-white/[0.08] transition-all duration-500" />
-            <div className="absolute inset-0 border border-white/10 rounded-2xl group-hover:border-white/25 transition-colors duration-500" />
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60" />
             
-            {/* Accent glow on hover */}
-            <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-accent/0 group-hover:bg-accent/20 rounded-full blur-3xl transition-all duration-700" />
+            {/* Decorative circle */}
+            <div className="absolute top-12 right-6 w-24 h-24 rounded-full bg-foreground/[0.04] group-hover:scale-150 transition-transform duration-700" />
 
-            <div className="relative p-8 sm:p-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
-                  <ShoppingBag className="w-6 h-6 text-white" />
+            <div className="relative p-8 sm:p-9">
+              <div className="inline-flex items-center gap-3 mb-7 rounded-2xl bg-foreground/5 border border-foreground/10 px-4 py-2.5">
+                <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center">
+                  <ShoppingBag className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">Linha</p>
-                  <p className="text-sm font-black uppercase text-white">Atacado</p>
+                  <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">Linha</p>
+                  <p className="text-sm font-black uppercase text-foreground">Atacado</p>
                 </div>
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-black text-white mb-3 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
                 ATACADO
               </h2>
-              <p className="text-white/50 text-sm leading-relaxed mb-10">
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                 Compras em quantidade com preços especiais para revendedores
               </p>
 
-              <div className="flex items-center gap-3 text-sm font-bold text-accent group-hover:gap-4 transition-all duration-300">
-                <span className="uppercase tracking-wider">Acessar Atacado</span>
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all duration-300">
-                  <ArrowRight className="w-4 h-4" />
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-foreground uppercase tracking-wider group-hover:tracking-[0.2em] transition-all duration-300">Acessar</span>
+                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform duration-300" />
                 </div>
               </div>
             </div>
@@ -79,37 +78,37 @@ const StoreSelector = () => {
           <Link
             to="/varejo"
             onClick={() => setStoreType("varejo")}
-            className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] transition-all duration-500 hover:-translate-y-2 border border-border/50"
           >
-            {/* White card */}
-            <div className="absolute inset-0 bg-white rounded-2xl" />
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
             
-            {/* Accent decoration */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full translate-x-10 -translate-y-10 group-hover:scale-[2.5] transition-transform duration-700" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/5 rounded-full -translate-x-8 translate-y-8 group-hover:scale-[3] transition-transform duration-700" />
+            {/* Decorative circles */}
+            <div className="absolute top-12 right-6 w-24 h-24 rounded-full bg-accent/[0.06] group-hover:scale-150 transition-transform duration-700" />
+            <div className="absolute bottom-8 left-6 w-16 h-16 rounded-full bg-accent/[0.04] group-hover:scale-[2] transition-transform duration-700" />
 
-            <div className="relative p-8 sm:p-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors duration-300">
-                  <Store className="w-6 h-6 text-accent" />
+            <div className="relative p-8 sm:p-9">
+              <div className="inline-flex items-center gap-3 mb-7 rounded-2xl bg-accent/5 border border-accent/15 px-4 py-2.5">
+                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
+                  <Store className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Linha</p>
+                  <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">Linha</p>
                   <p className="text-sm font-black uppercase text-accent">Varejo</p>
                 </div>
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-3 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
                 VAREJO
               </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-10">
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                 Compras unitárias com toda a qualidade Avance Modas
               </p>
 
-              <div className="flex items-center gap-3 text-sm font-bold text-accent group-hover:gap-4 transition-all duration-300">
-                <span className="uppercase tracking-wider">Acessar Varejo</span>
-                <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all duration-300">
-                  <ArrowRight className="w-4 h-4" />
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-accent uppercase tracking-wider group-hover:tracking-[0.2em] transition-all duration-300">Acessar</span>
+                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform duration-300" />
                 </div>
               </div>
             </div>
@@ -117,7 +116,7 @@ const StoreSelector = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-white/25 text-xs tracking-wider">
+        <div className="text-center mt-14 text-muted-foreground/60 text-xs tracking-wider">
           <p>© 2026 Avance Modas — Todos os direitos reservados</p>
         </div>
       </div>
