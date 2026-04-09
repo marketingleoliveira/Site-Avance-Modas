@@ -335,14 +335,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     to={`/produto/${product.node.handle}`}
                     className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${highlightClass}`}
                   >
-                    {/* Product Image with Color Swatches */}
+                    {/* Product Image */}
                     <div className="relative overflow-hidden">
                       <div className="aspect-[3/4] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
                           loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
                       
