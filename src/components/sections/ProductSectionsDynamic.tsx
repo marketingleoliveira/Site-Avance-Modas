@@ -440,6 +440,28 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                           </div>
                         );
                       })()}
+
+                      {/* Available Colors Count */}
+                      {(() => {
+                        const colorCount = colors.length;
+                        if (colorCount === 0) return null;
+                        return (
+                          <div className="flex items-center justify-center gap-1.5 pt-0.5">
+                            <div className="flex -space-x-1">
+                              {colors.slice(0, 4).map((c, i) => (
+                                <span
+                                  key={i}
+                                  className="w-3 h-3 rounded-full border border-background shadow-sm"
+                                  style={{ backgroundColor: c.hex || '#ccc' }}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">
+                              {colorCount} {colorCount === 1 ? 'cor' : 'cores'}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </Link>
                 );
