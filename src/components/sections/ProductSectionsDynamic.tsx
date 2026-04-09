@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useProductSections, useLayoutSettings } from "@/hooks/useSiteSettings";
 import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
+import { COLOR_MAP } from "@/lib/color-utils";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import logoAvance from "@/assets/logo-avance.png";
@@ -64,49 +65,10 @@ const categoryFilters = [
   { id: 'conjuntos', label: 'CONJUNTOS', tag: 'conjuntos' },
 ];
 
-// Color mapping for variants
-const colorMap: Record<string, string> = {
-  'preto': '#000000',
-  'black': '#000000',
-  'branco': '#ffffff',
-  'white': '#ffffff',
-  'rosa': '#ff69b4',
-  'pink': '#ff69b4',
-  'azul': '#2563eb',
-  'blue': '#2563eb',
-  'marinho': '#1e3a5f',
-  'navy': '#1e3a5f',
-  'verde': '#22c55e',
-  'green': '#22c55e',
-  'vermelho': '#ef4444',
-  'red': '#ef4444',
-  'amarelo': '#eab308',
-  'yellow': '#eab308',
-  'laranja': '#f97316',
-  'orange': '#f97316',
-  'roxo': '#a855f7',
-  'purple': '#a855f7',
-  'cinza': '#6b7280',
-  'gray': '#6b7280',
-  'grey': '#6b7280',
-  'bege': '#d4b896',
-  'beige': '#d4b896',
-  'nude': '#e8d0c0',
-  'coral': '#ff7f7f',
-  'turquesa': '#40e0d0',
-  'vinho': '#722f37',
-  'bordô': '#800020',
-  'marsala': '#8e5050',
-  'caramelo': '#c68642',
-  'chumbo': '#36454f',
-  'grafite': '#474747',
-  'off-white': '#faf9f6',
-  'creme': '#fffdd0',
-};
-
-const getColorHex = (colorName: string): string | null => {
+const getColorHex = (colorName: string): string => {
   const normalized = colorName.toLowerCase().trim();
-  return colorMap[normalized] || null;
+  const mapped = COLOR_MAP[normalized];
+  return mapped ? mapped.bg : '#6b7280';
 };
 
 const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
@@ -203,9 +165,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     );
     if (!colorOption) return [];
     
-    return colorOption.values
-      .map(color => ({ name: color, hex: getColorHex(color) }))
-      .filter(c => c.hex !== null);
+    return colorOption.values.map(color => ({ name: color, hex: getColorHex(color) }));
   };
 
   const colsDesktop = layoutSettings?.products_columns_desktop || "5";
