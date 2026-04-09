@@ -306,7 +306,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                 }
               }
             `}</style>
-            <div className="grid products-grid gap-4 md:gap-6">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6">
               {filteredProducts.slice(0, 8).map((product) => {
                 const colors = getProductColors(product);
                 const tags = product.node.tags || [];
@@ -333,11 +333,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${highlightClass}`}
+                    className={`group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[560px] mx-auto flex flex-col ${highlightClass}`}
                   >
                     {/* Product Image */}
-                    <div className="relative overflow-hidden">
-                      <div className="aspect-[3/4] overflow-hidden bg-secondary">
+                    <div className="relative overflow-hidden flex-shrink-0">
+                      <div className="h-[330px] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
@@ -389,7 +389,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     </div>
                     
                     {/* Product Info */}
-                    <div className="p-3 sm:p-4 text-center space-y-2.5">
+                    <div className="p-3 sm:p-4 text-center space-y-2.5 flex-1 flex flex-col justify-center">
                       <h3 className="text-[11px] sm:text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight">
                         {product.node.title}
                       </h3>
