@@ -306,7 +306,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                 }
               }
             `}</style>
-            <div className="grid products-grid gap-4 md:gap-6">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6">
               {filteredProducts.slice(0, 8).map((product) => {
                 const colors = getProductColors(product);
                 const tags = product.node.tags || [];
