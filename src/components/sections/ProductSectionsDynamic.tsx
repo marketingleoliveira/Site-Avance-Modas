@@ -355,46 +355,6 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
 
-                      {/* Color Swatches - Right Side (below logo) - limited to 4 colors max */}
-                      {colors.length > 0 && (
-                        <div className="absolute right-2 top-16 flex flex-col gap-1.5 md:gap-2 z-10">
-                          {colors.slice(0, 4).map((color, idx) => (
-                            <div
-                              key={idx}
-                              className="group/color relative h-6 md:h-5 flex items-center justify-end"
-                            >
-                              {/* Banner that expands on hover/focus - larger touch area on mobile */}
-                              <button 
-                                type="button"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }}
-                                onTouchStart={(e) => {
-                                  e.stopPropagation();
-                                }}
-                                className="absolute right-0 h-6 md:h-5 flex items-center justify-end overflow-hidden transition-all duration-300 ease-out
-                                  w-6 md:w-5 hover:w-[90px] focus:w-[90px] active:w-[90px] rounded-full hover:rounded-l-full focus:rounded-l-full active:rounded-l-full
-                                  shadow-md border-2 border-white cursor-pointer touch-manipulation"
-                                style={{ backgroundColor: color.hex || '#ccc' }}
-                              >
-                                {/* Color name text */}
-                                <span 
-                                  className="absolute left-2.5 text-[10px] md:text-[9px] font-semibold uppercase whitespace-nowrap opacity-0 transition-opacity duration-200 delay-100 
-                                    group-hover/color:opacity-100 group-focus-within/color:opacity-100 group-active/color:opacity-100"
-                                  style={{ 
-                                    color: ['#ffffff', '#faf9f6', '#fffdd0', '#e8d0c0', '#d4b896', '#eab308', '#f97316'].includes(color.hex || '') ? '#000' : '#fff' 
-                                  }}
-                                >
-                                  {color.name}
-                                </span>
-                                {/* Circle indicator stays on right */}
-                                <div className="w-6 md:w-5 h-6 md:h-5 rounded-full flex-shrink-0" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
 
                       {/* Tags/Badges */}
                       <div className="absolute left-1.5 sm:left-2 top-1.5 sm:top-2 flex flex-col gap-1 pointer-events-none">
@@ -429,11 +389,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     </div>
                     
                     {/* Product Info */}
-                    <div className="p-3">
+                    <div className="p-3 text-center">
                       <h3 className="text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight mb-2">
                         {product.node.title}
                       </h3>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2 mb-3">
                         {hasDiscount && (
                           <span className="text-sm text-muted-foreground line-through">
                             {formatPrice(compareAtPrice, product.node.priceRange.minVariantPrice.currencyCode)}
@@ -443,6 +403,16 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                           {formatPrice(currentPrice, product.node.priceRange.minVariantPrice.currencyCode)}
                         </p>
                       </div>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToCart(product, e as any);
+                        }}
+                        className="w-full py-2 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                      >
+                        Comprar
+                      </button>
                     </div>
                   </Link>
                 );
