@@ -389,23 +389,23 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     </div>
                     
                     {/* Product Info */}
-                    <div className="p-3 sm:p-4 text-center space-y-2">
+                    <div className="p-3 sm:p-4 text-center space-y-2.5">
                       <h3 className="text-[11px] sm:text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight">
                         {product.node.title}
                       </h3>
                       
-                      {/* Price highlight */}
-                      <div className="py-2 px-3 bg-accent/10 rounded-lg border border-accent/20">
+                      {/* Price */}
+                      <div>
                         {hasDiscount && (
-                          <span className="text-[11px] sm:text-xs text-muted-foreground line-through block mb-0.5">
+                          <span className="text-[11px] sm:text-xs text-muted-foreground line-through">
                             {formatPrice(compareAtPrice, product.node.priceRange.minVariantPrice.currencyCode)}
                           </span>
                         )}
-                        <p className={`text-lg sm:text-xl font-black tracking-tight ${hasDiscount || isPromo ? 'text-red-600' : 'text-accent'}`}>
+                        <p className={`text-xl sm:text-2xl font-black tracking-tight ${hasDiscount || isPromo ? 'text-red-600' : 'text-foreground'}`}>
                           {formatPrice(currentPrice, product.node.priceRange.minVariantPrice.currencyCode)}
                         </p>
                         {hasDiscount && (
-                          <span className="text-[10px] font-bold text-red-600 uppercase">Economize {discountPercent}%</span>
+                          <span className="text-[10px] font-bold text-emerald-600">Economize {discountPercent}%</span>
                         )}
                       </div>
 
@@ -419,6 +419,27 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       >
                         Comprar
                       </button>
+
+                      {/* Available Sizes */}
+                      {(() => {
+                        const sizeOption = product.node.options?.find(
+                          opt => opt.name.toLowerCase() === 'tamanho' || opt.name.toLowerCase() === 'size'
+                        );
+                        const sizes = sizeOption?.values || [];
+                        if (sizes.length === 0) return null;
+                        return (
+                          <div className="flex items-center justify-center gap-1 flex-wrap pt-0.5">
+                            {sizes.map(size => (
+                              <span
+                                key={size}
+                                className="text-[9px] sm:text-[10px] font-semibold text-muted-foreground border border-border rounded px-1.5 py-0.5 leading-none"
+                              >
+                                {size}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </Link>
                 );
