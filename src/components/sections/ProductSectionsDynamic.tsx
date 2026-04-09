@@ -389,27 +389,33 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                     </div>
                     
                     {/* Product Info */}
-                    <div className="p-3 text-center">
-                      <h3 className="text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight mb-2">
+                    <div className="p-3 sm:p-4 text-center space-y-2">
+                      <h3 className="text-[11px] sm:text-xs font-semibold text-foreground line-clamp-2 uppercase tracking-wide leading-tight">
                         {product.node.title}
                       </h3>
-                      <div className="flex items-center justify-center gap-2 mb-3">
+                      
+                      {/* Price highlight */}
+                      <div className="py-2 px-3 bg-accent/10 rounded-lg border border-accent/20">
                         {hasDiscount && (
-                          <span className="text-sm text-muted-foreground line-through">
+                          <span className="text-[11px] sm:text-xs text-muted-foreground line-through block mb-0.5">
                             {formatPrice(compareAtPrice, product.node.priceRange.minVariantPrice.currencyCode)}
                           </span>
                         )}
-                        <p className={`text-base font-bold ${hasDiscount || isPromo ? 'text-red-600' : 'text-foreground'}`}>
+                        <p className={`text-lg sm:text-xl font-black tracking-tight ${hasDiscount || isPromo ? 'text-red-600' : 'text-accent'}`}>
                           {formatPrice(currentPrice, product.node.priceRange.minVariantPrice.currencyCode)}
                         </p>
+                        {hasDiscount && (
+                          <span className="text-[10px] font-bold text-red-600 uppercase">Economize {discountPercent}%</span>
+                        )}
                       </div>
+
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleAddToCart(product, e as any);
                         }}
-                        className="w-full py-2 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                        className="w-full py-2.5 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-300 shadow-sm hover:shadow-md"
                       >
                         Comprar
                       </button>
