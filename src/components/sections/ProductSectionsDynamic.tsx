@@ -205,8 +205,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     
     return colorOption.values
       .map(color => ({ name: color, hex: getColorHex(color) }))
-      .filter(c => c.hex !== null)
-      .slice(0, 6);
+      .filter(c => c.hex !== null);
   };
 
   const colsDesktop = layoutSettings?.products_columns_desktop || "5";
@@ -448,7 +447,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         return (
                           <div className="flex items-center justify-center gap-1.5 pt-0.5">
                             <div className="flex -space-x-1">
-                              {colors.slice(0, 4).map((c, i) => (
+                              {colors.map((c, i) => (
                                 <span
                                   key={i}
                                   className="w-3 h-3 rounded-full border border-background shadow-sm"
