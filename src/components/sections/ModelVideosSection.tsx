@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Play } from "lucide-react";
+import { Play, ShoppingBag } from "lucide-react";
 import { useVideosSettings } from "@/hooks/useSiteSettings";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 interface VideoItem {
   id: string;
   video_url: string;
   thumbnail_url: string;
   title: string;
+  product_handle?: string;
+  product_title?: string;
   product_price?: string;
   product_original_price?: string;
   product_image?: string;
@@ -28,6 +31,8 @@ const VideoCard = ({ video, index }: { video: VideoItem; index: number }) => {
       setSelectedVideo(video);
     }
   };
+
+  const hasProduct = video.product_handle && video.product_title;
 
   return (
     <>
@@ -60,15 +65,15 @@ const VideoCard = ({ video, index }: { video: VideoItem; index: number }) => {
         )}
 
         {/* Bottom product info overlay */}
-        {video.title && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-12 pb-3 px-3">
+        {hasProduct && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-16 pb-3 px-3">
             <div className="flex items-center gap-2.5">
               {/* Small product thumbnail */}
-              {video.thumbnail_url && (
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden border-2 border-white/30 flex-shrink-0 bg-white/10">
+              {video.product_image && (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden border-2 border-white/30 flex-shrink-0 bg-white/10">
                   <img 
-                    src={video.thumbnail_url} 
-                    alt={video.title} 
+                    src={video.product_image} 
+                    alt={video.product_title} 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -76,15 +81,13 @@ const VideoCard = ({ video, index }: { video: VideoItem; index: number }) => {
               {/* Title & Price */}
               <div className="flex-1 min-w-0">
                 <h4 className="text-white text-[11px] sm:text-xs font-bold uppercase truncate leading-tight">
-                  {video.title}
+                  {video.product_title}
                 </h4>
-                {video.product_price && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-white text-sm sm:text-base font-black">
-                      {video.product_price}
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-white text-sm sm:text-base font-black">
+                    {video.product_price}
+                  </span>
+                </div>
                 {video.product_original_price && (
                   <span className="text-red-400 text-[10px] sm:text-xs line-through font-medium">
                     {video.product_original_price}
@@ -92,12 +95,31 @@ const VideoCard = ({ video, index }: { video: VideoItem; index: number }) => {
                 )}
               </div>
             </div>
+
+            {/* Buy button */}
+            <Link
+              to={`/produto/${video.product_handle}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-2 w-full flex items-center justify-center gap-1.5 py-2 bg-white text-black text-[11px] sm:text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              Comprar
+            </Link>
+          </div>
+        )}
+
+        {/* Title-only fallback (no product linked) */}
+        {!hasProduct && video.title && video.video_url && (
+          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <p className="text-white text-sm font-medium truncate">
+              {video.title}
+            </p>
           </div>
         )}
 
         {/* Play button on hover */}
         {video.video_url && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 pointer-events-none">
             <div className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-xl">
               <Play className="w-6 h-6 text-foreground fill-foreground ml-0.5" />
             </div>
