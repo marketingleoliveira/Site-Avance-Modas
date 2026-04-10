@@ -10,6 +10,7 @@ export interface HeroSlide {
   promo_subtitle: string;
   button_text: string;
   button_link: string;
+  button_enabled?: boolean;
 }
 
 export interface HeroSettings {
