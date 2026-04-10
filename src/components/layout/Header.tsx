@@ -21,12 +21,12 @@ const navLinks = [
   },
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Private Label", href: "/private-label" },
+  { name: "SAC", href: "/sac" },
   { 
     name: "Contato", 
     href: "/contato",
     submenu: [
       { name: "Fale Conosco", href: "/contato" },
-      { name: "SAC - Atendimento", href: "/sac" },
       { name: "Suporte", href: "/suporte" },
     ]
   },
