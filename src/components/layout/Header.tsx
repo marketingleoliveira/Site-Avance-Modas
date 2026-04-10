@@ -1,6 +1,6 @@
 import { useState, useCallback, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
@@ -21,7 +21,7 @@ const navLinks = [
   },
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Private Label", href: "/private-label" },
-  { name: "SAC", href: "/sac" },
+  
   { 
     name: "Contato", 
     href: "/contato",
@@ -121,6 +121,15 @@ const Header = () => {
 
           {/* Right Actions - Search bar + icons */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {/* SAC Button (desktop) */}
+            <Link
+              to="/sac"
+              className="hidden lg:flex items-center gap-2 px-5 py-2 border-2 border-primary rounded-full text-primary font-semibold text-xs tracking-wider uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            >
+              <Headphones className="w-4 h-4" />
+              SAC
+            </Link>
+
             {/* Search bar (desktop) */}
             <button 
               onClick={() => setSearchOpen(true)}
