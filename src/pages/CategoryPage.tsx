@@ -87,6 +87,14 @@ const CategoryPage = () => {
       // Filter by category keywords (or show all if category is 'todos')
       if (category === 'todos') {
         setProducts(allProducts);
+      } else if (category === 'promocoes') {
+        // Show only products with a discount (compareAtPrice > price)
+        const promoProducts = allProducts.filter(product => {
+          const compareAtPrice = product.node.compareAtPriceRange?.minVariantPrice?.amount;
+          const currentPrice = product.node.priceRange.minVariantPrice.amount;
+          return compareAtPrice && parseFloat(compareAtPrice) > parseFloat(currentPrice);
+        });
+        setProducts(promoProducts);
       } else {
         const keywords = categoryKeywords[category || ''] || [];
         if (keywords.length === 0) {
