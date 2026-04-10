@@ -1,6 +1,6 @@
 import { useState, useCallback, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
@@ -22,14 +22,6 @@ const navLinks = [
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Private Label", href: "/private-label" },
   
-  { 
-    name: "Contato", 
-    href: "/contato",
-    submenu: [
-      { name: "Fale Conosco", href: "/contato" },
-      { name: "Suporte", href: "/suporte" },
-    ]
-  },
   { name: "Rastreio", href: "/rastreio" },
 ];
 
