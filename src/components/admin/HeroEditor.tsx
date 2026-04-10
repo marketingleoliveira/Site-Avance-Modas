@@ -40,6 +40,7 @@ const createEmptySlide = (): HeroSlide => ({
   promo_subtitle: '',
   button_text: 'VER COLEÇÃO',
   button_link: '#',
+  button_enabled: true,
 });
 
 const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
@@ -258,7 +259,7 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
 
           {/* Slide Actions Overlay */}
           {!previewMode && (
-            <div className="absolute top-4 right-4 flex items-center gap-2">
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
               {slides.length > 1 && (
                 <>
                   <Button
@@ -300,7 +301,7 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
 
           {/* Upload Overlay */}
           {!previewMode && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
               <label className="cursor-pointer">
                 <div className="flex flex-col items-center gap-3 p-8 bg-white/10 backdrop-blur-md rounded-2xl border-2 border-dashed border-white/30 hover:border-white/60 transition-colors">
                   {uploading ? (
@@ -448,28 +449,43 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
           {/* Botão */}
           <Card>
             <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <MousePointer className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold">Botão de Ação</h4>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Texto do Botão</Label>
-                  <Input
-                    value={currentSlide.button_text || ''}
-                    onChange={(e) => updateCurrentSlide('button_text', e.target.value)}
-                    placeholder="COMPRE AGORA"
-                  />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <MousePointer className="w-5 h-5 text-primary" />
+                  <h4 className="font-semibold">Botão de Ação</h4>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Link do Botão</Label>
-                  <Input
-                    value={currentSlide.button_link || ''}
-                    onChange={(e) => updateCurrentSlide('button_link', e.target.value)}
-                    placeholder="/categoria/lancamentos"
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm text-muted-foreground">Ativar botão</Label>
+                  <Switch
+                    checked={currentSlide.button_enabled !== false}
+                    onCheckedChange={(checked) => {
+                      const newSlides = [...slides];
+                      newSlides[currentSlideIndex] = { ...currentSlide, button_enabled: checked };
+                      updateSlides(newSlides);
+                    }}
                   />
                 </div>
               </div>
+              {currentSlide.button_enabled !== false && (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Texto do Botão</Label>
+                    <Input
+                      value={currentSlide.button_text || ''}
+                      onChange={(e) => updateCurrentSlide('button_text', e.target.value)}
+                      placeholder="COMPRE AGORA"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Link do Botão</Label>
+                    <Input
+                      value={currentSlide.button_link || ''}
+                      onChange={(e) => updateCurrentSlide('button_link', e.target.value)}
+                      placeholder="/categoria/lancamentos"
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <section className="relative h-[50vh] sm:h-[60vh] lg:h-[85vh] overflow-hidden group">
+    <section className="relative w-full overflow-hidden group" style={{ aspectRatio: '1900/800' }}>
       {/* Background Image */}
       <div className="absolute inset-0">
         <img 

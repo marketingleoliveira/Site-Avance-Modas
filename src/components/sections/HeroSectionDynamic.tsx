@@ -51,13 +51,13 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
   }, [shouldAutoplay, isAutoPlaying, autoplayInterval, nextSlide]);
 
   if (loading) {
-    return <section className="relative h-[50vh] sm:h-[60vh] lg:h-[85vh] bg-secondary animate-pulse" />;
+    return <section className="relative w-full bg-secondary animate-pulse" style={{ aspectRatio: '1900/800' }} />;
   }
 
   const currentSlideData = slides[currentSlide];
 
   return (
-    <section className="relative h-[50vh] sm:h-[60vh] lg:h-[85vh] overflow-hidden group">
+    <section className="relative w-full overflow-hidden group" style={{ aspectRatio: '1900/800' }}>
       {/* Slides */}
       <div className="absolute inset-0">
         {slides.map((slide, index) => (
@@ -103,22 +103,24 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
           </p>
 
           {/* CTA Button - Outlined like Vestem */}
-          <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
-            {currentSlideData.button_link && currentSlideData.button_link !== '#' ? (
-              <a 
-                href={currentSlideData.button_link}
-                className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-              >
-                {currentSlideData.button_text}
-              </a>
-            ) : (
-              <button 
-                className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-              >
-                {currentSlideData.button_text}
-              </button>
-            )}
-          </div>
+          {currentSlideData.button_enabled !== false && currentSlideData.button_text && (
+            <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+              {currentSlideData.button_link && currentSlideData.button_link !== '#' ? (
+                <a 
+                  href={currentSlideData.button_link}
+                  className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                >
+                  {currentSlideData.button_text}
+                </a>
+              ) : (
+                <button 
+                  className="inline-block px-8 sm:px-10 py-3 sm:py-3.5 bg-background text-foreground font-semibold tracking-[0.2em] text-[10px] sm:text-xs uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+                >
+                  {currentSlideData.button_text}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
