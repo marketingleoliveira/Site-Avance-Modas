@@ -215,6 +215,23 @@ const CategoryPage = () => {
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     
+                    {/* Promotion Badge */}
+                    {(() => {
+                      const compareAtPrice = product.node.compareAtPriceRange?.minVariantPrice?.amount;
+                      const currentPrice = product.node.priceRange.minVariantPrice.amount;
+                      const hasDiscount = compareAtPrice && parseFloat(compareAtPrice) > parseFloat(currentPrice);
+                      const discountPercent = hasDiscount 
+                        ? Math.round((1 - parseFloat(currentPrice) / parseFloat(compareAtPrice)) * 100)
+                        : 0;
+                      return hasDiscount ? (
+                        <div className="absolute top-0 left-0 z-10">
+                          <div className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded-br-lg shadow-md">
+                            -{discountPercent}% OFF
+                          </div>
+                        </div>
+                      ) : null;
+                    })()}
+                    
                     {/* Logo Avance */}
                     <div className="absolute right-2 top-2">
                       <img 
