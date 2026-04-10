@@ -1,6 +1,6 @@
 import { useState, useCallback, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
@@ -22,14 +22,6 @@ const navLinks = [
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Private Label", href: "/private-label" },
   
-  { 
-    name: "Contato", 
-    href: "/contato",
-    submenu: [
-      { name: "Fale Conosco", href: "/contato" },
-      { name: "Suporte", href: "/suporte" },
-    ]
-  },
   { name: "Rastreio", href: "/rastreio" },
 ];
 
@@ -130,7 +122,15 @@ const Header = () => {
               SAC
             </Link>
 
-            {/* Search bar (desktop) */}
+            {/* Contato Button (desktop) */}
+            <Link
+              to="/contato"
+              className="hidden lg:flex items-center gap-2 px-5 py-2 bg-primary text-primary-foreground rounded-full font-semibold text-xs tracking-wider uppercase hover:bg-primary/90 transition-all duration-300"
+            >
+              <Mail className="w-4 h-4" />
+              Contato
+            </Link>
+
             <button 
               onClick={() => setSearchOpen(true)}
               className="hidden lg:flex items-center gap-2 px-4 py-2 border border-border rounded-full text-muted-foreground hover:border-foreground/30 transition-colors min-w-[200px] xl:min-w-[220px]"
