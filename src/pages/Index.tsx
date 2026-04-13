@@ -20,7 +20,7 @@ const Index = () => {
         <HeroSection />
         <FeaturesSection />
         <CategoriesSection />
-        <ShopifyProductGrid> 
+        <ShopifyProductGrid 
           title="Mais Vendidos" 
           subtitle="Conheça os produtos preferidos das nossas clientes."
           limit={8}
@@ -28,7 +28,6 @@ const Index = () => {
         <PromoBanner />
         <NewsletterSection />
       </main>
-      <start>  </start>
       <Footer />
     </div>
   );
