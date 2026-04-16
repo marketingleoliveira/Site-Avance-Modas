@@ -21,7 +21,7 @@ const navLinks = [
   },
   { name: "Promoções", href: "/categoria/promocoes" },
   { name: "Private Label", href: "/private-label" },
-  
+  { name: "Troca Rápida", href: "/troca-rapida" },
   { name: "Rastreio", href: "/rastreio" },
 ];
 

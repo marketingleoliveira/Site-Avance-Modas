@@ -21,6 +21,7 @@ import SupportPage from "./pages/SupportPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import WholesaleCheckout from "./pages/WholesaleCheckout";
 import WholesaleConfirmation from "./pages/WholesaleConfirmation";
+import QuickReturnPage from "./pages/QuickReturnPage";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -64,6 +65,7 @@ const AppContent = () => {
         <Route path="/suporte" element={<SupportPage />} />
         <Route path="/atacado/checkout" element={<WholesaleCheckout />} />
         <Route path="/atacado/confirmacao" element={<WholesaleConfirmation />} />
+        <Route path="/troca-rapida" element={<QuickReturnPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
