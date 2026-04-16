@@ -368,16 +368,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         )}
                       </div>
 
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleAddToCart(product, e as any);
-                        }}
-                        className="w-full py-2.5 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-300 shadow-sm hover:shadow-md"
+                      <span
+                        className="block w-full py-2.5 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-300 shadow-sm hover:shadow-md text-center cursor-pointer"
                       >
                         Comprar
-                      </button>
+                      </span>
 
                       {/* Available Sizes */}
                       {(() => {
