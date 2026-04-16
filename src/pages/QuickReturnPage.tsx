@@ -352,8 +352,8 @@ const QuickReturnPage = () => {
         {/* STEP 3: Done */}
         {step === "done" && (
           <div className="bg-card border border-border rounded-2xl p-8 text-center shadow-sm">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Solicitação registrada!</h2>
             <p className="text-muted-foreground mb-6">
