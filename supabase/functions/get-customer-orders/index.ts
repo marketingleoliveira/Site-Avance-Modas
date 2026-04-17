@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const SHOPIFY_DOMAIN = "r3ha52-nj.myshopify.com";
+    const SHOPIFY_DOMAIN = "avancemodas-xzj71.myshopify.com";
     const ADMIN_TOKEN = Deno.env.get("SHOPIFY_ADMIN_API_TOKEN") || Deno.env.get("SHOPIFY_ACCESS_TOKEN");
 
     if (!ADMIN_TOKEN) {
