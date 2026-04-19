@@ -1,6 +1,6 @@
 import { useState, useCallback, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail, RefreshCw } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
@@ -20,8 +20,6 @@ const navLinks = [
     ]
   },
   { name: "Promoções", href: "/categoria/promocoes" },
-  { name: "Private Label", href: "/private-label" },
-  { name: "Troca Rápida", href: "/troca-rapida" },
   { name: "Rastreio", href: "/rastreio" },
 ];
 
@@ -130,6 +128,17 @@ const Header = () => {
               <Mail className="w-4 h-4" />
               Contato
             </Link>
+
+            {/* Trocas Button (desktop) */}
+            <a
+              href="https://troqueavancemodas.lovable.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:flex items-center gap-2 px-5 py-2 border-2 border-accent rounded-full text-accent font-semibold text-xs tracking-wider uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Trocas
+            </a>
 
             <button 
               onClick={() => setSearchOpen(true)}
