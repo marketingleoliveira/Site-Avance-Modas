@@ -68,60 +68,6 @@ export type Database = {
         }
         Relationships: []
       }
-      return_requests: {
-        Row: {
-          admin_notes: string | null
-          created_at: string
-          customer_email: string
-          customer_name: string
-          customer_whatsapp: string
-          id: string
-          item_quantity: number
-          item_title: string
-          item_variant: string | null
-          order_date: string | null
-          order_number: string
-          reason: string | null
-          shopify_order_id: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          admin_notes?: string | null
-          created_at?: string
-          customer_email: string
-          customer_name: string
-          customer_whatsapp: string
-          id?: string
-          item_quantity?: number
-          item_title: string
-          item_variant?: string | null
-          order_date?: string | null
-          order_number: string
-          reason?: string | null
-          shopify_order_id?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          admin_notes?: string | null
-          created_at?: string
-          customer_email?: string
-          customer_name?: string
-          customer_whatsapp?: string
-          id?: string
-          item_quantity?: number
-          item_title?: string
-          item_variant?: string | null
-          order_date?: string | null
-          order_number?: string
-          reason?: string | null
-          shopify_order_id?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       sac_tickets: {
         Row: {
           admin_notes: string | null
