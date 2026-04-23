@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer";
 import HeroSectionDynamic from "@/components/sections/HeroSectionDynamic";
 import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic";
 import NewsletterSection from "@/components/sections/NewsletterSection";
-import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
@@ -33,7 +32,6 @@ const InicioVarejo = () => {
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="VAREJO" />
         <TestimonialsSection />
-        <PromoBanner />
         <ModelVideosSection />
         <NewsletterSection />
       </main>
