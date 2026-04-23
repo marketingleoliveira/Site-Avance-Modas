@@ -275,3 +275,23 @@
 .product-image-vibrant:hover {
   filter: saturate(1.35) contrast(1.08) brightness(1.03);
 }
+
+/* Testimonials infinite marquee */
+@keyframes testimonials-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.testimonials-track {
+  animation: testimonials-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+/* Pause animation when hovering the marquee row */
+.testimonials-marquee:hover .testimonials-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-track { animation: none; }
+}
