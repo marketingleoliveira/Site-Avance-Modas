@@ -18,6 +18,8 @@ import TrackingPage from "./pages/TrackingPage";
 import PrivateLabelPage from "./pages/PrivateLabelPage";
 import SACPage from "./pages/SACPage";
 import SupportPage from "./pages/SupportPage";
+import AboutPage from "./pages/AboutPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import WholesaleCheckout from "./pages/WholesaleCheckout";
 import WholesaleConfirmation from "./pages/WholesaleConfirmation";
@@ -63,6 +65,8 @@ const AppContent = () => {
         <Route path="/private-label" element={<PrivateLabelPage />} />
         <Route path="/sac" element={<SACPage />} />
         <Route path="/suporte" element={<SupportPage />} />
+        <Route path="/sobre" element={<AboutPage />} />
+        <Route path="/depoimentos" element={<TestimonialsPage />} />
         <Route path="/atacado/checkout" element={<WholesaleCheckout />} />
         <Route path="/atacado/confirmacao" element={<WholesaleConfirmation />} />
         

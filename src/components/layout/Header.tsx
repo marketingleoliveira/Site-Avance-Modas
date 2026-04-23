@@ -6,7 +6,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
 
 const navLinks = [
-  { name: "Novidades", href: "/categoria/lancamentos" },
+  { name: "Início", href: "/varejo" },
   { 
     name: "Produtos", 
     href: "#",
@@ -20,6 +20,8 @@ const navLinks = [
     ]
   },
   { name: "Promoções", href: "/categoria/promocoes" },
+  { name: "Sobre Nós", href: "/sobre" },
+  { name: "Depoimentos", href: "/depoimentos" },
   { name: "Rastreio", href: "/rastreio" },
 ];
 
