@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { fetchProductsByType, ShopifyProduct } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
@@ -269,6 +270,8 @@ const CategoryPage = () => {
           )}
         </div>
       </section>
+
+      <TestimonialsSection />
 
       <Footer />
     </div>

@@ -229,6 +229,48 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonials: {
+        Row: {
+          comment: string
+          created_at: string
+          customer_name: string
+          display_order: number
+          id: string
+          is_active: boolean
+          location: string | null
+          product_name: string | null
+          rating: number
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          customer_name: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          product_name?: string | null
+          rating?: number
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          customer_name?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          product_name?: string | null
+          rating?: number
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
