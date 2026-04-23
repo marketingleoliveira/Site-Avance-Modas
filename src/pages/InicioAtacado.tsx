@@ -10,6 +10,7 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { useStoreContext } from "@/stores/storeContextStore";
 import {
@@ -146,6 +147,7 @@ const InicioAtacado = () => {
         <HeroSectionDynamic type="ATACADO" />
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="ATACADO" />
+        <TestimonialsSection />
         <PromoBanner />
         <ModelVideosSection />
         <NewsletterSection />

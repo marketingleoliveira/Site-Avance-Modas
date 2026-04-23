@@ -8,6 +8,7 @@ import FeaturesSection from "@/components/sections/FeaturesSection";
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ShopifyProductGrid from "@/components/shopify/ShopifyProductGrid";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
           subtitle="Conheça os produtos preferidos das nossas clientes."
           limit={8}
         />
+        <TestimonialsSection />
         <PromoBanner />
         <NewsletterSection />
       </main>

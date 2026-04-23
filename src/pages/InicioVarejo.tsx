@@ -9,6 +9,7 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import PromoBanner from "@/components/sections/PromoBanner";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import NewsletterPopup from "@/components/newsletter/NewsletterPopup";
 import { useStoreContext } from "@/stores/storeContextStore";
 
@@ -31,6 +32,7 @@ const InicioVarejo = () => {
         <HeroSectionDynamic type="VAREJO" />
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="VAREJO" />
+        <TestimonialsSection />
         <PromoBanner />
         <ModelVideosSection />
         <NewsletterSection />

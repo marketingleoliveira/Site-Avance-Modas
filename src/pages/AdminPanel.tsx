@@ -24,6 +24,7 @@ import SupportTicketsManager from "@/components/admin/SupportTicketsManager";
 import DashboardStats from "@/components/admin/DashboardStats";
 import SizeChartManager from "@/components/admin/SizeChartManager";
 import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
+import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -180,6 +181,7 @@ const AdminPanel = () => {
         { id: "sections", label: "Seções de Produtos", icon: <Grid className="w-4 h-4" /> },
         { id: "features", label: "Barra de Benefícios", icon: <Settings className="w-4 h-4" /> },
         { id: "size-charts", label: "Tabelas de Medidas", icon: <FileText className="w-4 h-4" /> },
+        { id: "testimonials", label: "Depoimentos", icon: <Star className="w-4 h-4" /> },
       ]
     },
     {
@@ -1897,6 +1899,9 @@ const AdminPanel = () => {
             </CardContent>
           </Card>
         );
+
+      case "testimonials":
+        return <TestimonialsManager />;
 
       default:
         return null;
