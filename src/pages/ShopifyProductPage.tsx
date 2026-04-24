@@ -19,6 +19,7 @@ import SupportTicketModal from "@/components/support/SupportTicketModal";
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
 const VirtualFittingRoom = lazy(() => import("@/components/product/VirtualFittingRoom"));
+import ProductFeatureBadges from "@/components/product/ProductFeatureBadges";
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -681,6 +682,9 @@ className="w-full h-full object-contain bg-white"
 
             {/* Product Info */}
             <div className="space-y-4 sm:space-y-6">
+              {/* Feature Badges */}
+              <ProductFeatureBadges />
+
               {/* Title */}
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-tight">
