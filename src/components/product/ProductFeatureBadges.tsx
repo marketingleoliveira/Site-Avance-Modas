@@ -28,11 +28,24 @@ const CompressionIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const AloeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 21c0-4 1-8 4-11-1 5-2 8-4 11z" />
+    <path d="M12 21c0-4-1-8-4-11 1 5 2 8 4 11z" />
+    <path d="M12 21c0-3 .5-6 2-9-.5 4-1 6-2 9z" />
+    <path d="M12 21c0-3-.5-6-2-9 .5 4 1 6 2 9z" />
+    <path d="M12 21V11" />
+    <circle cx="17" cy="5" r="1.2" fill="currentColor" />
+    <path d="M16 6.5c.4.6 1.2.6 1.6 0" />
+  </svg>
+);
+
 const features = [
   { Icon: UVIcon, label: "Conforto", sub: "térmico" },
   { Icon: PocketIcon, label: "Bolsos", sub: "laterais" },
   { Icon: CompressionIcon, label: "Compressão", sub: "Inteligente" },
   { Icon: PantsIcon, label: "Zero", sub: "transparência" },
+  { Icon: AloeIcon, label: "Aloe Vera", sub: "Hidratante" },
 ];
 
 const ProductFeatureBadges = () => {
