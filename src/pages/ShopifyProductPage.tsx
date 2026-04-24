@@ -1013,18 +1013,18 @@ className="w-full h-full object-contain bg-white"
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 sm:gap-3 pt-2">
+              <div className="flex gap-2 sm:gap-3 pt-2 w-full">
                 <Button 
                   variant="hero" 
                   size="xl" 
-                  className="flex-1 gap-1.5 sm:gap-2 h-11 sm:h-12 md:h-14 text-xs sm:text-sm md:text-base px-2 sm:px-4 md:px-6"
+                  className="flex-1 min-w-0 gap-1.5 sm:gap-2 h-11 sm:h-12 md:h-14 text-[11px] sm:text-sm md:text-base px-2 sm:px-4 md:px-6"
                   onClick={handleAddToCart}
                   disabled={!canAddToCart}
                 >
                   <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">{!canAddToCart ? "Selecione opções" : "Adicionar ao Carrinho"}</span>
                 </Button>
-                <Button variant="outline" size="xl" className="h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 flex-shrink-0">
+                <Button variant="outline" size="xl" className="h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 flex-shrink-0 p-0">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
               </div>
