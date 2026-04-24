@@ -15,6 +15,7 @@ import SizeChartTable from "@/components/product/SizeChartTable";
 import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
 import logoAvance from "@/assets/logo-avance.png";
 import SupportTicketModal from "@/components/support/SupportTicketModal";
+import ProductSEO from "@/components/seo/ProductSEO";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
@@ -568,6 +569,15 @@ const ShopifyProductPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ProductSEO
+        title={product.title}
+        description={product.description || ""}
+        handle={product.handle}
+        image={images[0]?.node.url}
+        price={currentVariant?.price.amount || product.priceRange.minVariantPrice.amount}
+        currency={currentVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode || "BRL"}
+        available={isAtacadoProduct || !!currentVariant?.availableForSale}
+      />
       <AnnouncementBar />
       <Header />
       

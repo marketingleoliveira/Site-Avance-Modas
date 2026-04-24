@@ -21,6 +21,7 @@ const TestimonialsSection = () => {
         .from("testimonials")
         .select("id, customer_name, rating, comment, location, product_name")
         .eq("is_active", true)
+        .eq("rating", 5)
         .order("display_order", { ascending: true })
         .limit(8);
 

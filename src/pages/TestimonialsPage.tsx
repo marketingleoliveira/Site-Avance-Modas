@@ -27,6 +27,7 @@ const TestimonialsPage = () => {
         .from("testimonials")
         .select("*")
         .eq("is_active", true)
+        .eq("rating", 5)
         .order("created_at", { ascending: false })
         .limit(10);
       setTestimonials(data || []);
