@@ -12,15 +12,14 @@ const features = [
 
 const ProductFeatureBadges = () => {
   return (
-    <div className="flex items-center justify-start gap-4 sm:gap-6 py-3 border-b border-border">
+    <div className="grid grid-cols-4 gap-2 sm:flex sm:items-center sm:justify-start sm:gap-6 py-3 border-b border-border">
       {features.map(({ src, alt }) => (
         <img
           key={alt}
           src={src}
           alt={alt}
           loading="lazy"
-          style={{ width: 60, height: 60 }}
-          className="object-contain"
+          className="object-contain w-12 h-12 sm:w-[60px] sm:h-[60px] mx-auto sm:mx-0"
         />
       ))}
     </div>
