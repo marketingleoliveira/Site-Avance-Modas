@@ -15,6 +15,7 @@ import SizeChartTable from "@/components/product/SizeChartTable";
 import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyle } from "@/lib/color-utils";
 import logoAvance from "@/assets/logo-avance.png";
 import SupportTicketModal from "@/components/support/SupportTicketModal";
+import ProductSEO from "@/components/seo/ProductSEO";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
