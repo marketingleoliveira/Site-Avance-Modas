@@ -1,5 +1,3 @@
-import { Sun, Layers, ArrowDownToLine, type LucideIcon } from "lucide-react";
-
 const PantsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
     <path d="M6 2h12l-.5 7c-.2 2.5-.4 5-.7 7.5L16 22h-3l-.6-9h-.8L11 22H8l-.8-5.5C6.9 14 6.7 11.5 6.5 9L6 2z" />
