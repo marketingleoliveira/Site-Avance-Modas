@@ -569,6 +569,15 @@ const ShopifyProductPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ProductSEO
+        title={product.title}
+        description={product.description || ""}
+        handle={product.handle}
+        image={images[0]?.node.url}
+        price={currentVariant?.price.amount || product.priceRange.minVariantPrice.amount}
+        currency={currentVariant?.price.currencyCode || product.priceRange.minVariantPrice.currencyCode || "BRL"}
+        available={isAtacadoProduct || !!currentVariant?.availableForSale}
+      />
       <AnnouncementBar />
       <Header />
       
