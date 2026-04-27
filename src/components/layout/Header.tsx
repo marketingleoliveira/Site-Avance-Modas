@@ -224,6 +224,36 @@ const Header = () => {
                 )}
               </div>
             ))}
+            
+            {/* Mobile Action Buttons */}
+            <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-border">
+              <Link
+                to="/sac"
+                onClick={handleCloseMenu}
+                className="flex items-center gap-2 px-4 py-3 border-2 border-primary rounded-full text-primary font-semibold text-xs tracking-wider uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              >
+                <Headphones className="w-4 h-4" />
+                SAC
+              </Link>
+              <Link
+                to="/contato"
+                onClick={handleCloseMenu}
+                className="flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-full font-semibold text-xs tracking-wider uppercase hover:bg-primary/90 transition-all duration-300"
+              >
+                <Mail className="w-4 h-4" />
+                Contato
+              </Link>
+              <a
+                href="https://troqueavancemodas.lovable.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleCloseMenu}
+                className="flex items-center gap-2 px-4 py-3 border-2 border-accent rounded-full text-accent font-semibold text-xs tracking-wider uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Trocas
+              </a>
+            </div>
           </nav>
         </div>
       )}
