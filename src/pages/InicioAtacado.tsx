@@ -10,6 +10,7 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import BrandWordsMarquee from "@/components/sections/BrandWordsMarquee";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { useStoreContext } from "@/stores/storeContextStore";
 import {
@@ -147,6 +148,7 @@ const InicioAtacado = () => {
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="ATACADO" />
         <TestimonialsSection />
+        <BrandWordsMarquee />
         <ModelVideosSection />
         <NewsletterSection />
       </main>

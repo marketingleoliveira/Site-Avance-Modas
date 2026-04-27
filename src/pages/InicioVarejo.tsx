@@ -9,6 +9,7 @@ import NewsletterSection from "@/components/sections/NewsletterSection";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import BrandWordsMarquee from "@/components/sections/BrandWordsMarquee";
 import NewsletterPopup from "@/components/newsletter/NewsletterPopup";
 import { useStoreContext } from "@/stores/storeContextStore";
 
@@ -32,6 +33,7 @@ const InicioVarejo = () => {
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="VAREJO" />
         <TestimonialsSection />
+        <BrandWordsMarquee />
         <ModelVideosSection />
         <NewsletterSection />
       </main>
