@@ -1195,6 +1195,7 @@ className="w-full h-full object-contain bg-white"
               subtitle="Confira outros produtos da nossa coleção"
               limit={4}
               showViewAll={false}
+              type={isAtacadoProduct ? 'ATACADO' : 'VAREJO'}
             />
           </Suspense>
         </div>
