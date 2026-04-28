@@ -1860,6 +1860,24 @@ const AdminPanel = () => {
       case "wholesale-orders":
         return <WholesaleOrdersManager />;
 
+      case "coupons":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Percent className="w-5 h-5" />
+                Cupons de Desconto
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CouponsManager />
+            </CardContent>
+          </Card>
+        );
+
       case "support-tickets":
         return (
           <Card>
