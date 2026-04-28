@@ -373,13 +373,68 @@ export const CartDrawer = () => {
                     <span>Frete</span>
                     <span>{totalPrice >= 1500 ? 'Grátis' : 'Calculado no checkout'}</span>
                   </div>
+                  {couponEligible && (
+                    <div className="flex justify-between text-sm text-green-700 dark:text-green-500 font-medium">
+                      <span>Desconto ({appliedCoupon!.code} • {appliedCoupon!.discount_percent}%)</span>
+                      <span>- {formatPrice(discountAmount, items[0]?.price.currencyCode || 'BRL')}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-lg font-semibold">Total</span>
                     <span className="text-2xl font-bold text-primary">
-                      {formatPrice(totalPrice, items[0]?.price.currencyCode || 'BRL')}
+                      {formatPrice(finalPrice, items[0]?.price.currencyCode || 'BRL')}
                     </span>
                   </div>
                 </div>
+
+                {/* Coupon input - only for varejo Shopify checkout */}
+                {!useWholesaleFlow && (
+                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-2">
+                    {couponEligible ? (
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0">
+                            <Tag className="w-4 h-4 text-green-700 dark:text-green-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-green-800 dark:text-green-400 truncate">{appliedCoupon!.code}</p>
+                            <p className="text-xs text-muted-foreground">{appliedCoupon!.discount_percent}% de desconto aplicado</p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={() => { removeCoupon(); toast.success("Cupom removido"); }}>
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Tag className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">Tem um cupom?</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={couponInput}
+                            onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
+                            placeholder="DIGITE O CÓDIGO"
+                            className="flex-1 h-9 px-3 text-sm rounded-md border border-border bg-background uppercase placeholder:normal-case font-mono"
+                            disabled={isValidatingCoupon}
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleApplyCoupon}
+                            disabled={isValidatingCoupon || !couponInput.trim()}
+                            className="h-9"
+                          >
+                            {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aplicar"}
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
                 
                 <Button 
                   onClick={handleCheckout}
