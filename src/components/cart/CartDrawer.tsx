@@ -9,11 +9,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store, Send } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store, Send, Tag, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
+import { useCouponStore } from "@/stores/couponStore";
 import { toast } from "sonner";
 
 export const CartDrawer = () => {
@@ -40,6 +41,18 @@ export const CartDrawer = () => {
   const totalPrice = getTotalPrice();
   const hasWholesaleItems = items.some((item) => item.lineId?.startsWith('local-'));
   const useWholesaleFlow = isAtacado || hasWholesaleItems;
+
+  // Coupon
+  const appliedCoupon = useCouponStore((s) => s.applied);
+  const isValidatingCoupon = useCouponStore((s) => s.isValidating);
+  const applyCoupon = useCouponStore((s) => s.apply);
+  const removeCoupon = useCouponStore((s) => s.remove);
+  const [couponInput, setCouponInput] = useState("");
+
+  const couponContext: 'varejo' | 'atacado' = useWholesaleFlow ? 'atacado' : 'varejo';
+  const couponEligible = appliedCoupon && (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === couponContext);
+  const discountAmount = couponEligible ? (totalPrice * appliedCoupon!.discount_percent) / 100 : 0;
+  const finalPrice = totalPrice - discountAmount;
   
   // Only apply minimum order validation for atacado when settings are loaded
   const minimumOrder = atacadoSettings.minimum_order;
@@ -69,17 +82,41 @@ export const CartDrawer = () => {
     
     // Varejo: normal Shopify checkout
     const checkoutUrl = getCheckoutUrl();
-    
+
     if (checkoutUrl) {
-      window.open(checkoutUrl, '_blank');
+      // Append the Shopify discount code as a URL param so the discount is applied
+      // by Shopify itself in the checkout, avoiding any payment system conflicts.
+      let finalUrl = checkoutUrl;
+      if (couponEligible) {
+        try {
+          const u = new URL(checkoutUrl);
+          u.searchParams.set('discount', appliedCoupon!.code);
+          finalUrl = u.toString();
+        } catch {
+          finalUrl = checkoutUrl + (checkoutUrl.includes('?') ? '&' : '?') + 'discount=' + encodeURIComponent(appliedCoupon!.code);
+        }
+      }
+      window.open(finalUrl, '_blank');
       setIsOpen(false);
       toast.success("Checkout aberto!", {
-        description: "Complete seu pedido na nova aba.",
+        description: couponEligible
+          ? `Cupom ${appliedCoupon!.code} será aplicado automaticamente no Shopify.`
+          : "Complete seu pedido na nova aba.",
       });
     } else {
       toast.error("Erro ao abrir checkout", {
         description: "Tente adicionar um produto novamente.",
       });
+    }
+  };
+
+  const handleApplyCoupon = async () => {
+    const result = await applyCoupon(couponInput, couponContext);
+    if (result.ok) {
+      toast.success(result.message);
+      setCouponInput("");
+    } else {
+      toast.error(result.message);
     }
   };
 
