@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Heart, ShoppingBag, Eye, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ShopifyProduct, fetchProducts } from "@/lib/shopify-api";
+import { ShopifyProduct, fetchProducts, fetchProductsByType } from "@/lib/shopify-api";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -12,13 +12,15 @@ interface ShopifyProductGridProps {
   subtitle?: string;
   limit?: number;
   showViewAll?: boolean;
+  type?: 'ATACADO' | 'VAREJO';
 }
 
 const ShopifyProductGrid = ({ 
   title = "Nossos Produtos", 
   subtitle = "Conheça nossa coleção de roupas fitness.",
   limit = 8,
-  showViewAll = true 
+  showViewAll = true,
+  type,
 }: ShopifyProductGridProps) => {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,12 +29,17 @@ const ShopifyProductGrid = ({
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
-      const data = await fetchProducts(limit);
-      setProducts(data);
+      if (type) {
+        const data = await fetchProductsByType(type, Math.max(limit * 3, 20));
+        setProducts(data.slice(0, limit));
+      } else {
+        const data = await fetchProducts(limit);
+        setProducts(data);
+      }
       setLoading(false);
     };
     loadProducts();
-  }, [limit]);
+  }, [limit, type]);
 
   const handleAddToCart = (product: ShopifyProduct, e: React.MouseEvent) => {
     e.preventDefault();
