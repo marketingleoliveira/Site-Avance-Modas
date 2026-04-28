@@ -25,6 +25,7 @@ import DashboardStats from "@/components/admin/DashboardStats";
 import SizeChartManager from "@/components/admin/SizeChartManager";
 import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
+import CouponsManager from "@/components/admin/CouponsManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -207,6 +208,7 @@ const AdminPanel = () => {
       icon: <ShoppingBag className="w-4 h-4" />,
       items: [
         { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
+        { id: "coupons", label: "Cupons de Desconto", icon: <Percent className="w-4 h-4" /> },
       ]
     },
     {
@@ -1857,6 +1859,24 @@ const AdminPanel = () => {
 
       case "wholesale-orders":
         return <WholesaleOrdersManager />;
+
+      case "coupons":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Percent className="w-5 h-5" />
+                Cupons de Desconto
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CouponsManager />
+            </CardContent>
+          </Card>
+        );
 
       case "support-tickets":
         return (
