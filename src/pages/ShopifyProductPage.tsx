@@ -21,6 +21,8 @@ import ProductSEO from "@/components/seo/ProductSEO";
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
 const VirtualFittingRoom = lazy(() => import("@/components/product/VirtualFittingRoom"));
 import ProductFeatureBadges from "@/components/product/ProductFeatureBadges";
+import { useActiveCoupons } from "@/hooks/useActiveCoupons";
+import CouponBadge from "@/components/product/CouponBadge";
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
