@@ -272,7 +272,8 @@ const CategoryPage = () => {
                     </p>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
