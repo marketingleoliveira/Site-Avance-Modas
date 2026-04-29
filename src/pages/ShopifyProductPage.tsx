@@ -159,6 +159,9 @@ const ShopifyProductPage = () => {
   // Detect if product is ATACADO - if so, all variants are considered available
   const isAtacadoProduct = product?.title?.toUpperCase().includes('ATACADO') || false;
 
+  const { getCouponForProduct } = useActiveCoupons(isAtacadoProduct ? 'atacado' : 'varejo');
+  const productCoupon = getCouponForProduct(product?.handle);
+
   const sizeAvailabilityMaps = useMemo(() => {
     if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
     
