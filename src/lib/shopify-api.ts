@@ -306,5 +306,63 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   }
 }
 
+// Paginated fetch — returns one page plus cursor info for "load more" UIs
+const STOREFRONT_QUERY_PAGED = `
+  query GetProductsPaged($first: Int!, $after: String, $query: String) {
+    products(first: $first, after: $after, query: $query) {
+      pageInfo { hasNextPage endCursor }
+      edges {
+        cursor
+        node {
+          id
+          title
+          description
+          handle
+          tags
+          priceRange { minVariantPrice { amount currencyCode } }
+          compareAtPriceRange { minVariantPrice { amount currencyCode } }
+          images(first: 1) { edges { node { url altText } } }
+          variants(first: 1) {
+            edges { node {
+              id title
+              price { amount currencyCode }
+              compareAtPrice { amount currencyCode }
+              availableForSale
+              selectedOptions { name value }
+            } }
+          }
+          options { name values }
+        }
+      }
+    }
+  }
+`;
+
+export interface ProductsPage {
+  edges: ShopifyProduct[];
+  hasNextPage: boolean;
+  endCursor: string | null;
+}
+
+export async function fetchProductsPaged(
+  first: number = 20,
+  after: string | null = null,
+  query?: string
+): Promise<ProductsPage> {
+  try {
+    const data = await storefrontApiRequest(STOREFRONT_QUERY_PAGED, { first, after, query: query || null });
+    if (!data) return { edges: [], hasNextPage: false, endCursor: null };
+    const products = data.data.products;
+    return {
+      edges: products.edges as ShopifyProduct[],
+      hasNextPage: !!products.pageInfo?.hasNextPage,
+      endCursor: products.pageInfo?.endCursor ?? null,
+    };
+  } catch (error) {
+    console.error('Error fetching paged products:', error);
+    return { edges: [], hasNextPage: false, endCursor: null };
+  }
+}
+
 // Export for cart store to use
 export { getShopifyConfig, getStorefrontUrl };

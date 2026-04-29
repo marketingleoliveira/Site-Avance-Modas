@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store, Send, Tag, X } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Trash2, ExternalLink, Loader2, AlertTriangle, CheckCircle, Package, Store, Send, Tag, X, BadgePercent, Ban } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/stores/cartStore";
 import { useStoreContext } from "@/stores/storeContextStore";
@@ -53,17 +53,22 @@ export const CartDrawer = () => {
   const couponScopeOk = appliedCoupon && (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === couponContext);
   const restrictedHandles = appliedCoupon?.product_handles ?? [];
   const hasHandleRestriction = restrictedHandles.length > 0;
+  const isItemEligible = (handle?: string) =>
+    !!couponScopeOk && (!hasHandleRestriction || (!!handle && restrictedHandles.includes(handle)));
   // Sum eligible items: when there are restrictions, only items whose handle is in the list count.
   const eligibleSubtotal = couponScopeOk
     ? items.reduce((sum, item) => {
-        const handle = item.product?.node?.handle;
-        const isEligible = !hasHandleRestriction || (handle && restrictedHandles.includes(handle));
-        return isEligible ? sum + parseFloat(item.price.amount) * item.quantity : sum;
+        return isItemEligible(item.product?.node?.handle)
+          ? sum + parseFloat(item.price.amount) * item.quantity
+          : sum;
       }, 0)
     : 0;
   const couponEligible = couponScopeOk && eligibleSubtotal > 0;
   const discountAmount = couponEligible ? (eligibleSubtotal * appliedCoupon!.discount_percent) / 100 : 0;
   const finalPrice = totalPrice - discountAmount;
+  const ineligibleCount = couponScopeOk && hasHandleRestriction
+    ? items.filter((it) => !isItemEligible(it.product?.node?.handle)).length
+    : 0;
   
   // Only apply minimum order validation for atacado when settings are loaded
   const minimumOrder = atacadoSettings.minimum_order;
@@ -200,7 +205,13 @@ export const CartDrawer = () => {
                 {items.map((item) => (
                   <div 
                     key={item.variantId} 
-                    className="flex gap-3 p-3 bg-secondary/30 rounded-xl border border-border/50 hover:border-border transition-colors"
+                    className={`relative flex gap-3 p-3 rounded-xl border transition-colors ${
+                      couponEligible && hasHandleRestriction
+                        ? isItemEligible(item.product?.node?.handle)
+                          ? 'bg-green-50/60 dark:bg-green-950/20 border-green-300/70 dark:border-green-800/60'
+                          : 'bg-secondary/20 border-dashed border-border/60 opacity-80'
+                        : 'bg-secondary/30 border-border/50 hover:border-border'
+                    }`}
                   >
                     <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50">
                       {item.product.node.images?.edges?.[0]?.node && (
@@ -220,6 +231,19 @@ export const CartDrawer = () => {
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {item.selectedOptions.map(option => option.value).join(' • ')}
                           </p>
+                        )}
+                        {couponEligible && hasHandleRestriction && (
+                          isItemEligible(item.product?.node?.handle) ? (
+                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950/50 px-1.5 py-0.5 rounded">
+                              <BadgePercent className="w-3 h-3" />
+                              -{appliedCoupon!.discount_percent}% com {appliedCoupon!.code}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                              <Ban className="w-3 h-3" />
+                              Não inclui o cupom
+                            </span>
+                          )
                         )}
                       </div>
                       
@@ -281,6 +305,28 @@ export const CartDrawer = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Coupon eligibility summary */}
+              {couponEligible && hasHandleRestriction && (
+                <div className="mt-3 rounded-lg border border-border/60 bg-secondary/20 p-3 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400 font-medium">
+                      <BadgePercent className="w-3.5 h-3.5" />
+                      Cupom <strong className="font-mono">{appliedCoupon!.code}</strong> aplicado a {items.length - ineligibleCount} de {items.length} itens
+                    </span>
+                    {ineligibleCount > 0 && (
+                      <span className="text-muted-foreground">
+                        {ineligibleCount} fora da promoção
+                      </span>
+                    )}
+                  </div>
+                  {ineligibleCount > 0 && (
+                    <p className="text-muted-foreground mt-1">
+                      O desconto incide somente sobre os produtos selecionados pela loja para este cupom.
+                    </p>
+                  )}
+                </div>
+              )}
               
               <div className="flex-shrink-0 space-y-4 pt-4 border-t bg-background mt-4">
                 {/* Minimum order progress indicator for atacado - only show when settings loaded */}

@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Tag, Loader2, Copy, Check, Package, Search } from "lucide-react";
 import { toast } from "sonner";
-import { fetchProducts, type ShopifyProduct } from "@/lib/shopify-api";
+import { fetchProductsPaged, type ShopifyProduct } from "@/lib/shopify-api";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -40,7 +40,13 @@ const CouponsManager = () => {
   // Product picker state
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const [productsLoadingMore, setProductsLoadingMore] = useState(false);
+  const [productsCursor, setProductsCursor] = useState<string | null>(null);
+  const [productsHasMore, setProductsHasMore] = useState(false);
   const [productSearch, setProductSearch] = useState("");
+  const [activeSearchTerm, setActiveSearchTerm] = useState("");
+
+  const PAGE_SIZE = 30;
 
   // Edit state for changing product list of an existing coupon
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -62,36 +68,73 @@ const CouponsManager = () => {
     setLoading(false);
   };
 
-  const loadProducts = async () => {
-    if (products.length > 0) return;
+  // Build Shopify search query combining title scope + free text
+  const buildShopifyQuery = (scope: 'varejo' | 'atacado' | 'all', term: string) => {
+    const parts: string[] = [];
+    if (scope === 'varejo') parts.push('title:*VAREJO*');
+    else if (scope === 'atacado') parts.push('title:*ATACADO*');
+    const t = term.trim();
+    if (t) parts.push(`title:*${t}*`);
+    return parts.join(' AND ') || undefined;
+  };
+
+  const loadProductsFirstPage = async (scope: 'varejo' | 'atacado' | 'all', term: string) => {
     setProductsLoading(true);
+    setActiveSearchTerm(term);
     try {
-      // Fetch a wide set; filter client-side by Varejo/Atacado in UI
-      const list = await fetchProducts(250);
-      setProducts(list || []);
-    } catch (e) {
-      toast.error("Erro ao carregar produtos do Shopify");
+      const page = await fetchProductsPaged(PAGE_SIZE, null, buildShopifyQuery(scope, term));
+      setProducts(page.edges);
+      setProductsCursor(page.endCursor);
+      setProductsHasMore(page.hasNextPage);
+    } catch {
+      toast.error("Erro ao carregar produtos");
     } finally {
       setProductsLoading(false);
     }
   };
 
-  useEffect(() => { load(); }, []);
-  useEffect(() => { if (restrictToProducts) loadProducts(); }, [restrictToProducts]);
-
-  // Filter products shown in picker by appliesTo scope and search
-  const filterProducts = (scope: 'varejo' | 'atacado' | 'all', search: string) => {
-    const term = search.trim().toLowerCase();
-    return products.filter((p) => {
-      const title = p.node.title.toUpperCase();
-      if (scope === 'varejo' && !title.includes('VAREJO')) return false;
-      if (scope === 'atacado' && !title.includes('ATACADO')) return false;
-      if (term && !p.node.title.toLowerCase().includes(term) && !p.node.handle.toLowerCase().includes(term)) return false;
-      return true;
-    });
+  const loadMoreProducts = async (scope: 'varejo' | 'atacado' | 'all') => {
+    if (!productsHasMore || productsLoadingMore || !productsCursor) return;
+    setProductsLoadingMore(true);
+    try {
+      const page = await fetchProductsPaged(PAGE_SIZE, productsCursor, buildShopifyQuery(scope, activeSearchTerm));
+      // Dedupe by handle in case of overlap
+      setProducts((prev) => {
+        const seen = new Set(prev.map((p) => p.node.handle));
+        const merged = [...prev];
+        for (const e of page.edges) if (!seen.has(e.node.handle)) merged.push(e);
+        return merged;
+      });
+      setProductsCursor(page.endCursor);
+      setProductsHasMore(page.hasNextPage);
+    } finally {
+      setProductsLoadingMore(false);
+    }
   };
 
-  const filteredForCreate = filterProducts(appliesTo, productSearch);
+  useEffect(() => { load(); }, []);
+
+  // (Re)load first page whenever the picker opens, scope changes, or search is committed
+  useEffect(() => {
+    if (!restrictToProducts && !editingId) return;
+    const scope = editingId
+      ? (coupons.find((c) => c.id === editingId)?.applies_to ?? 'varejo')
+      : appliesTo;
+    const term = editingId ? editSearch : productSearch;
+    const handler = setTimeout(() => loadProductsFirstPage(scope, term), 300);
+    return () => clearTimeout(handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restrictToProducts, editingId, appliesTo, productSearch, editSearch]);
+
+  // Server-paged results are already scope+search filtered. We still apply a defensive
+  // client-side scope check (keyword in title) to honor the project's title-based separation.
+  const enforceScope = (list: ShopifyProduct[], scope: 'varejo' | 'atacado' | 'all') => {
+    if (scope === 'all') return list;
+    const kw = scope === 'varejo' ? 'VAREJO' : 'ATACADO';
+    return list.filter((p) => p.node.title.toUpperCase().includes(kw));
+  };
+
+  const filteredForCreate = enforceScope(products, appliesTo);
 
   const toggleHandle = (handle: string, list: string[], setList: (v: string[]) => void) => {
     if (list.includes(handle)) setList(list.filter((h) => h !== handle));
@@ -145,11 +188,10 @@ const CouponsManager = () => {
     else { toast.success("Cupom excluído"); load(); }
   };
 
-  const startEdit = async (c: Coupon) => {
+  const startEdit = (c: Coupon) => {
     setEditingId(c.id);
     setEditHandles(c.product_handles || []);
     setEditSearch("");
-    await loadProducts();
   };
 
   const cancelEdit = () => { setEditingId(null); setEditHandles([]); setEditSearch(""); };
@@ -271,6 +313,19 @@ const CouponsManager = () => {
                           </label>
                         );
                       })}
+                      {productsHasMore && filteredForCreate.length > 0 && (
+                        <div className="flex justify-center py-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => loadMoreProducts(appliesTo)}
+                            disabled={productsLoadingMore}
+                          >
+                            {productsLoadingMore ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+                            Carregar mais ({PAGE_SIZE})
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </ScrollArea>
                 )}
@@ -366,7 +421,7 @@ const CouponsManager = () => {
                       ) : (
                         <ScrollArea className="h-56 border rounded-md bg-background">
                           <div className="p-2 space-y-1">
-                            {filterProducts(c.applies_to, editSearch).map((p) => {
+                            {enforceScope(products, c.applies_to).map((p) => {
                               const handle = p.node.handle;
                               const checked = editHandles.includes(handle);
                               return (
@@ -384,6 +439,19 @@ const CouponsManager = () => {
                                 </label>
                               );
                             })}
+                            {productsHasMore && (
+                              <div className="flex justify-center py-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => loadMoreProducts(c.applies_to)}
+                                  disabled={productsLoadingMore}
+                                >
+                                  {productsLoadingMore ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+                                  Carregar mais
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         </ScrollArea>
                       )}
