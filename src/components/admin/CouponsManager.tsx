@@ -6,8 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Tag, Loader2, Copy, Check } from "lucide-react";
+import { Plus, Trash2, Tag, Loader2, Copy, Check, Package, Search } from "lucide-react";
 import { toast } from "sonner";
+import { fetchProducts, type ShopifyProduct } from "@/lib/shopify-api";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Coupon {
   id: string;
@@ -16,6 +19,7 @@ interface Coupon {
   discount_percent: number;
   is_active: boolean;
   applies_to: 'varejo' | 'atacado' | 'all';
+  product_handles: string[];
   created_at: string;
 }
 
@@ -30,6 +34,19 @@ const CouponsManager = () => {
   const [percent, setPercent] = useState<number>(8);
   const [appliesTo, setAppliesTo] = useState<'varejo' | 'atacado' | 'all'>('varejo');
   const [creating, setCreating] = useState(false);
+  const [restrictToProducts, setRestrictToProducts] = useState(false);
+  const [selectedHandles, setSelectedHandles] = useState<string[]>([]);
+
+  // Product picker state
+  const [products, setProducts] = useState<ShopifyProduct[]>([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
+
+  // Edit state for changing product list of an existing coupon
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editHandles, setEditHandles] = useState<string[]>([]);
+  const [editSearch, setEditSearch] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -45,12 +62,50 @@ const CouponsManager = () => {
     setLoading(false);
   };
 
+  const loadProducts = async () => {
+    if (products.length > 0) return;
+    setProductsLoading(true);
+    try {
+      // Fetch a wide set; filter client-side by Varejo/Atacado in UI
+      const list = await fetchProducts(250);
+      setProducts(list || []);
+    } catch (e) {
+      toast.error("Erro ao carregar produtos do Shopify");
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
   useEffect(() => { load(); }, []);
+  useEffect(() => { if (restrictToProducts) loadProducts(); }, [restrictToProducts]);
+
+  // Filter products shown in picker by appliesTo scope and search
+  const filterProducts = (scope: 'varejo' | 'atacado' | 'all', search: string) => {
+    const term = search.trim().toLowerCase();
+    return products.filter((p) => {
+      const title = p.node.title.toUpperCase();
+      if (scope === 'varejo' && !title.includes('VAREJO')) return false;
+      if (scope === 'atacado' && !title.includes('ATACADO')) return false;
+      if (term && !p.node.title.toLowerCase().includes(term) && !p.node.handle.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  };
+
+  const filteredForCreate = filterProducts(appliesTo, productSearch);
+
+  const toggleHandle = (handle: string, list: string[], setList: (v: string[]) => void) => {
+    if (list.includes(handle)) setList(list.filter((h) => h !== handle));
+    else setList([...list, handle]);
+  };
 
   const handleCreate = async () => {
     const trimmed = code.trim().toUpperCase();
     if (!trimmed) { toast.error("Informe o código do cupom"); return; }
     if (percent <= 0 || percent > 100) { toast.error("Percentual deve ser entre 1 e 100"); return; }
+    if (restrictToProducts && selectedHandles.length === 0) {
+      toast.error("Selecione ao menos um produto ou desative a restrição");
+      return;
+    }
     setCreating(true);
     const { error } = await supabase.from('coupons').insert({
       code: trimmed,
@@ -58,6 +113,7 @@ const CouponsManager = () => {
       discount_percent: percent,
       applies_to: appliesTo,
       is_active: true,
+      product_handles: restrictToProducts ? selectedHandles : [],
     });
     setCreating(false);
     if (error) {
@@ -72,6 +128,7 @@ const CouponsManager = () => {
       description: "Lembre-se de criar o mesmo código no Shopify Admin para que o desconto seja aplicado no checkout.",
     });
     setCode(""); setDescription(""); setPercent(8); setAppliesTo('varejo');
+    setRestrictToProducts(false); setSelectedHandles([]); setProductSearch("");
     load();
   };
 
@@ -88,6 +145,28 @@ const CouponsManager = () => {
     else { toast.success("Cupom excluído"); load(); }
   };
 
+  const startEdit = async (c: Coupon) => {
+    setEditingId(c.id);
+    setEditHandles(c.product_handles || []);
+    setEditSearch("");
+    await loadProducts();
+  };
+
+  const cancelEdit = () => { setEditingId(null); setEditHandles([]); setEditSearch(""); };
+
+  const saveEdit = async (c: Coupon) => {
+    setSavingEdit(true);
+    const { error } = await supabase
+      .from('coupons')
+      .update({ product_handles: editHandles })
+      .eq('id', c.id);
+    setSavingEdit(false);
+    if (error) { toast.error("Erro ao salvar produtos do cupom"); return; }
+    toast.success(editHandles.length === 0 ? "Cupom agora vale para todos os produtos" : `${editHandles.length} produto(s) elegível(eis)`);
+    cancelEdit();
+    load();
+  };
+
   const copyCode = (c: string) => {
     navigator.clipboard.writeText(c);
     setCopied(c);
@@ -100,7 +179,7 @@ const CouponsManager = () => {
         <p className="text-sm text-amber-800 dark:text-amber-300">
           <strong>⚠️ Importante:</strong> O desconto é aplicado pelo <strong>Shopify</strong> no checkout para evitar conflitos com o sistema de pagamento. 
           Para cada cupom criado aqui, você precisa também criar o mesmo código no <strong>Shopify Admin → Discounts</strong> com o mesmo percentual.
-          Assim o desconto entra automaticamente no valor final ao redirecionar para o Shopify.
+          Assim o desconto entra automaticamente no valor final ao redirecionar para o Shopify. <strong>Dica:</strong> ao restringir produtos abaixo, configure também no Shopify a opção "Aplicar a produtos específicos" com os mesmos itens.
         </p>
       </div>
 
@@ -130,7 +209,7 @@ const CouponsManager = () => {
               <select
                 className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={appliesTo}
-                onChange={(e) => setAppliesTo(e.target.value as 'varejo' | 'atacado' | 'all')}
+                onChange={(e) => { setAppliesTo(e.target.value as 'varejo' | 'atacado' | 'all'); setSelectedHandles([]); }}
               >
                 <option value="varejo">Varejo</option>
                 <option value="atacado">Atacado</option>
@@ -138,6 +217,73 @@ const CouponsManager = () => {
               </select>
             </div>
           </div>
+
+          <div className="border rounded-lg p-4 space-y-3 bg-secondary/20">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-0.5">
+                <Label className="flex items-center gap-2 cursor-pointer">
+                  <Package className="w-4 h-4" /> Restringir a produtos específicos
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Quando ativo, o desconto só será aplicado aos produtos selecionados. Caso contrário, vale para todos os produtos do escopo escolhido.
+                </p>
+              </div>
+              <Switch checked={restrictToProducts} onCheckedChange={(v) => { setRestrictToProducts(v); if (!v) setSelectedHandles([]); }} />
+            </div>
+
+            {restrictToProducts && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={productSearch}
+                      onChange={(e) => setProductSearch(e.target.value)}
+                      placeholder="Buscar produto por título ou handle..."
+                      className="pl-8"
+                    />
+                  </div>
+                  <Badge variant="secondary">{selectedHandles.length} selecionado(s)</Badge>
+                </div>
+
+                {productsLoading ? (
+                  <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin" /></div>
+                ) : (
+                  <ScrollArea className="h-64 border rounded-md bg-background">
+                    <div className="p-2 space-y-1">
+                      {filteredForCreate.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-6">Nenhum produto encontrado</p>
+                      ) : filteredForCreate.map((p) => {
+                        const handle = p.node.handle;
+                        const checked = selectedHandles.includes(handle);
+                        return (
+                          <label key={handle} className="flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50 cursor-pointer">
+                            <Checkbox checked={checked} onCheckedChange={() => toggleHandle(handle, selectedHandles, setSelectedHandles)} />
+                            <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
+                              {p.node.images?.edges?.[0]?.node?.url && (
+                                <img src={p.node.images.edges[0].node.url} alt={p.node.title} className="w-full h-full object-cover" loading="lazy" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{p.node.title}</p>
+                              <p className="text-xs text-muted-foreground truncate font-mono">{handle}</p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                )}
+
+                {selectedHandles.length > 0 && (
+                  <div className="flex justify-end">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedHandles([])}>Limpar seleção</Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <Button onClick={handleCreate} disabled={creating}>
             {creating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
             Criar Cupom
@@ -159,33 +305,98 @@ const CouponsManager = () => {
           ) : (
             <div className="space-y-2">
               {coupons.map((c) => (
-                <div key={c.id} className="flex items-center justify-between gap-4 p-3 border rounded-lg bg-background">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        onClick={() => copyCode(c.code)}
-                        className="font-mono font-bold text-base flex items-center gap-1 hover:text-primary"
-                        title="Copiar código"
-                      >
-                        {c.code}
-                        {copied === c.code ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 opacity-50" />}
-                      </button>
-                      <Badge variant="secondary">{c.discount_percent}% OFF</Badge>
-                      <Badge variant="outline">
-                        {c.applies_to === 'all' ? 'Ambos' : c.applies_to === 'varejo' ? 'Varejo' : 'Atacado'}
-                      </Badge>
-                      {!c.is_active && <Badge variant="destructive">Inativo</Badge>}
+                <div key={c.id} className="border rounded-lg bg-background">
+                  <div className="flex items-center justify-between gap-4 p-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          onClick={() => copyCode(c.code)}
+                          className="font-mono font-bold text-base flex items-center gap-1 hover:text-primary"
+                          title="Copiar código"
+                        >
+                          {c.code}
+                          {copied === c.code ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3 opacity-50" />}
+                        </button>
+                        <Badge variant="secondary">{c.discount_percent}% OFF</Badge>
+                        <Badge variant="outline">
+                          {c.applies_to === 'all' ? 'Ambos' : c.applies_to === 'varejo' ? 'Varejo' : 'Atacado'}
+                        </Badge>
+                        {(c.product_handles?.length ?? 0) > 0 ? (
+                          <Badge className="bg-primary/10 text-primary border border-primary/20">
+                            <Package className="w-3 h-3 mr-1" /> {c.product_handles.length} produto(s)
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline">Todos os produtos</Badge>
+                        )}
+                        {!c.is_active && <Badge variant="destructive">Inativo</Badge>}
+                      </div>
+                      {c.description && <p className="text-xs text-muted-foreground mt-1">{c.description}</p>}
                     </div>
-                    {c.description && <p className="text-xs text-muted-foreground mt-1">{c.description}</p>}
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <Button variant="outline" size="sm" onClick={() => editingId === c.id ? cancelEdit() : startEdit(c)}>
+                        <Package className="w-4 h-4 mr-1" />
+                        {editingId === c.id ? 'Fechar' : 'Produtos'}
+                      </Button>
                       <Switch checked={c.is_active} onCheckedChange={() => toggleActive(c.id, c.is_active)} />
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id, c.code)} className="text-destructive hover:text-destructive">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(c.id, c.code)} className="text-destructive hover:text-destructive">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
+
+                  {editingId === c.id && (
+                    <div className="border-t p-3 space-y-2 bg-secondary/10">
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            value={editSearch}
+                            onChange={(e) => setEditSearch(e.target.value)}
+                            placeholder="Buscar produto..."
+                            className="pl-8 h-9"
+                          />
+                        </div>
+                        <Badge variant="secondary">{editHandles.length} selecionado(s)</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Deixe vazio para que o cupom valha para todos os produtos do escopo ({c.applies_to === 'all' ? 'Ambos' : c.applies_to}).
+                      </p>
+                      {productsLoading ? (
+                        <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin" /></div>
+                      ) : (
+                        <ScrollArea className="h-56 border rounded-md bg-background">
+                          <div className="p-2 space-y-1">
+                            {filterProducts(c.applies_to, editSearch).map((p) => {
+                              const handle = p.node.handle;
+                              const checked = editHandles.includes(handle);
+                              return (
+                                <label key={handle} className="flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50 cursor-pointer">
+                                  <Checkbox checked={checked} onCheckedChange={() => toggleHandle(handle, editHandles, setEditHandles)} />
+                                  <div className="w-9 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
+                                    {p.node.images?.edges?.[0]?.node?.url && (
+                                      <img src={p.node.images.edges[0].node.url} alt={p.node.title} className="w-full h-full object-cover" loading="lazy" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{p.node.title}</p>
+                                    <p className="text-xs text-muted-foreground truncate font-mono">{handle}</p>
+                                  </div>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </ScrollArea>
+                      )}
+                      <div className="flex justify-end gap-2 pt-2">
+                        <Button variant="ghost" size="sm" onClick={() => setEditHandles([])}>Limpar tudo</Button>
+                        <Button variant="outline" size="sm" onClick={cancelEdit}>Cancelar</Button>
+                        <Button size="sm" onClick={() => saveEdit(c)} disabled={savingEdit}>
+                          {savingEdit ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Check className="w-4 h-4 mr-1" />}
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

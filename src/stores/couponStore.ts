@@ -7,6 +7,7 @@ export interface AppliedCoupon {
   discount_percent: number;
   description: string | null;
   applies_to: 'varejo' | 'atacado' | 'all';
+  product_handles: string[];
 }
 
 interface CouponStore {
@@ -28,7 +29,7 @@ export const useCouponStore = create<CouponStore>()(
         try {
           const { data, error } = await supabase
             .from('coupons')
-            .select('code, discount_percent, description, applies_to, is_active')
+            .select('code, discount_percent, description, applies_to, is_active, product_handles')
             .eq('code', code)
             .eq('is_active', true)
             .maybeSingle();
@@ -44,6 +45,7 @@ export const useCouponStore = create<CouponStore>()(
               discount_percent: Number(data.discount_percent),
               description: data.description,
               applies_to: data.applies_to as 'varejo' | 'atacado' | 'all',
+              product_handles: ((data as { product_handles?: string[] | null }).product_handles ?? []) as string[],
             },
           });
           return { ok: true, message: `Cupom aplicado: ${data.discount_percent}% de desconto` };

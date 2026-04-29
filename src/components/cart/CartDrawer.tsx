@@ -50,8 +50,19 @@ export const CartDrawer = () => {
   const [couponInput, setCouponInput] = useState("");
 
   const couponContext: 'varejo' | 'atacado' = useWholesaleFlow ? 'atacado' : 'varejo';
-  const couponEligible = appliedCoupon && (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === couponContext);
-  const discountAmount = couponEligible ? (totalPrice * appliedCoupon!.discount_percent) / 100 : 0;
+  const couponScopeOk = appliedCoupon && (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === couponContext);
+  const restrictedHandles = appliedCoupon?.product_handles ?? [];
+  const hasHandleRestriction = restrictedHandles.length > 0;
+  // Sum eligible items: when there are restrictions, only items whose handle is in the list count.
+  const eligibleSubtotal = couponScopeOk
+    ? items.reduce((sum, item) => {
+        const handle = item.product?.node?.handle;
+        const isEligible = !hasHandleRestriction || (handle && restrictedHandles.includes(handle));
+        return isEligible ? sum + parseFloat(item.price.amount) * item.quantity : sum;
+      }, 0)
+    : 0;
+  const couponEligible = couponScopeOk && eligibleSubtotal > 0;
+  const discountAmount = couponEligible ? (eligibleSubtotal * appliedCoupon!.discount_percent) / 100 : 0;
   const finalPrice = totalPrice - discountAmount;
   
   // Only apply minimum order validation for atacado when settings are loaded
@@ -113,6 +124,19 @@ export const CartDrawer = () => {
   const handleApplyCoupon = async () => {
     const result = await applyCoupon(couponInput, couponContext);
     if (result.ok) {
+      // Re-read store after apply to validate eligibility against current cart
+      const applied = useCouponStore.getState().applied;
+      const restricted = applied?.product_handles ?? [];
+      if (restricted.length > 0) {
+        const anyEligible = items.some((it) => it.product?.node?.handle && restricted.includes(it.product.node.handle));
+        if (!anyEligible) {
+          useCouponStore.getState().remove();
+          toast.error("Cupom válido, mas nenhum produto do carrinho é elegível", {
+            description: "Este cupom só vale para produtos selecionados pela loja.",
+          });
+          return;
+        }
+      }
       toast.success(result.message);
       setCouponInput("");
     } else {
