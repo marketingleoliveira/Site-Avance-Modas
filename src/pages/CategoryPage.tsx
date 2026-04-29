@@ -10,6 +10,8 @@ import { useStoreContext } from "@/stores/storeContextStore";
 import { toast } from "sonner";
 import { ShoppingBag, ChevronRight } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
+import { useActiveCoupons } from "@/hooks/useActiveCoupons";
+import CouponBadge from "@/components/product/CouponBadge";
 
 // Mapping of filter categories to title keywords
 const categoryKeywords: Record<string, string[]> = {
@@ -73,6 +75,7 @@ const CategoryPage = () => {
   
   // Use persistent store context
   const storeType = useStoreContext(state => state.storeType);
+  const { getCouponForProduct } = useActiveCoupons(storeType === 'atacado' ? 'atacado' : 'varejo');
   const displayStoreType = storeType === 'atacado' ? 'ATACADO' : 'VAREJO';
 
   const config = category ? categoryConfig[category] : null;
@@ -202,7 +205,9 @@ const CategoryPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-              {products.map((product) => (
+              {products.map((product) => {
+                const productCoupon = getCouponForProduct(product.node.handle);
+                return (
                 <Link
                   key={product.node.id}
                   to={`/produto/${product.node.handle}`}
@@ -241,6 +246,8 @@ const CategoryPage = () => {
                         className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] object-contain"
                       />
                     </div>
+
+                    {productCoupon && <CouponBadge coupon={productCoupon} variant="ribbon" />}
                     
                     {/* Quick Add Button */}
                     <button 
@@ -265,7 +272,8 @@ const CategoryPage = () => {
                     </p>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

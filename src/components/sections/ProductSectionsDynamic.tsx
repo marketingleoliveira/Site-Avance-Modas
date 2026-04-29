@@ -6,6 +6,8 @@ import { COLOR_MAP } from "@/lib/color-utils";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import logoAvance from "@/assets/logo-avance.png";
+import { useActiveCoupons } from "@/hooks/useActiveCoupons";
+import CouponBadge from "@/components/product/CouponBadge";
 
 interface ProductSectionsDynamicProps {
   type: 'ATACADO' | 'VAREJO';
@@ -78,6 +80,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('todos');
   const addItem = useCartStore((state) => state.addItem);
+  const { getCouponForProduct } = useActiveCoupons(type === 'ATACADO' ? 'atacado' : 'varejo');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -279,7 +282,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                 const discountPercent = hasDiscount 
                   ? Math.round((1 - parseFloat(currentPrice) / parseFloat(compareAtPrice)) * 100)
                   : 0;
-                
+                const productCoupon = getCouponForProduct(product.node.handle);
                 
                 return (
                   <Link
@@ -307,6 +310,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         />
                       </div>
 
+                      {/* Coupon Badge */}
+                      {productCoupon && <CouponBadge coupon={productCoupon} variant="ribbon" />}
 
                       {/* Discount Ribbon - Diagonal flag */}
                       {(isPromo || hasDiscount) && (

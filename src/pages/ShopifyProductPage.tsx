@@ -21,6 +21,8 @@ import ProductSEO from "@/components/seo/ProductSEO";
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
 const VirtualFittingRoom = lazy(() => import("@/components/product/VirtualFittingRoom"));
 import ProductFeatureBadges from "@/components/product/ProductFeatureBadges";
+import { useActiveCoupons } from "@/hooks/useActiveCoupons";
+import CouponBadge from "@/components/product/CouponBadge";
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -156,6 +158,9 @@ const ShopifyProductPage = () => {
   // Pre-compute size availability maps (general availability, not filtered by color)
   // Detect if product is ATACADO - if so, all variants are considered available
   const isAtacadoProduct = product?.title?.toUpperCase().includes('ATACADO') || false;
+
+  const { getCouponForProduct } = useActiveCoupons(isAtacadoProduct ? 'atacado' : 'varejo');
+  const productCoupon = getCouponForProduct(product?.handle);
 
   const sizeAvailabilityMaps = useMemo(() => {
     if (!product) return { regular: new Map<string, boolean>(), top: new Map<string, boolean>(), bottom: new Map<string, boolean>() };
@@ -709,6 +714,14 @@ className="w-full h-full object-contain bg-white"
                     {formatPrice(currentVariant?.price.amount || product.priceRange.minVariantPrice.amount, currentVariant?.price.currencyCode || 'BRL')}
                   </span>
                 </div>
+                {productCoupon && (
+                  <div className="pt-2">
+                    <CouponBadge coupon={productCoupon} variant="inline" />
+                    <p className="text-[10px] text-muted-foreground mt-1 italic">
+                      * Cupons promocionais não são acumulativos com outras promoções ou cupons.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Conjunto Size Selection - Separate Top/Bottom */}
