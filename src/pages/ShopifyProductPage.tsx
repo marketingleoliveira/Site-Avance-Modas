@@ -714,6 +714,14 @@ className="w-full h-full object-contain bg-white"
                     {formatPrice(currentVariant?.price.amount || product.priceRange.minVariantPrice.amount, currentVariant?.price.currencyCode || 'BRL')}
                   </span>
                 </div>
+                {productCoupon && (
+                  <div className="pt-2">
+                    <CouponBadge coupon={productCoupon} variant="inline" />
+                    <p className="text-[10px] text-muted-foreground mt-1 italic">
+                      * Cupons promocionais não são acumulativos com outras promoções ou cupons.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Conjunto Size Selection - Separate Top/Bottom */}
