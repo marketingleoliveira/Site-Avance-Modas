@@ -75,7 +75,7 @@ const CategoryPage = () => {
   
   // Use persistent store context
   const storeType = useStoreContext(state => state.storeType);
-  const { getCouponForProduct } = useActiveCoupons(storeType === 'ATACADO' ? 'atacado' : 'varejo');
+  const { getCouponForProduct } = useActiveCoupons(storeType === 'atacado' ? 'atacado' : 'varejo');
   const displayStoreType = storeType === 'atacado' ? 'ATACADO' : 'VAREJO';
 
   const config = category ? categoryConfig[category] : null;
