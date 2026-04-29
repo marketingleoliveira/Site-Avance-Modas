@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
 import { cn } from "@/lib/utils";
+import { useActiveCoupons } from "@/hooks/useActiveCoupons";
+import CouponBadge from "@/components/product/CouponBadge";
 
 interface ShopifyProductGridFilteredProps {
   title?: string;
@@ -27,6 +29,7 @@ const ShopifyProductGridFiltered = ({
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore(state => state.addItem);
+  const { getCouponForProduct } = useActiveCoupons(type === 'ATACADO' ? 'atacado' : 'varejo');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -165,6 +168,7 @@ const ShopifyProductGridFiltered = ({
             const firstImage = product.node.images.edges[0]?.node;
             const price = product.node.priceRange.minVariantPrice;
             const colors = getColorOptions(product);
+            const productCoupon = getCouponForProduct(product.node.handle);
             
             return (
               <Link
@@ -205,6 +209,8 @@ const ShopifyProductGridFiltered = ({
                       </div>
                     </div>
                   )}
+
+                  {productCoupon && <CouponBadge coupon={productCoupon} variant="ribbon" />}
 
                   {/* Quick actions */}
                   <div className="absolute top-12 right-2 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 z-10">
