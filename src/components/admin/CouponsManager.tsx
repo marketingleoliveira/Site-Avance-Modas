@@ -313,6 +313,19 @@ const CouponsManager = () => {
                           </label>
                         );
                       })}
+                      {productsHasMore && filteredForCreate.length > 0 && (
+                        <div className="flex justify-center py-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => loadMoreProducts(appliesTo)}
+                            disabled={productsLoadingMore}
+                          >
+                            {productsLoadingMore ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+                            Carregar mais ({PAGE_SIZE})
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </ScrollArea>
                 )}
