@@ -124,6 +124,19 @@ export const CartDrawer = () => {
   const handleApplyCoupon = async () => {
     const result = await applyCoupon(couponInput, couponContext);
     if (result.ok) {
+      // Re-read store after apply to validate eligibility against current cart
+      const applied = useCouponStore.getState().applied;
+      const restricted = applied?.product_handles ?? [];
+      if (restricted.length > 0) {
+        const anyEligible = items.some((it) => it.product?.node?.handle && restricted.includes(it.product.node.handle));
+        if (!anyEligible) {
+          useCouponStore.getState().remove();
+          toast.error("Cupom válido, mas nenhum produto do carrinho é elegível", {
+            description: "Este cupom só vale para produtos selecionados pela loja.",
+          });
+          return;
+        }
+      }
       toast.success(result.message);
       setCouponInput("");
     } else {
