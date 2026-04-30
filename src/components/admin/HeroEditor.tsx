@@ -47,6 +47,8 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
   const [uploading, setUploading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Convert legacy settings to slides array
   const getSlides = (): HeroSlide[] => {
@@ -137,6 +139,17 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
     setCurrentSlideIndex(newIndex);
   };
 
+  const reorderSlides = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= slides.length || to >= slides.length) return;
+    const newSlides = [...slides];
+    const [moved] = newSlides.splice(from, 1);
+    newSlides.splice(to, 0, moved);
+    updateSlides(newSlides);
+    // Keep the moved slide selected
+    setCurrentSlideIndex(to);
+    toast.success("Ordem dos slides atualizada!");
+  };
+
   if (!settings) {
     return (
       <div className="flex items-center justify-center h-64 bg-secondary/50 rounded-xl border-2 border-dashed border-border">
@@ -177,34 +190,78 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
 
       {/* Slides Thumbnails */}
       {slides.length > 1 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
-          {slides.map((slide, index) => (
-            <button
-              key={slide.id}
-              onClick={() => setCurrentSlideIndex(index)}
-              className={cn(
-                "relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden border-2 transition-all",
-                index === currentSlideIndex 
-                  ? "border-primary ring-2 ring-primary/20" 
-                  : "border-border hover:border-primary/50"
-              )}
-            >
-              {slide.image_url ? (
-                <img 
-                  src={slide.image_url} 
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-secondary flex items-center justify-center">
-                  <ImagePlus className="w-4 h-4 text-muted-foreground" />
-                </div>
-              )}
-              <span className="absolute bottom-1 right-1 text-[10px] font-bold bg-black/60 text-white px-1.5 rounded">
-                {index + 1}
-              </span>
-            </button>
-          ))}
+        <div>
+          <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+            <GripVertical className="w-3 h-3" />
+            Arraste as miniaturas para reordenar os slides
+          </p>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {slides.map((slide, index) => (
+              <div
+                key={slide.id}
+                draggable
+                onDragStart={(e) => {
+                  setDraggedIndex(index);
+                  e.dataTransfer.effectAllowed = 'move';
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  if (dragOverIndex !== index) setDragOverIndex(index);
+                }}
+                onDragLeave={() => {
+                  if (dragOverIndex === index) setDragOverIndex(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedIndex !== null && draggedIndex !== index) {
+                    reorderSlides(draggedIndex, index);
+                  }
+                  setDraggedIndex(null);
+                  setDragOverIndex(null);
+                }}
+                onDragEnd={() => {
+                  setDraggedIndex(null);
+                  setDragOverIndex(null);
+                }}
+                className={cn(
+                  "relative flex-shrink-0 cursor-move transition-all",
+                  draggedIndex === index && "opacity-40 scale-95",
+                  dragOverIndex === index && draggedIndex !== index && "scale-105"
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => setCurrentSlideIndex(index)}
+                  className={cn(
+                    "relative block w-24 h-16 rounded-lg overflow-hidden border-2 transition-all",
+                    index === currentSlideIndex 
+                      ? "border-primary ring-2 ring-primary/20" 
+                      : "border-border hover:border-primary/50",
+                    dragOverIndex === index && draggedIndex !== index && "border-primary ring-2 ring-primary/40"
+                  )}
+                >
+                  {slide.image_url ? (
+                    <img 
+                      src={slide.image_url} 
+                      alt={`Slide ${index + 1}`}
+                      className="w-full h-full object-cover pointer-events-none"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-secondary flex items-center justify-center">
+                      <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  )}
+                  <span className="absolute top-1 left-1 bg-black/60 text-white rounded p-0.5">
+                    <GripVertical className="w-3 h-3" />
+                  </span>
+                  <span className="absolute bottom-1 right-1 text-[10px] font-bold bg-black/60 text-white px-1.5 rounded">
+                    {index + 1}
+                  </span>
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
