@@ -43,7 +43,10 @@ const ShopifyProductPage = () => {
   useEffect(() => {
     const loadProduct = async () => {
       if (!handle) return;
-      
+
+      // Scroll to top whenever the product changes (e.g. clicking a related product)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       // Check cache first
       const cached = getCachedProduct(handle);
       if (cached) {
