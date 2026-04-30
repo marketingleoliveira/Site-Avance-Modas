@@ -244,11 +244,11 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-1.5 sm:gap-2 lg:gap-3">
                 {[
-                  { href: "/", label: "Sobre Nós" },
-                  { href: "/#produtos", label: "Produtos" },
-                  { href: "/#produtos", label: "Lançamentos" },
-                  { href: "/#produtos", label: "Promoções" },
-                  { href: "/#contato", label: "Contato" },
+                  { href: "/sobre", label: "Sobre Nós" },
+                  { href: "/varejo", label: "Produtos" },
+                  { href: "/categoria/promocoes", label: "Promoções" },
+                  { href: "/depoimentos", label: "Depoimentos" },
+                  { href: "/contato", label: "Contato" },
                 ].map((link, index) => (
                   <li
                     key={link.label}
@@ -258,12 +258,12 @@ const Footer = () => {
                     )}
                     style={{ transitionDelay: `${200 + index * 50}ms` }}
                   >
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:translate-x-1 inline-block"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
                 <li
@@ -290,21 +290,27 @@ const Footer = () => {
                 Categorias
               </h4>
               <ul className="flex flex-col gap-1.5 sm:gap-2 lg:gap-3">
-                {["Shorts", "Leggings", "Tops", "Conjuntos", "Acessórios"].map((category, index) => (
+                {[
+                  { label: "Shorts", href: "/categoria/shorts" },
+                  { label: "Leggings", href: "/categoria/leggings" },
+                  { label: "Tops", href: "/categoria/tops" },
+                  { label: "Conjuntos", href: "/categoria/conjuntos" },
+                  { label: "Bermudas", href: "/categoria/bermudas" },
+                ].map((category, index) => (
                   <li
-                    key={category}
+                    key={category.label}
                     className={cn(
                       "transition-all duration-500",
                       footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
                     )}
                     style={{ transitionDelay: `${300 + index * 50}ms` }}
                   >
-                    <a
-                      href="/#produtos"
+                    <Link
+                      to={category.href}
                       className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors hover:translate-x-1 inline-block"
                     >
-                      {category}
-                    </a>
+                      {category.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
