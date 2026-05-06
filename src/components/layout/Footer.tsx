@@ -10,16 +10,31 @@ import { cn } from "@/lib/utils";
 
 // Payment method icons with real brand colors
 const VisaIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(26,91,199,0.6)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(26,91,199,0.6)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#1A5BC7" />
-    <text x="25" y="21" textAnchor="middle" fontSize="12" fontWeight="bold" fontStyle="italic" fill="white" fontFamily="Arial, sans-serif">
+    <text
+      x="25"
+      y="21"
+      textAnchor="middle"
+      fontSize="12"
+      fontWeight="bold"
+      fontStyle="italic"
+      fill="white"
+      fontFamily="Arial, sans-serif"
+    >
       VISA
     </text>
   </svg>
 );
 
 const MastercardIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(235,0,27,0.5)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(235,0,27,0.5)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#1A1F36" />
     <circle cx="19" cy="16" r="8" fill="#EB001B" />
     <circle cx="31" cy="16" r="8" fill="#F79E1B" />
@@ -28,9 +43,20 @@ const MastercardIcon = () => (
 );
 
 const EloIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,205,0,0.6)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,205,0,0.6)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#000000" />
-    <text x="25" y="20" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#FFCD00" fontFamily="Arial, sans-serif">
+    <text
+      x="25"
+      y="20"
+      textAnchor="middle"
+      fontSize="11"
+      fontWeight="bold"
+      fill="#FFCD00"
+      fontFamily="Arial, sans-serif"
+    >
       elo
     </text>
     <circle cx="38" cy="10" r="4" fill="#00A4E0" />
@@ -40,7 +66,10 @@ const EloIcon = () => (
 );
 
 const HipercardIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(177,31,36,0.5)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(177,31,36,0.5)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#B11F24" />
     <text x="25" y="19" textAnchor="middle" fontSize="8" fontWeight="bold" fill="white" fontFamily="Arial, sans-serif">
       HIPERCARD
@@ -49,7 +78,10 @@ const HipercardIcon = () => (
 );
 
 const PixIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(50,187,177,0.6)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(50,187,177,0.6)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#32BBB1" />
     <g transform="translate(25, 16) rotate(45)">
       <rect x="-6" y="-6" width="12" height="12" fill="white" rx="2" />
@@ -61,7 +93,10 @@ const PixIcon = () => (
 );
 
 const BoletoIcon = () => (
-  <svg viewBox="0 0 50 32" className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+  <svg
+    viewBox="0 0 50 32"
+    className="h-7 w-auto transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+  >
     <rect x="1" y="1" width="48" height="30" rx="4" fill="#2D2D2D" />
     <rect x="8" y="8" width="2" height="14" fill="#FFF" />
     <rect x="12" y="8" width="1" height="14" fill="#FFF" />
@@ -80,21 +115,21 @@ const BoletoIcon = () => (
 );
 
 // Security badges
-const SecurityBadge = ({ 
-  icon: Icon, 
-  label, 
+const SecurityBadge = ({
+  icon: Icon,
+  label,
   delay,
-  isVisible 
-}: { 
-  icon: React.ElementType; 
-  label: string; 
+  isVisible,
+}: {
+  icon: React.ElementType;
+  label: string;
   delay: number;
   isVisible: boolean;
 }) => (
-  <div 
+  <div
     className={cn(
       "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 transition-all duration-500 hover:bg-primary-foreground/20 hover:border-primary-foreground/40 hover:scale-105 group",
-      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
     )}
     style={{ transitionDelay: `${delay}ms` }}
   >
@@ -121,16 +156,14 @@ interface AnimatedSectionProps {
 
 const AnimatedSection = ({ children, delay = 0, className }: AnimatedSectionProps) => {
   const { ref, isVisible } = useIntersectionObserver({ threshold: 0.1 });
-  
+
   return (
     <div
       ref={ref}
       className={cn(
         "transition-all duration-700 ease-out",
-        isVisible 
-          ? "opacity-100 translate-y-0" 
-          : "opacity-0 translate-y-8",
-        className
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+        className,
       )}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -144,7 +177,7 @@ const Footer = () => {
   const [showTerms, setShowTerms] = useState(false);
   const [showWholesale, setShowWholesale] = useState(false);
   const { ref: footerRef, isVisible: footerVisible } = useIntersectionObserver({ threshold: 0.05 });
-  
+
   return (
     <>
       <footer ref={footerRef} className="bg-primary text-primary-foreground overflow-hidden">
@@ -156,19 +189,19 @@ const Footer = () => {
               <div className="relative group">
                 {/* Glow effect background */}
                 <div className="absolute -inset-2 bg-gradient-to-r from-white/20 via-white/30 to-white/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
+
                 {/* Logo container with glass effect */}
                 <div className="relative flex items-center gap-3 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10">
                   {/* Logo icon */}
                   <div className="relative">
                     <div className="absolute inset-0 bg-white/20 rounded-lg blur-md animate-pulse" />
-                    <img 
-                      src={logo} 
-                      alt="Avance" 
-                      className="relative h-10 sm:h-12 lg:h-14 w-auto object-contain brightness-0 invert drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-transform duration-300 group-hover:scale-105" 
+                    <img
+                      src={logo}
+                      alt="Avance"
+                      className="relative h-10 sm:h-12 lg:h-14 w-auto object-contain brightness-0 invert drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
-                  
+
                   {/* Brand name with gradient */}
                   <div className="flex flex-col">
                     <span className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-wider bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent drop-shadow-lg">
@@ -179,11 +212,11 @@ const Footer = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Decorative line */}
                 <div className="mt-3 h-px w-full bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               </div>
-              
+
               <p className="text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 leading-relaxed">
                 Moda fitness de qualidade para quem busca estilo e performance nos treinos e na moda praia.
               </p>
@@ -198,7 +231,7 @@ const Footer = () => {
                       key={method.name}
                       className={cn(
                         "transition-all duration-500 cursor-pointer",
-                        footerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                        footerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
                       )}
                       style={{ transitionDelay: `${400 + index * 80}ms` }}
                       title={method.name}
@@ -215,24 +248,9 @@ const Footer = () => {
                   Compra Segura
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <SecurityBadge 
-                    icon={Shield} 
-                    label="Site Protegido" 
-                    delay={700} 
-                    isVisible={footerVisible} 
-                  />
-                  <SecurityBadge 
-                    icon={Lock} 
-                    label="SSL Secure" 
-                    delay={800} 
-                    isVisible={footerVisible} 
-                  />
-                  <SecurityBadge 
-                    icon={BadgeCheck} 
-                    label="Loja Verificada" 
-                    delay={900} 
-                    isVisible={footerVisible} 
-                  />
+                  <SecurityBadge icon={Shield} label="Site Protegido" delay={700} isVisible={footerVisible} />
+                  <SecurityBadge icon={Lock} label="SSL Secure" delay={800} isVisible={footerVisible} />
+                  <SecurityBadge icon={BadgeCheck} label="Loja Verificada" delay={900} isVisible={footerVisible} />
                 </div>
               </div>
             </AnimatedSection>
@@ -254,7 +272,7 @@ const Footer = () => {
                     key={link.label}
                     className={cn(
                       "transition-all duration-500",
-                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4",
                     )}
                     style={{ transitionDelay: `${200 + index * 50}ms` }}
                   >
@@ -269,7 +287,7 @@ const Footer = () => {
                 <li
                   className={cn(
                     "transition-all duration-500",
-                    footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                    footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4",
                   )}
                   style={{ transitionDelay: "450ms" }}
                 >
@@ -301,7 +319,7 @@ const Footer = () => {
                     key={category.label}
                     className={cn(
                       "transition-all duration-500",
-                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4",
                     )}
                     style={{ transitionDelay: `${300 + index * 50}ms` }}
                   >
@@ -323,7 +341,7 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                 {[
-                  { icon: Phone, text: "(11) 9 8927-3818" },
+                  { icon: Phone, text: "(11) 9 8467-1276" },
                   { icon: Mail, text: "contato@avance.com.br", className: "break-all" },
                   { icon: MapPin, text: "São Paulo, SP - Brasil", iconClassName: "mt-0.5" },
                 ].map((item, index) => (
@@ -332,7 +350,7 @@ const Footer = () => {
                     className={cn(
                       "flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs lg:text-sm text-primary-foreground/80 transition-all duration-500",
                       item.className,
-                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                      footerVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4",
                     )}
                     style={{ transitionDelay: `${400 + index * 100}ms` }}
                   >
@@ -344,7 +362,10 @@ const Footer = () => {
             </AnimatedSection>
           </div>
 
-          <AnimatedSection delay={400} className="border-t border-primary-foreground/20 mt-6 sm:mt-8 lg:mt-12 pt-4 sm:pt-6 lg:pt-8 flex flex-col items-center gap-3 sm:gap-4">
+          <AnimatedSection
+            delay={400}
+            className="border-t border-primary-foreground/20 mt-6 sm:mt-8 lg:mt-12 pt-4 sm:pt-6 lg:pt-8 flex flex-col items-center gap-3 sm:gap-4"
+          >
             <div className="text-center">
               <p className="text-[10px] sm:text-xs lg:text-sm text-primary-foreground/60">
                 © 2026 Avance. Todos os direitos reservados.
@@ -364,7 +385,7 @@ const Footer = () => {
                   onClick={item.onClick}
                   className={cn(
                     "hover:text-primary-foreground transition-all whitespace-nowrap hover:scale-105 duration-300",
-                    footerVisible ? "opacity-100" : "opacity-0"
+                    footerVisible ? "opacity-100" : "opacity-0",
                   )}
                   style={{ transitionDelay: `${500 + index * 50}ms` }}
                 >
@@ -375,7 +396,7 @@ const Footer = () => {
                 to="/admin/login"
                 className={cn(
                   "hover:text-primary-foreground transition-all whitespace-nowrap hover:scale-105 duration-300",
-                  footerVisible ? "opacity-100" : "opacity-0"
+                  footerVisible ? "opacity-100" : "opacity-0",
                 )}
                 style={{ transitionDelay: "650ms" }}
               >
