@@ -405,7 +405,10 @@ export const useCartStore = create<CartStore>()(
           return null;
         }
         
-        return get().checkoutUrl;
+        // Re-sanitize in case a previously persisted checkoutUrl still uses the
+        // wrong host (e.g. avancemodas.com.br before the fix was deployed).
+        const stored = get().checkoutUrl;
+        return stored ? formatCheckoutUrl(stored) : null;
       },
 
       syncCart: async () => {
