@@ -144,6 +144,12 @@ const CART_LINES_REMOVE_MUTATION = `
 function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
+    // Force Shopify's permanent domain for checkout. The store's "primary domain"
+    // (avancemodas.com.br) points to the Lovable site, not Shopify, so checkout
+    // URLs returned by Shopify under that host return 404. Rewriting the host
+    // to the myshopify.com domain ensures the checkout page resolves correctly.
+    url.host = 'r3ha52-nj.myshopify.com';
+    url.protocol = 'https:';
     url.searchParams.set('channel', 'online_store');
     return url.toString();
   } catch {
