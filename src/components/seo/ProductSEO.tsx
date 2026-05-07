@@ -23,7 +23,7 @@ const ProductSEO = ({
   available,
   brand = "Avance Modas",
 }: ProductSEOProps) => {
-  const cleanDesc = stripHtml(description || `${title} - Compre na Avance Modas com tecido tecnológico, proteção UV 50+ e Aloe Vera Hidratante.`).slice(0, 160);
+  const cleanDesc = `Moda Fitness Varejo e Atacado | Avance Modas — ${title}. Tecido tecnológico, proteção UV 50+ e Aloe Vera. Compre no varejo ou atacado.`.slice(0, 160);
   const pageTitle = "Moda Fitness Varejo e Atacado | Avance Modas";
   const url = `https://avancemodas.lovable.app/produto/${handle}`;
 
