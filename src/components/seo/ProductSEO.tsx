@@ -55,7 +55,7 @@ const ProductSEO = ({
       <link rel="canonical" href={url} />
 
       <meta property="og:type" content="product" />
-      <meta property="og:title" content={pageTitle} />
+      <meta property="og:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
       <meta property="og:description" content={cleanDesc} />
       <meta property="og:url" content={url} />
       {image && <meta property="og:image" content={image} />}
@@ -64,7 +64,7 @@ const ProductSEO = ({
       <meta property="product:availability" content={available ? "in stock" : "out of stock"} />
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
       <meta name="twitter:description" content={cleanDesc} />
       {image && <meta name="twitter:image" content={image} />}
 
