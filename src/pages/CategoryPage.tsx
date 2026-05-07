@@ -12,6 +12,7 @@ import { ShoppingBag, ChevronRight } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
+import CategorySEO from "@/components/seo/CategorySEO";
 
 // Mapping of filter categories to title keywords
 const categoryKeywords: Record<string, string[]> = {
@@ -166,6 +167,13 @@ const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <CategorySEO
+        category={category || "todos"}
+        title={config.title}
+        description={config.description}
+        image={products[0]?.node.images.edges[0]?.node.url}
+        productCount={products.length}
+      />
       <AnnouncementBar />
       <Header />
       
