@@ -23,6 +23,7 @@ const VirtualFittingRoom = lazy(() => import("@/components/product/VirtualFittin
 import ProductFeatureBadges from "@/components/product/ProductFeatureBadges";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
+import PriceDisplay from "@/components/product/PriceDisplay";
 
 const ShopifyProductPage = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -712,11 +713,17 @@ className="w-full h-full object-contain bg-white"
 
               {/* Price */}
               <div className="space-y-1">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
-                    {formatPrice(currentVariant?.price.amount || product.priceRange.minVariantPrice.amount, currentVariant?.price.currencyCode || 'BRL')}
-                  </span>
-                </div>
+                <PriceDisplay
+                  amount={currentVariant?.price.amount || product.priceRange.minVariantPrice.amount}
+                  compareAtAmount={
+                    currentVariant?.compareAtPrice?.amount ||
+                    product.compareAtPriceRange?.minVariantPrice?.amount ||
+                    null
+                  }
+                  currencyCode={currentVariant?.price.currencyCode || 'BRL'}
+                  size="lg"
+                  align="left"
+                />
                 {productCoupon && (
                   <div className="pt-2">
                     <CouponBadge coupon={productCoupon} variant="inline" />
