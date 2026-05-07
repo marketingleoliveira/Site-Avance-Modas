@@ -23,9 +23,19 @@ const ProductSEO = ({
   available,
   brand = "Avance Modas",
 }: ProductSEOProps) => {
-  const cleanDesc = `Moda Fitness Varejo e Atacado | Avance Modas — ${title}. Tecido tecnológico, proteção UV 50+ e Aloe Vera. Compre no varejo ou atacado.`.slice(0, 160);
+  const baseDesc = `Moda Fitness Varejo e Atacado | Avance Modas — ${title}. Tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo ou atacado.`;
+  // Trim safely on word boundary to fit ~155 chars
+  const trimToLimit = (s: string, max = 155) => {
+    const clean = stripHtml(s);
+    if (clean.length <= max) return clean;
+    const cut = clean.slice(0, max);
+    return cut.slice(0, cut.lastIndexOf(" ")).trim() + "…";
+  };
+  const cleanDesc = trimToLimit(baseDesc);
   const pageTitle = "Moda Fitness Varejo e Atacado | Avance Modas";
-  const url = `https://avancemodas.lovable.app/produto/${handle}`;
+  const url = `https://avancemodas.com.br/produto/${handle}`;
+  const fallbackImage = "https://avancemodas.com.br/favicon-512.png?v=5";
+  const ogImage = image || fallbackImage;
 
   const jsonLd = {
     "@context": "https://schema.org/",
@@ -58,7 +68,8 @@ const ProductSEO = ({
       <meta property="og:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
       <meta property="og:description" content={cleanDesc} />
       <meta property="og:url" content={url} />
-      {image && <meta property="og:image" content={image} />}
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:alt" content={title} />
       <meta property="product:price:amount" content={price} />
       <meta property="product:price:currency" content={currency} />
       <meta property="product:availability" content={available ? "in stock" : "out of stock"} />
@@ -66,7 +77,8 @@ const ProductSEO = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
       <meta name="twitter:description" content={cleanDesc} />
-      {image && <meta name="twitter:image" content={image} />}
+      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={title} />
 
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
