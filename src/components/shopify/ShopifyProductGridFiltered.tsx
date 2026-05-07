@@ -10,6 +10,7 @@ import logoAvance from "@/assets/logo-avance.png";
 import { cn } from "@/lib/utils";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
+import PriceDisplay from "@/components/product/PriceDisplay";
 
 interface ShopifyProductGridFilteredProps {
   title?: string;
@@ -167,6 +168,7 @@ const ShopifyProductGridFiltered = ({
           {products.map((product, index) => {
             const firstImage = product.node.images.edges[0]?.node;
             const price = product.node.priceRange.minVariantPrice;
+            const compareAt = product.node.compareAtPriceRange?.minVariantPrice;
             const colors = getColorOptions(product);
             const productCoupon = getCouponForProduct(product.node.handle);
             
@@ -246,9 +248,13 @@ const ShopifyProductGridFiltered = ({
                     {product.node.title}
                   </h3>
                   
-                  <p className="text-lg sm:text-xl font-black text-accent tracking-tight">
-                    {formatPrice(price.amount, price.currencyCode)}
-                  </p>
+                  <PriceDisplay
+                    amount={price.amount}
+                    compareAtAmount={compareAt && parseFloat(compareAt.amount) > parseFloat(price.amount) ? compareAt.amount : null}
+                    currencyCode={price.currencyCode}
+                    size="md"
+                    align="center"
+                  />
                 </div>
               </Link>
             );
