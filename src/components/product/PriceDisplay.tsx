@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import pixLogo from "@/assets/pix-logo.png";
 
 interface PriceDisplayProps {
   amount: string | number;
@@ -23,24 +24,15 @@ interface PriceDisplayProps {
 const formatBRL = (n: number, currency = "BRL") =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(n);
 
-/** Logotipo oficial do Pix (BCB) — SVG inline, sem dependências externas. */
+/** Logo Pix (asset enviado pelo lojista). */
 const PixLogo = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 512 512"
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-    aria-label="Pix"
-    role="img"
-  >
-    <path
-      fill="#32BCAD"
-      d="M392.6 311.6 311.7 392.5c-30.7 30.7-80.6 30.7-111.4 0L119.3 311.6c-7.1-7.1-7.1-18.7 0-25.8 7.1-7.1 18.7-7.1 25.8 0l80.9 80.9c19.4 19.4 50.9 19.4 70.3 0l80.9-80.9c7.1-7.1 18.7-7.1 25.8 0 7.1 7.1 7.1 18.7 0 25.8zM119.3 200.4l80.9-80.9c30.7-30.7 80.6-30.7 111.4 0l80.9 80.9c7.1 7.1 7.1 18.7 0 25.8-7.1 7.1-18.7 7.1-25.8 0l-80.9-80.9c-19.4-19.4-50.9-19.4-70.3 0l-80.9 80.9c-7.1 7.1-18.7 7.1-25.8 0-7.1-7.1-7.1-18.7 0-25.8z"
-    />
-    <path
-      fill="#32BCAD"
-      d="M256 213.3c11.3 0 22.5 4.3 31.1 12.9L329 268.1l-41.9 41.9c-17.2 17.2-45 17.2-62.2 0L183 268.1l41.9-41.9c8.6-8.6 19.8-12.9 31.1-12.9z"
-    />
-  </svg>
+  <img
+    src={pixLogo}
+    alt="Pix"
+    className={cn("object-contain inline-block", className)}
+    loading="lazy"
+    decoding="async"
+  />
 );
 
 /**
