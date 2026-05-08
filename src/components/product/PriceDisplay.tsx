@@ -136,19 +136,19 @@ const PriceDisplay = ({
         </span>
       )}
 
-      <span
-        className={cn(
-          "inline-flex items-center gap-1 font-semibold text-foreground leading-none flex-wrap",
-          align === "center" ? "justify-center" : "justify-start",
-          sizes.pix
-        )}
-      >
-        {showPixBadge ? "ou" : "à vista"} {formatBRL(pixPrice, currencyCode)} no
-        <PixLogo className={sizes.logo} />
-        {showPixBadge && (
+      {showPixBadge && (
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 font-semibold text-foreground leading-none flex-wrap",
+            align === "center" ? "justify-center" : "justify-start",
+            sizes.pix
+          )}
+        >
+          ou {formatBRL(pixPrice, currencyCode)} no
+          <PixLogo className={sizes.logo} />
           <span className="text-emerald-600 font-bold">(3% off)</span>
-        )}
-      </span>
+        </span>
+      )}
 
       <span className={cn("text-muted-foreground leading-none", sizes.sub)}>
         até {installments}x de {formatBRL(installmentValue, currencyCode)} sem juros
