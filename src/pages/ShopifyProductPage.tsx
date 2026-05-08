@@ -723,6 +723,7 @@ className="w-full h-full object-contain bg-white"
                   currencyCode={currentVariant?.price.currencyCode || 'BRL'}
                   size="lg"
                   align="left"
+                  showPixBadge={!isAtacadoProduct}
                 />
                 {productCoupon && (
                   <div className="pt-2">

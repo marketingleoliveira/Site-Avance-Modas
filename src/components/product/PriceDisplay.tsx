@@ -1,4 +1,10 @@
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PriceDisplayProps {
   amount: string | number;
@@ -7,6 +13,11 @@ interface PriceDisplayProps {
   size?: "sm" | "md" | "lg";
   align?: "left" | "center";
   className?: string;
+  /**
+   * Quando true, exibe o selo "Desconto no Pix 3%" acima do preço e aplica
+   * o desconto Pix na linha "ou R$ X no Pix". Use somente em Varejo.
+   */
+  showPixBadge?: boolean;
 }
 
 const formatBRL = (n: number, currency = "BRL") =>
@@ -46,6 +57,7 @@ const PriceDisplay = ({
   size = "md",
   align = "left",
   className,
+  showPixBadge = false,
 }: PriceDisplayProps) => {
   const price = typeof amount === "string" ? parseFloat(amount) : amount;
   const compareAt = compareAtAmount
@@ -85,6 +97,29 @@ const PriceDisplay = ({
         className
       )}
     >
+      {showPixBadge && (
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-bold uppercase tracking-wide text-emerald-700 shadow-sm cursor-help",
+                  size === "lg" ? "text-[11px]" : "text-[9px] sm:text-[10px]"
+                )}
+                aria-label="Desconto no Pix 3%"
+              >
+                <PixLogo className={size === "lg" ? "h-3.5 w-3.5" : "h-3 w-3"} />
+                Desconto no Pix 3%
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[220px] text-xs">
+              Pagando via Pix você ganha <strong>3% de desconto</strong> sobre o
+              valor total da compra. Aplicado automaticamente no checkout.
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
       {hasDiscount && (
         <span className={cn("text-muted-foreground line-through leading-none", sizes.from)}>
           {formatBRL(compareAt!, currencyCode)}
@@ -101,17 +136,19 @@ const PriceDisplay = ({
         </span>
       )}
 
-      <span
-        className={cn(
-          "inline-flex items-center gap-1 font-semibold text-foreground leading-none flex-wrap",
-          align === "center" ? "justify-center" : "justify-start",
-          sizes.pix
-        )}
-      >
-        ou {formatBRL(pixPrice, currencyCode)} no
-        <PixLogo className={sizes.logo} />
-        <span className="text-emerald-600 font-bold">(3% off)</span>
-      </span>
+      {showPixBadge && (
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 font-semibold text-foreground leading-none flex-wrap",
+            align === "center" ? "justify-center" : "justify-start",
+            sizes.pix
+          )}
+        >
+          ou {formatBRL(pixPrice, currencyCode)} no
+          <PixLogo className={sizes.logo} />
+          <span className="text-emerald-600 font-bold">(3% off)</span>
+        </span>
+      )}
 
       <span className={cn("text-muted-foreground leading-none", sizes.sub)}>
         até {installments}x de {formatBRL(installmentValue, currencyCode)} sem juros

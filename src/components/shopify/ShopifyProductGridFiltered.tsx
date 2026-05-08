@@ -254,6 +254,7 @@ const ShopifyProductGridFiltered = ({
                     currencyCode={price.currencyCode}
                     size="md"
                     align="center"
+                    showPixBadge={type !== 'ATACADO'}
                   />
                 </div>
               </Link>
