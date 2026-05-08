@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import logoAvance from "@/assets/logo-avance.png";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
+import PriceDisplay from "@/components/product/PriceDisplay";
 
 interface ProductSectionsDynamicProps {
   type: 'ATACADO' | 'VAREJO';
@@ -359,19 +360,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                       </h3>
                       
                       {/* Price */}
-                      <div>
-                        {hasDiscount && (
-                          <span className="text-[11px] sm:text-xs text-muted-foreground line-through">
-                            {formatPrice(compareAtPrice, product.node.priceRange.minVariantPrice.currencyCode)}
-                          </span>
-                        )}
-                        <p className={`text-xl sm:text-2xl font-black tracking-tight ${hasDiscount || isPromo ? 'text-red-600' : 'text-foreground'}`}>
-                          {formatPrice(currentPrice, product.node.priceRange.minVariantPrice.currencyCode)}
-                        </p>
-                        {hasDiscount && (
-                          <span className="text-[10px] font-bold text-emerald-600">Economize {discountPercent}%</span>
-                        )}
-                      </div>
+                      <PriceDisplay
+                        amount={currentPrice}
+                        compareAtAmount={hasDiscount ? compareAtPrice : null}
+                        currencyCode={product.node.priceRange.minVariantPrice.currencyCode}
+                        size="md"
+                        align="center"
+                        showPixBadge={type === 'VAREJO'}
+                      />
 
                       <span
                         className="block w-full py-2.5 bg-foreground text-background text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-300 shadow-sm hover:shadow-md text-center cursor-pointer"
