@@ -268,6 +268,16 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   grid-template-columns: repeat(${colsDesktop}, minmax(0, 1fr));
                 }
               }
+              @keyframes product-image-pan {
+                0%   { transform: translate3d(0, 0, 0); }
+                25%  { transform: translate3d(-1.5%, -1%, 0); }
+                50%  { transform: translate3d(1.5%, -1.5%, 0); }
+                75%  { transform: translate3d(-1%, 1%, 0); }
+                100% { transform: translate3d(0, 0, 0); }
+              }
+              .product-card:hover .product-card-image {
+                animation: product-image-pan 6s ease-in-out infinite;
+              }
             `}</style>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6">
               {filteredProducts.slice(0, 8).map((product) => {
@@ -289,7 +299,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className="group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[580px] mx-auto flex flex-col"
+                    className="product-card group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[700px] mx-auto flex flex-col"
                   >
                     {/* Product Image */}
                     <div className="relative overflow-hidden flex-shrink-0">
@@ -298,7 +308,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
                           loading="lazy"
-                          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                          className="product-card-image w-full h-full object-cover object-top will-change-transform"
                         />
                       </div>
                       
