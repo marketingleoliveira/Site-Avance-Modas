@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 
-Sitemap: https://avancemodas.lovable.app/sitemap.xml
+Sitemap: https://avancemodas.com.br/sitemap.xml
