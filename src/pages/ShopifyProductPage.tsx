@@ -1283,6 +1283,16 @@ className="w-full h-full object-contain bg-white"
         productHandle={handle}
         productTitle={product?.title}
       />
+
+      <AddedToCartDialog
+        open={addedDialogOpen}
+        onOpenChange={setAddedDialogOpen}
+        productTitle={product?.title}
+        productImage={product?.images?.edges?.[0]?.node?.url}
+        quantity={lastAddedQty}
+        onContinueShopping={() => setAddedDialogOpen(false)}
+        onCheckout={handleGoToCheckout}
+      />
     </div>
   );
 };
