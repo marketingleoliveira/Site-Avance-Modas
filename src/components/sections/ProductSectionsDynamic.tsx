@@ -300,13 +300,21 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   >
                     {/* Product Image */}
                     <div className="relative overflow-hidden flex-shrink-0">
-                      <div className="h-[330px] overflow-hidden bg-secondary">
+                      <div className="relative h-[330px] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
                           loading="lazy"
-                          className="product-card-image w-full h-full object-cover object-top will-change-transform"
+                          className="product-card-image absolute inset-0 w-full h-full object-cover object-top"
                         />
+                        {product.node.images.edges[1]?.node.url && (
+                          <img
+                            src={product.node.images.edges[1].node.url}
+                            alt={product.node.title}
+                            loading="lazy"
+                            className="product-card-image-secondary absolute inset-0 w-full h-full object-cover object-top"
+                          />
+                        )}
                       </div>
                       
                       {/* Logo - Top Right */}
