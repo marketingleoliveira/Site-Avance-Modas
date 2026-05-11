@@ -114,7 +114,19 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   useEffect(() => {
     const loadFilteredProducts = async () => {
       if (activeFilter === 'todos') {
-        setFilteredProducts(allProducts);
+        // Sort: leggings first, then tops, then the rest
+        const leggingsKw = categoryKeywords.leggings;
+        const topsKw = categoryKeywords.tops;
+        const getRank = (title: string) => {
+          const t = title.toLowerCase();
+          if (leggingsKw.some(k => t.includes(k))) return 0;
+          if (topsKw.some(k => t.includes(k))) return 1;
+          return 2;
+        };
+        const sorted = [...allProducts].sort(
+          (a, b) => getRank(a.node.title) - getRank(b.node.title)
+        );
+        setFilteredProducts(sorted);
         return;
       }
       
@@ -449,20 +461,22 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
               })}
             </div>
 
-            {/* Ver Todos Button - Prominent */}
-            {filteredProducts.length > 8 && (
-              <div className="flex justify-center mt-10">
-                <Link
-                  to={activeFilter === 'todos' ? '/categoria/todos' : `/categoria/${activeFilter}`}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-wider rounded-full hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  <span>Ver Todos os Produtos</span>
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              </div>
-            )}
+            {/* Ver Todos Button - Highly Prominent */}
+            <div className="flex flex-col items-center mt-14 mb-4">
+              <div className="h-px w-24 bg-gradient-to-r from-transparent via-foreground/30 to-transparent mb-6" />
+              <Link
+                to={activeFilter === 'todos' ? '/categoria/todos' : `/categoria/${activeFilter}`}
+                className="group relative inline-flex items-center gap-4 px-10 sm:px-14 py-5 sm:py-6 bg-accent text-accent-foreground font-extrabold text-base sm:text-lg uppercase tracking-[0.2em] rounded-full shadow-2xl hover:shadow-[0_20px_50px_-12px_hsl(var(--accent)/0.6)] hover:scale-105 transition-all duration-300 ring-4 ring-accent/20 hover:ring-accent/40 animate-pulse-subtle"
+              >
+                <span className="relative z-10">Ver Todos os Produtos</span>
+                <svg viewBox="0 0 24 24" className="w-6 h-6 sm:w-7 sm:h-7 relative z-10 transition-transform duration-300 group-hover:translate-x-2" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+              <p className="mt-4 text-xs sm:text-sm text-muted-foreground font-medium tracking-wide">
+                Explore toda a coleção {type === 'ATACADO' ? 'atacado' : 'varejo'}
+              </p>
+            </div>
           </>
         )}
       </div>
