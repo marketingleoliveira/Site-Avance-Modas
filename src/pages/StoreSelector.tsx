@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
+import modelLeft from "@/assets/store-selector-model-left.png";
+import modelRight from "@/assets/store-selector-model-right.png";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { ArrowRight, ShoppingBag, Store } from "lucide-react";
 
@@ -7,7 +9,27 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #fff0f0 0%, #ffffff 40%, #fff5f5 70%, #ffe8e8 100%)' }}>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #ffe1e1 0%, #fff5f5 35%, #ffffff 50%, #fff0f0 65%, #ffd4d4 100%)' }}>
+      {/* Decorative red blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-accent/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full bg-accent/25 blur-3xl" />
+
+      {/* Fitness models — hidden on small screens, decorative */}
+      <img
+        src={modelLeft}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-[92vh] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
+      />
+      <img
+        src={modelRight}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        className="pointer-events-none select-none hidden lg:block absolute right-0 bottom-0 h-[92vh] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:500ms] [animation-fill-mode:both]"
+      />
+
       <div className="relative z-10 w-full max-w-3xl">
         {/* Logo & Title */}
         <div className="text-center mb-14 animate-fade-in">
