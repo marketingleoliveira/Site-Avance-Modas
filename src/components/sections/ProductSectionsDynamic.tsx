@@ -306,11 +306,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   <Link
                     key={product.node.id}
                     to={`/produto/${product.node.handle}`}
-                    className="product-card group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[330px] h-[700px] mx-auto flex flex-col"
+                    className="product-card group bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 w-[300px] mx-auto flex flex-col"
                   >
                     {/* Product Image */}
                     <div className="relative overflow-hidden flex-shrink-0">
-                      <div className="relative h-[330px] overflow-hidden bg-secondary">
+                      <div className="relative h-[400px] w-[300px] overflow-hidden bg-secondary">
                         <img
                           src={product.node.images.edges[0]?.node.url || "/placeholder.svg"}
                           alt={product.node.title}
