@@ -209,6 +209,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
             </h2>
           </div>
 
+          {type === 'ATACADO' && atacadoSettings.show_minimum_order_notice && (
+            <div className="flex justify-center mb-6 -mt-4">
+              <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-amber-800 shadow-sm">
+                Pedido mínimo da loja: R$ {atacadoSettings.minimum_order.toFixed(2).replace('.', ',')}
+              </span>
+            </div>
+          )}
+
           {/* Category Filters */}
           <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-8 md:gap-12 py-5 min-w-max sm:min-w-0">
