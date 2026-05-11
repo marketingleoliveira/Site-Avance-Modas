@@ -46,6 +46,22 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Convert a stored attachment reference (legacy public URL or new storage path)
+// into a short-lived signed URL that admins can open.
+const resolveAttachmentUrl = async (ref: string): Promise<string> => {
+  let path = ref;
+  const marker = "/sac-attachments/";
+  const idx = ref.indexOf(marker);
+  if (idx !== -1) {
+    path = ref.substring(idx + marker.length);
+  }
+  const { data, error } = await supabase.storage
+    .from("sac-attachments")
+    .createSignedUrl(path, 60 * 10); // 10 minutes
+  if (error || !data) return ref;
+  return data.signedUrl;
+};
+
 const getAttachmentIcon = (url: string) => {
   const extension = url.split(".").pop()?.toLowerCase();
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || "")) {
@@ -56,7 +72,7 @@ const getAttachmentIcon = (url: string) => {
 
 const getAttachmentName = (url: string) => {
   const parts = url.split("/");
-  return parts[parts.length - 1];
+  return parts[parts.length - 1].split("?")[0];
 };
 
 interface SACTicket {
