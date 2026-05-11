@@ -268,15 +268,12 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                   grid-template-columns: repeat(${colsDesktop}, minmax(0, 1fr));
                 }
               }
-              @keyframes product-image-pan {
-                0%   { transform: translate3d(0, 0, 0); }
-                25%  { transform: translate3d(-1.5%, -1%, 0); }
-                50%  { transform: translate3d(1.5%, -1.5%, 0); }
-                75%  { transform: translate3d(-1%, 1%, 0); }
-                100% { transform: translate3d(0, 0, 0); }
+              .product-card-image-secondary {
+                opacity: 0;
+                transition: opacity 0.5s ease-in-out;
               }
-              .product-card:hover .product-card-image {
-                animation: product-image-pan 6s ease-in-out infinite;
+              .product-card:hover .product-card-image-secondary {
+                opacity: 1;
               }
             `}</style>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6">
