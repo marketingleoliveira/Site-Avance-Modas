@@ -16,6 +16,8 @@ import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyl
 import logoAvance from "@/assets/logo-avance.png";
 import SupportTicketModal from "@/components/support/SupportTicketModal";
 import ProductSEO from "@/components/seo/ProductSEO";
+import AddedToCartDialog from "@/components/cart/AddedToCartDialog";
+import { useCouponStore } from "@/stores/couponStore";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
@@ -39,6 +41,10 @@ const ShopifyProductPage = () => {
   const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const addItem = useCartStore(state => state.addItem);
+  const getCheckoutUrl = useCartStore(state => state.getCheckoutUrl);
+  const [addedDialogOpen, setAddedDialogOpen] = useState(false);
+  const [lastAddedQty, setLastAddedQty] = useState(1);
+  const appliedCoupon = useCouponStore((s) => s.applied);
   const { addToRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
@@ -523,7 +529,7 @@ const ShopifyProductPage = () => {
     }).format(parseFloat(amount));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
     
     if (!currentVariant) {
@@ -552,7 +558,7 @@ const ShopifyProductPage = () => {
       node: product
     };
 
-    addItem({
+    await addItem({
       product: productWrapper,
       variantId: currentVariant.id,
       variantTitle: currentVariant.title,
@@ -561,10 +567,47 @@ const ShopifyProductPage = () => {
       selectedOptions: currentVariant.selectedOptions || [],
     });
 
-    toast.success("Adicionado ao carrinho!", {
-      description: `${product.title} x${quantity}`,
-      position: "top-center",
-    });
+    setLastAddedQty(quantity);
+
+    // Varejo: abre o popup confirmando a adição com opções de
+    // continuar comprando ou finalizar compra. Atacado mantém o toast.
+    if (isAtacadoProduct) {
+      toast.success("Adicionado ao carrinho!", {
+        description: `${product.title} x${quantity}`,
+        position: "top-center",
+      });
+    } else {
+      setAddedDialogOpen(true);
+    }
+  };
+
+  const handleGoToCheckout = () => {
+    setAddedDialogOpen(false);
+    const checkoutUrl = getCheckoutUrl();
+    if (!checkoutUrl) {
+      toast.error("Erro ao abrir checkout", {
+        description: "Tente novamente em instantes.",
+      });
+      return;
+    }
+    let finalUrl = checkoutUrl;
+    if (
+      appliedCoupon &&
+      (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === 'varejo')
+    ) {
+      try {
+        const u = new URL(checkoutUrl);
+        u.searchParams.set('discount', appliedCoupon.code);
+        finalUrl = u.toString();
+      } catch {
+        finalUrl =
+          checkoutUrl +
+          (checkoutUrl.includes('?') ? '&' : '?') +
+          'discount=' +
+          encodeURIComponent(appliedCoupon.code);
+      }
+    }
+    window.open(finalUrl, '_blank');
   };
 
   const hasConjuntoSizesGlobal = topSizes.length > 0 && bottomSizes.length > 0;
@@ -1056,7 +1099,13 @@ className="w-full h-full object-contain bg-white"
                   disabled={!canAddToCart}
                 >
                   <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="truncate">{!canAddToCart ? "Selecione opções" : "Adicionar ao Carrinho"}</span>
+                  <span className="truncate">
+                    {!canAddToCart
+                      ? "Selecione opções"
+                      : isAtacadoProduct
+                      ? "Adicionar ao Carrinho"
+                      : "Comprar"}
+                  </span>
                 </Button>
                 <Button variant="outline" size="xl" className="h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 flex-shrink-0 p-0">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -1233,6 +1282,16 @@ className="w-full h-full object-contain bg-white"
         onOpenChange={setSupportModalOpen}
         productHandle={handle}
         productTitle={product?.title}
+      />
+
+      <AddedToCartDialog
+        open={addedDialogOpen}
+        onOpenChange={setAddedDialogOpen}
+        productTitle={product?.title}
+        productImage={product?.images?.edges?.[0]?.node?.url}
+        quantity={lastAddedQty}
+        onContinueShopping={() => setAddedDialogOpen(false)}
+        onCheckout={handleGoToCheckout}
       />
     </div>
   );
