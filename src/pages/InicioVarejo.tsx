@@ -12,6 +12,7 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import BrandWordsMarquee from "@/components/sections/BrandWordsMarquee";
 import NewsletterPopup from "@/components/newsletter/NewsletterPopup";
 import { useStoreContext } from "@/stores/storeContextStore";
+import bannerConforto from "@/assets/banner-conforto-modelos.png";
 
 const InicioVarejo = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
@@ -31,6 +32,14 @@ const InicioVarejo = () => {
       <main className="flex-1">
         <HeroSectionDynamic type="VAREJO" />
         <FeaturesSectionDynamic />
+        <section className="w-full">
+          <img
+            src={bannerConforto}
+            alt="Tecnologia e conforto Avance Modas - modelos vestindo a coleção fitness"
+            className="w-full h-auto object-cover"
+            loading="lazy"
+          />
+        </section>
         <ProductSectionsDynamic type="VAREJO" />
         <TestimonialsSection />
         <BrandWordsMarquee />
