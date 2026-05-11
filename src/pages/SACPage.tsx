@@ -145,7 +145,7 @@ const SACPage = () => {
   };
 
   const uploadAttachments = async (): Promise<string[]> => {
-    const urls: string[] = [];
+    const paths: string[] = [];
     const totalFiles = attachments.length;
     
     for (let i = 0; i < attachments.length; i++) {
@@ -162,16 +162,13 @@ const SACPage = () => {
         console.error("Error uploading file:", error);
         throw new Error(`Erro ao enviar arquivo: ${file.name}`);
       }
-      
-      const { data: urlData } = supabase.storage
-        .from("sac-attachments")
-        .getPublicUrl(filePath);
-      
-      urls.push(urlData.publicUrl);
+
+      // Store the storage path; admins generate signed URLs on view.
+      paths.push(filePath);
       setUploadProgress(((i + 1) / totalFiles) * 100);
     }
-    
-    return urls;
+
+    return paths;
   };
 
   const getFileIcon = (file: File) => {

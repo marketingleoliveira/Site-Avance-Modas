@@ -46,6 +46,22 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+// Convert a stored attachment reference (legacy public URL or new storage path)
+// into a short-lived signed URL that admins can open.
+const resolveAttachmentUrl = async (ref: string): Promise<string> => {
+  let path = ref;
+  const marker = "/sac-attachments/";
+  const idx = ref.indexOf(marker);
+  if (idx !== -1) {
+    path = ref.substring(idx + marker.length);
+  }
+  const { data, error } = await supabase.storage
+    .from("sac-attachments")
+    .createSignedUrl(path, 60 * 10); // 10 minutes
+  if (error || !data) return ref;
+  return data.signedUrl;
+};
+
 const getAttachmentIcon = (url: string) => {
   const extension = url.split(".").pop()?.toLowerCase();
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension || "")) {
@@ -56,7 +72,7 @@ const getAttachmentIcon = (url: string) => {
 
 const getAttachmentName = (url: string) => {
   const parts = url.split("/");
-  return parts[parts.length - 1];
+  return parts[parts.length - 1].split("?")[0];
 };
 
 interface SACTicket {
@@ -121,6 +137,7 @@ const SACManager = () => {
   const [adminNotes, setAdminNotes] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [signedAttachments, setSignedAttachments] = useState<string[]>([]);
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -144,11 +161,19 @@ const SACManager = () => {
     fetchTickets();
   }, []);
 
-  const openTicketDetails = (ticket: SACTicket) => {
+  const openTicketDetails = async (ticket: SACTicket) => {
     setSelectedTicket(ticket);
     setAdminNotes(ticket.admin_notes || "");
     setNewStatus(ticket.status);
     setIsDialogOpen(true);
+    if (ticket.attachments && ticket.attachments.length > 0) {
+      const signed = await Promise.all(
+        ticket.attachments.map((ref) => resolveAttachmentUrl(ref))
+      );
+      setSignedAttachments(signed);
+    } else {
+      setSignedAttachments([]);
+    }
   };
 
   const handleUpdateTicket = async () => {
@@ -438,9 +463,10 @@ const SACManager = () => {
                     <Paperclip className="w-4 h-4" />
                     Anexos ({selectedTicket.attachments.length})
                   </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {selectedTicket.attachments.map((url, index) => {
-                      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                   <div className="grid grid-cols-2 gap-2">
+                    {selectedTicket.attachments.map((origRef, index) => {
+                      const url = signedAttachments[index] || origRef;
+                      const isImage = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(url);
                       return (
                         <a
                           key={index}
@@ -459,7 +485,7 @@ const SACManager = () => {
                             getAttachmentIcon(url)
                           )}
                           <span className="flex-1 text-xs truncate">
-                            {getAttachmentName(url)}
+                            {getAttachmentName(origRef)}
                           </span>
                           <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
