@@ -19,6 +19,11 @@ interface PriceDisplayProps {
    * o desconto Pix na linha "ou R$ X no Pix". Use somente em Varejo.
    */
   showPixBadge?: boolean;
+  /**
+   * Quando false, oculta a linha "até Nx de R$ W sem juros". Útil para o
+   * Atacado onde não exibimos parcelamento nos cards.
+   */
+  showInstallments?: boolean;
 }
 
 const formatBRL = (n: number, currency = "BRL") =>
@@ -50,6 +55,7 @@ const PriceDisplay = ({
   align = "left",
   className,
   showPixBadge = false,
+  showInstallments = true,
 }: PriceDisplayProps) => {
   const price = typeof amount === "string" ? parseFloat(amount) : amount;
   const compareAt = compareAtAmount
@@ -142,9 +148,11 @@ const PriceDisplay = ({
         </span>
       )}
 
-      <span className={cn("text-muted-foreground leading-none", sizes.sub)}>
-        até {installments}x de {formatBRL(installmentValue, currencyCode)} sem juros
-      </span>
+      {showInstallments && (
+        <span className={cn("text-muted-foreground leading-none", sizes.sub)}>
+          até {installments}x de {formatBRL(installmentValue, currencyCode)} sem juros
+        </span>
+      )}
     </div>
   );
 };
