@@ -1099,7 +1099,13 @@ className="w-full h-full object-contain bg-white"
                   disabled={!canAddToCart}
                 >
                   <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                  <span className="truncate">{!canAddToCart ? "Selecione opções" : "Adicionar ao Carrinho"}</span>
+                  <span className="truncate">
+                    {!canAddToCart
+                      ? "Selecione opções"
+                      : isAtacadoProduct
+                      ? "Adicionar ao Carrinho"
+                      : "Comprar"}
+                  </span>
                 </Button>
                 <Button variant="outline" size="xl" className="h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 flex-shrink-0 p-0">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
