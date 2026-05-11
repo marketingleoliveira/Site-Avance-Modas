@@ -529,7 +529,7 @@ const ShopifyProductPage = () => {
     }).format(parseFloat(amount));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const hasConjuntoSizes = topSizes.length > 0 && bottomSizes.length > 0;
     
     if (!currentVariant) {
@@ -558,7 +558,7 @@ const ShopifyProductPage = () => {
       node: product
     };
 
-    addItem({
+    await addItem({
       product: productWrapper,
       variantId: currentVariant.id,
       variantTitle: currentVariant.title,
@@ -567,10 +567,47 @@ const ShopifyProductPage = () => {
       selectedOptions: currentVariant.selectedOptions || [],
     });
 
-    toast.success("Adicionado ao carrinho!", {
-      description: `${product.title} x${quantity}`,
-      position: "top-center",
-    });
+    setLastAddedQty(quantity);
+
+    // Varejo: abre o popup confirmando a adição com opções de
+    // continuar comprando ou finalizar compra. Atacado mantém o toast.
+    if (isAtacadoProduct) {
+      toast.success("Adicionado ao carrinho!", {
+        description: `${product.title} x${quantity}`,
+        position: "top-center",
+      });
+    } else {
+      setAddedDialogOpen(true);
+    }
+  };
+
+  const handleGoToCheckout = () => {
+    setAddedDialogOpen(false);
+    const checkoutUrl = getCheckoutUrl();
+    if (!checkoutUrl) {
+      toast.error("Erro ao abrir checkout", {
+        description: "Tente novamente em instantes.",
+      });
+      return;
+    }
+    let finalUrl = checkoutUrl;
+    if (
+      appliedCoupon &&
+      (appliedCoupon.applies_to === 'all' || appliedCoupon.applies_to === 'varejo')
+    ) {
+      try {
+        const u = new URL(checkoutUrl);
+        u.searchParams.set('discount', appliedCoupon.code);
+        finalUrl = u.toString();
+      } catch {
+        finalUrl =
+          checkoutUrl +
+          (checkoutUrl.includes('?') ? '&' : '?') +
+          'discount=' +
+          encodeURIComponent(appliedCoupon.code);
+      }
+    }
+    window.open(finalUrl, '_blank');
   };
 
   const hasConjuntoSizesGlobal = topSizes.length > 0 && bottomSizes.length > 0;
