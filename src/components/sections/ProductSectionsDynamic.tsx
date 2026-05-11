@@ -9,6 +9,7 @@ import logoAvance from "@/assets/logo-avance.png";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
 import PriceDisplay from "@/components/product/PriceDisplay";
+import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 
 interface ProductSectionsDynamicProps {
   type: 'ATACADO' | 'VAREJO';
