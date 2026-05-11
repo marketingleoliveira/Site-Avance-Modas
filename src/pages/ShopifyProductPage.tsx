@@ -16,6 +16,8 @@ import { COLOR_VARIATIONS, COLOR_MAP, normalizeForMatch, sortSizes, getColorStyl
 import logoAvance from "@/assets/logo-avance.png";
 import SupportTicketModal from "@/components/support/SupportTicketModal";
 import ProductSEO from "@/components/seo/ProductSEO";
+import AddedToCartDialog from "@/components/cart/AddedToCartDialog";
+import { useCouponStore } from "@/stores/couponStore";
 
 // Lazy load heavy components
 const ShopifyProductGrid = lazy(() => import("@/components/shopify/ShopifyProductGrid"));
@@ -39,6 +41,10 @@ const ShopifyProductPage = () => {
   const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const addItem = useCartStore(state => state.addItem);
+  const getCheckoutUrl = useCartStore(state => state.getCheckoutUrl);
+  const [addedDialogOpen, setAddedDialogOpen] = useState(false);
+  const [lastAddedQty, setLastAddedQty] = useState(1);
+  const appliedCoupon = useCouponStore((s) => s.applied);
   const { addToRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
