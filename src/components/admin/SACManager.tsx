@@ -463,9 +463,10 @@ const SACManager = () => {
                     <Paperclip className="w-4 h-4" />
                     Anexos ({selectedTicket.attachments.length})
                   </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {selectedTicket.attachments.map((url, index) => {
-                      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+                   <div className="grid grid-cols-2 gap-2">
+                    {selectedTicket.attachments.map((origRef, index) => {
+                      const url = signedAttachments[index] || origRef;
+                      const isImage = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(url);
                       return (
                         <a
                           key={index}
@@ -484,7 +485,7 @@ const SACManager = () => {
                             getAttachmentIcon(url)
                           )}
                           <span className="flex-1 text-xs truncate">
-                            {getAttachmentName(url)}
+                            {getAttachmentName(origRef)}
                           </span>
                           <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
