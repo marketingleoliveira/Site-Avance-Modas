@@ -83,6 +83,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   const [activeFilter, setActiveFilter] = useState<string>('todos');
   const addItem = useCartStore((state) => state.addItem);
   const { getCouponForProduct } = useActiveCoupons(type === 'ATACADO' ? 'atacado' : 'varejo');
+  const { settings: atacadoSettings } = useAtacadoSettings();
 
   useEffect(() => {
     const loadProducts = async () => {
