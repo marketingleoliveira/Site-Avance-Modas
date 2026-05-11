@@ -11,6 +11,7 @@ import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import BrandWordsMarquee from "@/components/sections/BrandWordsMarquee";
+import TecnologiaConfortoBanner from "@/components/sections/TecnologiaConfortoBanner";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { useStoreContext } from "@/stores/storeContextStore";
 import {
@@ -145,6 +146,7 @@ const InicioAtacado = () => {
       
       <main className="flex-1">
         <HeroSectionDynamic type="ATACADO" />
+        <TecnologiaConfortoBanner />
         <FeaturesSectionDynamic />
         <ProductSectionsDynamic type="ATACADO" />
         <TestimonialsSection />
