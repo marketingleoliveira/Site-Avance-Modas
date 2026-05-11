@@ -114,7 +114,19 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
   useEffect(() => {
     const loadFilteredProducts = async () => {
       if (activeFilter === 'todos') {
-        setFilteredProducts(allProducts);
+        // Sort: leggings first, then tops, then the rest
+        const leggingsKw = categoryKeywords.leggings;
+        const topsKw = categoryKeywords.tops;
+        const getRank = (title: string) => {
+          const t = title.toLowerCase();
+          if (leggingsKw.some(k => t.includes(k))) return 0;
+          if (topsKw.some(k => t.includes(k))) return 1;
+          return 2;
+        };
+        const sorted = [...allProducts].sort(
+          (a, b) => getRank(a.node.title) - getRank(b.node.title)
+        );
+        setFilteredProducts(sorted);
         return;
       }
       
