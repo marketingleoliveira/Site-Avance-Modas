@@ -137,6 +137,7 @@ const SACManager = () => {
   const [adminNotes, setAdminNotes] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [signedAttachments, setSignedAttachments] = useState<string[]>([]);
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -160,11 +161,19 @@ const SACManager = () => {
     fetchTickets();
   }, []);
 
-  const openTicketDetails = (ticket: SACTicket) => {
+  const openTicketDetails = async (ticket: SACTicket) => {
     setSelectedTicket(ticket);
     setAdminNotes(ticket.admin_notes || "");
     setNewStatus(ticket.status);
     setIsDialogOpen(true);
+    if (ticket.attachments && ticket.attachments.length > 0) {
+      const signed = await Promise.all(
+        ticket.attachments.map((ref) => resolveAttachmentUrl(ref))
+      );
+      setSignedAttachments(signed);
+    } else {
+      setSignedAttachments([]);
+    }
   };
 
   const handleUpdateTicket = async () => {
