@@ -3,7 +3,7 @@ import logoAvance from "@/assets/logo-avance.png";
 import modelLeft from "@/assets/store-selector-model-left.png";
 import modelRight from "@/assets/store-selector-model-right.png";
 import { useStoreContext } from "@/stores/storeContextStore";
-import { ArrowRight, ShoppingBag, Store } from "lucide-react";
+import { ArrowRight, ShoppingBag, Store, Gem, Heart, Star, Truck, ShieldCheck, Repeat, Headphones, Sparkles } from "lucide-react";
 
 const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
@@ -20,30 +20,54 @@ const StoreSelector = () => {
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-[92vh] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
+        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
       />
       <img
         src={modelRight}
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="pointer-events-none select-none hidden lg:block absolute right-0 bottom-0 h-[92vh] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:500ms] [animation-fill-mode:both]"
+        className="pointer-events-none select-none hidden lg:block absolute right-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:500ms] [animation-fill-mode:both]"
       />
 
       <div className="relative z-10 w-full max-w-3xl">
         {/* Logo & Title */}
-        <div className="text-center mb-14 animate-fade-in">
+        <div className="text-center mb-10 animate-fade-in">
           <img
             src={logoAvance}
             alt="Avance Modas"
-            className="h-24 sm:h-32 mx-auto mb-5 object-contain"
+            className="h-20 sm:h-24 mx-auto mb-4 object-contain"
           />
+          {/* Premium badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/40 bg-white/80 backdrop-blur-sm mb-5 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            <span className="text-[11px] font-bold tracking-[0.2em] text-accent uppercase">Moda Fitness Premium</span>
+          </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2">
             Avance <span className="text-accent">Modas</span>
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base mt-3 tracking-wide">
             Moda fitness que transforma seu estilo ✨
           </p>
+
+          {/* Feature pills */}
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-8">
+            {[
+              { Icon: Gem, title: "QUALIDADE", desc: "Produtos premium" },
+              { Icon: Heart, title: "CONFORTO", desc: "Para o seu dia a dia" },
+              { Icon: Star, title: "ESTILO", desc: "Looks que inspiram" },
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-white shadow-sm border border-border/60 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-accent" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[11px] font-bold tracking-wider text-foreground leading-tight">{title}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Cards */}
@@ -109,8 +133,28 @@ const StoreSelector = () => {
           </Link>
         </div>
 
+        {/* Trust bar */}
+        <div className="mt-10 mx-auto max-w-2xl bg-white/85 backdrop-blur-sm border border-border/60 rounded-2xl px-6 py-4 shadow-[0_8px_30px_-12px_hsl(0_0%_0%/0.12)] animate-fade-in [animation-delay:600ms] [animation-fill-mode:both]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { Icon: Truck, title: "ENVIO RÁPIDO", desc: "Para todo o Brasil" },
+              { Icon: ShieldCheck, title: "COMPRA SEGURA", desc: "Seus dados protegidos" },
+              { Icon: Repeat, title: "TROCA FÁCIL", desc: "Mais praticidade" },
+              { Icon: Headphones, title: "ATENDIMENTO", desc: "Suporte humanizado" },
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-2.5">
+                <Icon className="w-5 h-5 text-accent shrink-0" />
+                <div className="text-left min-w-0">
+                  <p className="text-[10px] font-bold tracking-wider text-foreground leading-tight">{title}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight truncate">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Footer */}
-        <div className="text-center mt-14 text-muted-foreground/60 text-xs tracking-wider animate-fade-in [animation-delay:600ms] [animation-fill-mode:both]">
+        <div className="text-center mt-6 text-muted-foreground/60 text-xs tracking-wider animate-fade-in [animation-delay:700ms] [animation-fill-mode:both]">
           <p>© 2026 Avance Modas — Todos os direitos reservados</p>
         </div>
       </div>
