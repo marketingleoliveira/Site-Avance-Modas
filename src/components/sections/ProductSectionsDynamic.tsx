@@ -382,6 +382,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                         size="md"
                         align="center"
                         showPixBadge={type === 'VAREJO'}
+                        showInstallments={type === 'VAREJO'}
                       />
 
                       <span
