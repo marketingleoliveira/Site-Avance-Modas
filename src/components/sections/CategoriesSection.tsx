@@ -53,7 +53,7 @@ const CategoriesSection = () => {
                   className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 product-image-vibrant" 
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* hover overlay removido para não escurecer a imagem */}
               <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <h3 className="text-base sm:text-lg lg:text-xl font-bold text-primary-foreground mb-0.5 sm:mb-1">
                   {category.name}
