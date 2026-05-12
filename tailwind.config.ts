@@ -107,6 +107,10 @@ export default {
           "0%": { transform: "scale(0)", opacity: "0.5" },
           "100%": { transform: "scale(4)", opacity: "0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -117,6 +121,7 @@ export default {
         "slide-down": "slide-down 0.25s ease-out forwards",
         "slide-up": "slide-up 0.2s ease-in forwards",
         ripple: "ripple 0.6s linear forwards",
+        float: "float 6s ease-in-out infinite",
       },
     },
   },

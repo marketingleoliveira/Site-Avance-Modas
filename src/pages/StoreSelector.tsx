@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
 import modelLeft from "@/assets/store-selector-model-left.png";
-import modelRight from "@/assets/store-selector-model-right.png";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { ArrowRight, ShoppingBag, Store, Gem, Heart, Star, Truck, ShieldCheck, Repeat, Headphones, Sparkles } from "lucide-react";
 
@@ -22,13 +21,27 @@ const StoreSelector = () => {
         loading="lazy"
         className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
       />
-      <img
-        src={modelRight}
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        className="pointer-events-none select-none hidden lg:block absolute right-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:500ms] [animation-fill-mode:both]"
-      />
+
+      {/* Floating fitness phrases — right side */}
+      <div aria-hidden="true" className="pointer-events-none hidden lg:block absolute right-0 top-0 h-full w-[28%] xl:w-[30%] overflow-hidden">
+        {[
+          { text: "FORÇA", top: "10%", right: "8%", delay: "200ms", size: "text-5xl xl:text-6xl", color: "text-accent", rotate: "-rotate-6", float: "animate-[float_6s_ease-in-out_infinite]" },
+          { text: "Foco. Treino. Estilo.", top: "22%", right: "18%", delay: "500ms", size: "text-xl xl:text-2xl", color: "text-foreground/80", rotate: "rotate-2", float: "animate-[float_7s_ease-in-out_infinite_300ms]" },
+          { text: "ATITUDE", top: "36%", right: "6%", delay: "700ms", size: "text-6xl xl:text-7xl", color: "text-foreground", rotate: "rotate-3", float: "animate-[float_8s_ease-in-out_infinite_500ms]" },
+          { text: "Movimento é vida", top: "50%", right: "20%", delay: "900ms", size: "text-lg xl:text-xl", color: "text-accent/90", rotate: "-rotate-2", float: "animate-[float_6.5s_ease-in-out_infinite_700ms]" },
+          { text: "PERFORMANCE", top: "62%", right: "4%", delay: "1100ms", size: "text-4xl xl:text-5xl", color: "text-foreground/90", rotate: "-rotate-3", float: "animate-[float_7.5s_ease-in-out_infinite_900ms]" },
+          { text: "Supere seus limites", top: "76%", right: "14%", delay: "1300ms", size: "text-base xl:text-lg", color: "text-muted-foreground", rotate: "rotate-1", float: "animate-[float_6s_ease-in-out_infinite_1100ms]" },
+          { text: "ENERGIA", top: "86%", right: "8%", delay: "1500ms", size: "text-3xl xl:text-4xl", color: "text-accent", rotate: "rotate-6", float: "animate-[float_7s_ease-in-out_infinite_1300ms]" },
+        ].map((p) => (
+          <span
+            key={p.text}
+            style={{ top: p.top, right: p.right, animationDelay: p.delay, animationFillMode: "both" }}
+            className={`absolute font-black tracking-tight uppercase italic ${p.size} ${p.color} ${p.rotate} animate-fade-in`}
+          >
+            <span className={`inline-block ${p.float} drop-shadow-[0_4px_12px_rgba(0,0,0,0.08)]`}>{p.text}</span>
+          </span>
+        ))}
+      </div>
 
       <div className="relative z-10 w-full max-w-3xl">
         {/* Logo & Title */}
