@@ -8,7 +8,7 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, #ffe1e1 0%, #fff5f5 35%, #ffffff 50%, #fff0f0 65%, #ffd4d4 100%)' }}>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center lg:justify-end p-4 lg:pr-16 xl:pr-24" style={{ background: 'linear-gradient(135deg, #ffe1e1 0%, #fff5f5 35%, #ffffff 50%, #fff0f0 65%, #ffd4d4 100%)' }}>
       {/* Decorative red blobs */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-accent/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full bg-accent/25 blur-3xl" />
@@ -19,10 +19,10 @@ const StoreSelector = () => {
         alt=""
         aria-hidden="true"
         loading="lazy"
-        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
+        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both] z-0"
       />
 
-      <div className="relative z-10 w-full max-w-3xl">
+      <div className="relative z-10 w-full max-w-3xl lg:mr-0">
         {/* Logo & Title */}
         <div className="text-center mb-10 animate-fade-in">
           <img
