@@ -8,10 +8,49 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center lg:justify-end p-4 lg:pr-16 xl:pr-24" style={{ background: 'linear-gradient(135deg, #ffe1e1 0%, #fff5f5 35%, #ffffff 50%, #fff0f0 65%, #ffd4d4 100%)' }}>
-      {/* Decorative red blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-accent/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full bg-accent/25 blur-3xl" />
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center lg:justify-end p-4 lg:pr-20 xl:pr-32 bg-[#fafafa]">
+      {/* Decorative wavy lines — top left & bottom right */}
+      <svg className="pointer-events-none absolute top-0 left-0 w-64 h-64 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="M0 40 Q 50 0, 100 40 T 200 40" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 60 Q 50 20, 100 60 T 200 60" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 80 Q 50 40, 100 80 T 200 80" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      </svg>
+      <svg className="pointer-events-none absolute bottom-0 right-0 w-72 h-72 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="M0 120 Q 50 80, 100 120 T 200 120" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 140 Q 50 100, 100 140 T 200 140" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 160 Q 50 120, 100 160 T 200 160" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      </svg>
+
+      {/* Decorative dot grids */}
+      <div
+        className="pointer-events-none absolute hidden md:block top-[14%] left-[34%] w-32 h-20 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(hsl(var(--accent) / 0.55) 1.5px, transparent 1.5px)',
+          backgroundSize: '14px 14px',
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute hidden md:block bottom-[14%] right-[6%] w-28 h-20 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(hsl(var(--accent) / 0.55) 1.5px, transparent 1.5px)',
+          backgroundSize: '14px 14px',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Giant outlined "A" watermark on the right */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute hidden lg:block right-[2%] top-1/2 -translate-y-1/2 text-[34rem] leading-none font-black select-none"
+        style={{
+          WebkitTextStroke: '2px hsl(var(--accent) / 0.18)',
+          color: 'transparent',
+          fontFamily: "'Playfair Display', serif",
+        }}
+      >
+        A
+      </div>
 
       {/* Fitness models — hidden on small screens, decorative */}
       <img
