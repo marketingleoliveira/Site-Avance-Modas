@@ -105,7 +105,7 @@ const ProductsSection = () => {
                 </div>
 
                 {/* Quick Add */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-300">
+                <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-300">
                   <Button variant="shop" size="sm" className="w-full gap-2">
                     <ShoppingBag className="w-4 h-4" />
                     Adicionar
