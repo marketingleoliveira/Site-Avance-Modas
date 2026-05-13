@@ -8,7 +8,7 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center lg:justify-end p-4 lg:pr-20 xl:pr-32 bg-[#fafafa]">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-[#fafafa]">
       {/* Decorative wavy lines — top left & bottom right */}
       <svg className="pointer-events-none absolute top-0 left-0 w-64 h-64 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
         <path d="M0 40 Q 50 0, 100 40 T 200 40" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -39,16 +39,17 @@ const StoreSelector = () => {
         aria-hidden="true"
       />
 
-      {/* Fitness models — hidden on small screens, decorative */}
-      <img
-        src={modelLeft}
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        className="pointer-events-none select-none hidden lg:block absolute left-0 bottom-0 h-screen w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both] z-0"
-      />
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex items-center justify-center gap-6 xl:gap-10">
+        {/* Fitness model — hidden on small screens, decorative, anchored beside the cards */}
+        <img
+          src={modelLeft}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="pointer-events-none select-none hidden lg:block flex-shrink-0 h-[85vh] max-h-[820px] w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
+        />
 
-      <div className="relative z-10 w-full max-w-3xl lg:mr-0">
+        <div className="w-full max-w-3xl">
         {/* Logo & Title */}
         <div className="text-center mb-10 animate-fade-in">
           <img
@@ -174,6 +175,7 @@ const StoreSelector = () => {
         {/* Footer */}
         <div className="text-center mt-6 text-muted-foreground/60 text-xs tracking-wider animate-fade-in [animation-delay:700ms] [animation-fill-mode:both]">
           <p>© 2026 Avance Modas — Todos os direitos reservados</p>
+        </div>
         </div>
       </div>
     </div>
