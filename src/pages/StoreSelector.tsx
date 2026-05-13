@@ -39,19 +39,6 @@ const StoreSelector = () => {
         aria-hidden="true"
       />
 
-      {/* Giant outlined "A" watermark on the right */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute hidden lg:block right-[2%] top-1/2 -translate-y-1/2 text-[34rem] leading-none font-black select-none"
-        style={{
-          WebkitTextStroke: '2px hsl(var(--accent) / 0.18)',
-          color: 'transparent',
-          fontFamily: "'Playfair Display', serif",
-        }}
-      >
-        A
-      </div>
-
       {/* Fitness models — hidden on small screens, decorative */}
       <img
         src={modelLeft}
