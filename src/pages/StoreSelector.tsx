@@ -2,206 +2,180 @@ import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
 import modelLeft from "@/assets/store-selector-model-left.png";
 import { useStoreContext } from "@/stores/storeContextStore";
-import {
-  ArrowUpRight,
-  Gem,
-  Heart,
-  Star,
-  Truck,
-  ShieldCheck,
-  Repeat,
-  Headphones,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, ShoppingBag, Store, Gem, Heart, Star, Truck, ShieldCheck, Repeat, Headphones, Sparkles } from "lucide-react";
 
 const StoreSelector = () => {
-  const setStoreType = useStoreContext((state) => state.setStoreType);
-
-  const features = [
-    { Icon: Gem, title: "QUALIDADE", desc: "Produtos premium" },
-    { Icon: Heart, title: "CONFORTO", desc: "Para o seu dia a dia" },
-    { Icon: Star, title: "ESTILO", desc: "Looks que inspiram" },
-  ];
-
-  const trust = [
-    { Icon: Truck, title: "ENVIO RÁPIDO", desc: "Para todo o Brasil" },
-    { Icon: ShieldCheck, title: "COMPRA SEGURA", desc: "Dados protegidos" },
-    { Icon: Repeat, title: "TROCA FÁCIL", desc: "Mais praticidade" },
-    { Icon: Headphones, title: "ATENDIMENTO", desc: "Suporte humano" },
-  ];
+  const setStoreType = useStoreContext(state => state.setStoreType);
 
   return (
-    <div className="min-h-screen w-full bg-[#f5f5f5] flex items-center justify-center p-3 sm:p-6">
-      {/* Editorial card frame */}
-      <div className="relative w-full max-w-7xl bg-white rounded-[28px] overflow-hidden shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)] border border-black/5">
-        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[640px] lg:min-h-[760px]">
-          {/* LEFT — Editorial model panel */}
-          <aside className="relative lg:col-span-5 bg-gradient-to-br from-foreground via-foreground to-black overflow-hidden">
-            {/* huge typographic backdrop */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 flex items-end justify-start pl-2 pointer-events-none select-none"
-            >
-              <span className="font-display italic text-white/[0.06] leading-none text-[18rem] lg:text-[22rem] xl:text-[26rem] -mb-16 tracking-tighter">
-                A
-              </span>
-            </div>
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-[#fafafa]">
+      {/* Decorative wavy lines — top left & bottom right */}
+      <svg className="pointer-events-none absolute top-0 left-0 w-64 h-64 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="M0 40 Q 50 0, 100 40 T 200 40" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 60 Q 50 20, 100 60 T 200 60" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 80 Q 50 40, 100 80 T 200 80" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      </svg>
+      <svg className="pointer-events-none absolute bottom-0 right-0 w-72 h-72 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+        <path d="M0 120 Q 50 80, 100 120 T 200 120" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 140 Q 50 100, 100 140 T 200 140" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M0 160 Q 50 120, 100 160 T 200 160" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      </svg>
 
-            {/* accent slash */}
-            <div className="absolute top-0 right-0 h-full w-[2px] bg-accent/70" />
-            <div className="absolute top-8 left-8 z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
-                <Sparkles className="w-3 h-3 text-accent" />
-                <span className="text-[10px] font-bold tracking-[0.25em] text-white uppercase">
-                  New Collection · 2026
-                </span>
+      {/* Decorative dot grids */}
+      <div
+        className="pointer-events-none absolute hidden md:block top-[14%] left-[34%] w-32 h-20 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(hsl(var(--accent) / 0.55) 1.5px, transparent 1.5px)',
+          backgroundSize: '14px 14px',
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute hidden md:block bottom-[14%] right-[6%] w-28 h-20 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(hsl(var(--accent) / 0.55) 1.5px, transparent 1.5px)',
+          backgroundSize: '14px 14px',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex items-center justify-center gap-6 xl:gap-10">
+        {/* Fitness model — hidden on small screens, decorative, anchored beside the cards */}
+        <img
+          src={modelLeft}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="pointer-events-none select-none hidden lg:block flex-shrink-0 h-[85vh] max-h-[820px] w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
+        />
+
+        <div className="w-full max-w-3xl">
+        {/* Logo & Title */}
+        <div className="text-center mb-10 animate-fade-in">
+          <img
+            src={logoAvance}
+            alt="Avance Modas"
+            className="h-20 sm:h-24 mx-auto mb-4 object-contain"
+          />
+          {/* Premium badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/40 bg-white/80 backdrop-blur-sm mb-5 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            <span className="text-[11px] font-bold tracking-[0.2em] text-accent uppercase">Moda Fitness Premium</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2">
+            Avance <span className="text-accent">Modas</span>
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base mt-3 tracking-wide">
+            Moda fitness que transforma seu estilo ✨
+          </p>
+
+          {/* Feature pills */}
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-8">
+            {[
+              { Icon: Gem, title: "QUALIDADE", desc: "Produtos premium" },
+              { Icon: Heart, title: "CONFORTO", desc: "Para o seu dia a dia" },
+              { Icon: Star, title: "ESTILO", desc: "Looks que inspiram" },
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-white shadow-sm border border-border/60 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-accent" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[11px] font-bold tracking-wider text-foreground leading-tight">{title}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7">
+          {/* Atacado */}
+          <Link
+            to="/atacado"
+            onClick={() => setStoreType("atacado")}
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.2)] transition-all duration-500 hover:-translate-y-2 border border-border/50 animate-fade-in [animation-delay:200ms] [animation-fill-mode:both]"
+          >
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60" />
+
+            <div className="relative p-8 sm:p-9 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto mb-5">
+                <ShoppingBag className="w-7 h-7 text-white" />
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
+                ATACADO
+              </h2>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                Compras em quantidade com preços especiais para revendedores
+              </p>
+
+              {/* Animated banner button */}
+              <div className="relative overflow-hidden rounded-xl bg-foreground text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                <span>Acessar Atacado</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </div>
             </div>
+          </Link>
 
-            {/* Model */}
-            <img
-              src={modelLeft}
-              alt="Modelo Avance Modas"
-              loading="eager"
-              className="relative z-10 w-full h-full object-contain object-bottom drop-shadow-[0_30px_50px_rgba(0,0,0,0.4)] animate-fade-in"
-            />
+          {/* Varejo */}
+          <Link
+            to="/varejo"
+            onClick={() => setStoreType("varejo")}
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] transition-all duration-500 hover:-translate-y-2 border border-border/50 animate-fade-in [animation-delay:400ms] [animation-fill-mode:both]"
+          >
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
 
-            {/* Bottom signature strip */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-8 py-6">
-              <p className="text-white/60 text-[10px] tracking-[0.3em] uppercase mb-1">
-                Avance · Moda Fitness
-              </p>
-              <p className="text-white font-display text-2xl italic leading-tight">
-                Movimento que veste atitude.
-              </p>
-            </div>
-          </aside>
-
-          {/* RIGHT — Content panel */}
-          <section className="relative lg:col-span-7 flex flex-col px-6 py-8 sm:px-12 sm:py-12 lg:px-16 lg:py-14">
-            {/* Header row */}
-            <header className="flex items-center justify-between mb-8 lg:mb-10">
-              <img src={logoAvance} alt="Avance Modas" className="h-12 sm:h-14 object-contain" />
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                <span className="text-[10px] font-bold tracking-[0.25em] text-muted-foreground uppercase">
-                  Online agora
-                </span>
+            <div className="relative p-8 sm:p-9 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto mb-5">
+                <Store className="w-7 h-7 text-white" />
               </div>
-            </header>
 
-            {/* Title block */}
-            <div className="mb-8 lg:mb-10">
-              <p className="text-[11px] font-bold tracking-[0.35em] text-accent uppercase mb-3">
-                Bem-vinda à Avance
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
+                VAREJO
+              </h2>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                Compras unitárias com toda a qualidade Avance Modas
               </p>
-              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] tracking-tight text-foreground">
-                Escolha
-                <br />
-                como você
-                <br />
-                quer <span className="italic text-accent">comprar.</span>
-              </h1>
-              <p className="mt-5 text-muted-foreground text-sm sm:text-base max-w-md leading-relaxed">
-                Duas experiências sob medida — para revendedoras que movimentam estoque e para quem
-                busca o look perfeito do dia.
-              </p>
-            </div>
 
-            {/* Feature pills inline */}
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-8 lg:mb-10">
-              {features.map(({ Icon, title, desc }) => (
-                <div key={title} className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center">
-                    <Icon className="w-3.5 h-3.5 text-accent" />
-                  </div>
-                  <div className="leading-tight">
-                    <p className="text-[10px] font-bold tracking-wider text-foreground">{title}</p>
-                    <p className="text-[10px] text-muted-foreground">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Action rows — horizontal magazine cards */}
-            <div className="space-y-4 mb-8 lg:mb-10">
-              {/* Atacado */}
-              <Link
-                to="/atacado"
-                onClick={() => setStoreType("atacado")}
-                className="group relative flex items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-foreground text-white overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)]"
-              >
-                <div className="absolute inset-y-0 left-0 w-1 bg-accent" />
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-white/5 group-hover:scale-125 transition-transform duration-700" />
-                <div className="relative z-10 flex-1 min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.3em] text-white/50 uppercase mb-1">
-                    01 — Para Revendedoras
-                  </p>
-                  <h2 className="font-display text-3xl sm:text-4xl tracking-tight leading-none">
-                    Atacado
-                  </h2>
-                  <p className="text-white/60 text-xs sm:text-sm mt-2 max-w-sm">
-                    Compras em quantidade com preços especiais
-                  </p>
-                </div>
-                <div className="relative z-10 flex items-center gap-3 shrink-0">
-                  <span className="hidden sm:inline text-[11px] font-bold tracking-widest uppercase text-white/80 group-hover:text-white transition-colors">
-                    Acessar
-                  </span>
-                  <div className="w-12 h-12 rounded-full bg-white text-foreground flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all duration-300 group-hover:rotate-45">
-                    <ArrowUpRight className="w-5 h-5" />
-                  </div>
-                </div>
-              </Link>
-
-              {/* Varejo */}
-              <Link
-                to="/varejo"
-                onClick={() => setStoreType("varejo")}
-                className="group relative flex items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl bg-accent text-white overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_-15px_hsl(0_85%_50%/0.5)]"
-              >
-                <div className="absolute inset-y-0 left-0 w-1 bg-white" />
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 rounded-full bg-white/10 group-hover:scale-125 transition-transform duration-700" />
-                <div className="relative z-10 flex-1 min-w-0">
-                  <p className="text-[10px] font-bold tracking-[0.3em] text-white/70 uppercase mb-1">
-                    02 — Para Você
-                  </p>
-                  <h2 className="font-display text-3xl sm:text-4xl tracking-tight leading-none">
-                    Varejo
-                  </h2>
-                  <p className="text-white/80 text-xs sm:text-sm mt-2 max-w-sm">
-                    Compras unitárias com toda a qualidade Avance
-                  </p>
-                </div>
-                <div className="relative z-10 flex items-center gap-3 shrink-0">
-                  <span className="hidden sm:inline text-[11px] font-bold tracking-widest uppercase text-white group-hover:tracking-[0.25em] transition-all">
-                    Acessar
-                  </span>
-                  <div className="w-12 h-12 rounded-full bg-white text-accent flex items-center justify-center group-hover:rotate-45 transition-all duration-300">
-                    <ArrowUpRight className="w-5 h-5" />
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Trust footer */}
-            <div className="mt-auto border-t border-border/60 pt-5">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {trust.map(({ Icon, title, desc }) => (
-                  <div key={title} className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-accent shrink-0" />
-                    <div className="min-w-0 leading-tight">
-                      <p className="text-[9px] font-bold tracking-wider text-foreground">{title}</p>
-                      <p className="text-[9px] text-muted-foreground truncate">{desc}</p>
-                    </div>
-                  </div>
-                ))}
+              {/* Animated banner button */}
+              <div className="relative overflow-hidden rounded-xl bg-accent text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                <span>Acessar Varejo</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </div>
-              <p className="text-center text-[10px] text-muted-foreground/70 tracking-wider mt-5">
-                © 2026 Avance Modas — Todos os direitos reservados
-              </p>
             </div>
-          </section>
+          </Link>
+        </div>
+
+        {/* Trust bar */}
+        <div className="mt-10 mx-auto max-w-2xl bg-white/85 backdrop-blur-sm border border-border/60 rounded-2xl px-6 py-4 shadow-[0_8px_30px_-12px_hsl(0_0%_0%/0.12)] animate-fade-in [animation-delay:600ms] [animation-fill-mode:both]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { Icon: Truck, title: "ENVIO RÁPIDO", desc: "Para todo o Brasil" },
+              { Icon: ShieldCheck, title: "COMPRA SEGURA", desc: "Seus dados protegidos" },
+              { Icon: Repeat, title: "TROCA FÁCIL", desc: "Mais praticidade" },
+              { Icon: Headphones, title: "ATENDIMENTO", desc: "Suporte humanizado" },
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-2.5">
+                <Icon className="w-5 h-5 text-accent shrink-0" />
+                <div className="text-left min-w-0">
+                  <p className="text-[10px] font-bold tracking-wider text-foreground leading-tight">{title}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight truncate">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-6 text-muted-foreground/60 text-xs tracking-wider animate-fade-in [animation-delay:700ms] [animation-fill-mode:both]">
+          <p>© 2026 Avance Modas — Todos os direitos reservados</p>
+        </div>
         </div>
       </div>
     </div>
