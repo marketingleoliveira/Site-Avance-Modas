@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import logoAvance from "@/assets/logo-avance.png";
-import modelLeft from "@/assets/store-selector-model-left.png";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { ArrowRight, ShoppingBag, Store, Gem, Heart, Star, Truck, ShieldCheck, Repeat, Headphones, Sparkles } from "lucide-react";
 
@@ -39,17 +38,8 @@ const StoreSelector = () => {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex items-center justify-center gap-6 xl:gap-10">
-        {/* Fitness model — hidden on small screens, decorative, anchored beside the cards */}
-        <img
-          src={modelLeft}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          className="pointer-events-none select-none hidden lg:block flex-shrink-0 h-[85vh] max-h-[820px] w-auto object-contain object-bottom drop-shadow-[0_25px_40px_rgba(0,0,0,0.18)] animate-fade-in [animation-delay:300ms] [animation-fill-mode:both]"
-        />
-
-        <div className="w-full max-w-3xl">
+      <div className="relative z-10 w-full max-w-3xl mx-auto">
+        <div className="w-full">
         {/* Logo & Title */}
         <div className="text-center mb-10 animate-fade-in">
           <img
