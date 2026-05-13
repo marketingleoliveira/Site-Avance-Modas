@@ -176,6 +176,7 @@ const StoreSelector = () => {
         <div className="text-center mt-6 text-muted-foreground/60 text-xs tracking-wider animate-fade-in [animation-delay:700ms] [animation-fill-mode:both]">
           <p>© 2026 Avance Modas — Todos os direitos reservados</p>
         </div>
+        </div>
       </div>
     </div>
   );
