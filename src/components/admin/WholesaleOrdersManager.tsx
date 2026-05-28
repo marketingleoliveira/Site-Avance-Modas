@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2, Trash2, FileText, ClipboardCheck } from "lucide-react";
+import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck } from "lucide-react";
 import { downloadOrderGuidePdf, downloadOrderStockPdf } from "@/lib/wholesale-order-exports";
 
 interface CartItemData {
@@ -23,6 +23,7 @@ interface CartItemData {
 
 interface WholesaleOrder {
   id: string;
+  order_number?: string | null;
   created_at: string;
   updated_at: string;
   customer_name: string;
@@ -62,7 +63,6 @@ const WholesaleOrdersManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
-  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -113,21 +113,6 @@ const WholesaleOrdersManager = () => {
       toast.error("Erro ao atualizar solicitação");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleDeleteOrder = async () => {
-    if (!deleteOrderId) return;
-    try {
-      const { error } = await supabase.from("wholesale_orders").delete().eq("id", deleteOrderId);
-      if (error) throw error;
-      toast.success("Pedido excluído com sucesso!");
-      setDeleteOrderId(null);
-      if (selectedOrder?.id === deleteOrderId) setSelectedOrder(null);
-      fetchOrders();
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      toast.error("Erro ao excluir pedido");
     }
   };
 
@@ -185,6 +170,7 @@ const WholesaleOrdersManager = () => {
               <div key={order.id} className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl border border-border/50 hover:border-border transition-colors">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-mono text-muted-foreground">#{order.order_number || "—"}</span>
                     <span className="font-medium">{order.customer_name}</span>
                     <Badge className={statusColors[order.status] || ""}>
                       {statusLabels[order.status] || order.status}
@@ -217,9 +203,6 @@ const WholesaleOrdersManager = () => {
                   >
                     <ClipboardCheck className="w-4 h-4 mr-1" /> Gerar Estoque
                   </Button>
-                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
                 </div>
               </div>
             ))}
@@ -231,7 +214,12 @@ const WholesaleOrdersManager = () => {
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes da Solicitação</DialogTitle>
+            <DialogTitle>
+              Detalhes da Solicitação
+              {selectedOrder?.order_number && (
+                <span className="ml-2 text-sm font-mono text-muted-foreground">#{selectedOrder.order_number}</span>
+              )}
+            </DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-6">
@@ -309,15 +297,10 @@ const WholesaleOrdersManager = () => {
                     rows={3}
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleUpdateOrder} disabled={saving} className="flex-1">
-                    {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                    Salvar Alterações
-                  </Button>
-                  <Button variant="destructive" onClick={() => { setDeleteOrderId(selectedOrder.id); }}>
-                    <Trash2 className="w-4 h-4 mr-1" /> Excluir
-                  </Button>
-                </div>
+                <Button onClick={handleUpdateOrder} disabled={saving} className="w-full">
+                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Salvar Alterações
+                </Button>
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
                     <FileText className="w-4 h-4 mr-2" /> Gerar Guia
@@ -331,24 +314,6 @@ const WholesaleOrdersManager = () => {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Delete confirmation */}
-      <AlertDialog open={!!deleteOrderId} onOpenChange={(open) => !open && setDeleteOrderId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir pedido?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. O pedido será removido permanentemente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteOrder} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </Card>
   );
 };
