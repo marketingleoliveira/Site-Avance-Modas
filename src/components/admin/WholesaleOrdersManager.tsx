@@ -204,18 +204,18 @@ const WholesaleOrdersManager = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    title="Confirmação de Pedido (PDF) — Marketing e Diretoria"
+                    title="Guia de Solicitação de Pedido (PDF)"
                     onClick={() => downloadOrderGuidePdf(order as never)}
                   >
-                    <FileText className="w-4 h-4" />
+                    <FileText className="w-4 h-4 mr-1" /> Gerar Guia
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    title="Controle de Estoque (PDF) — E-commerce"
+                    title="Controle de Estoque (PDF)"
                     onClick={() => downloadOrderStockPdf(order as never)}
                   >
-                    <ClipboardCheck className="w-4 h-4" />
+                    <ClipboardCheck className="w-4 h-4 mr-1" /> Gerar Estoque
                   </Button>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
                     <Trash2 className="w-4 h-4" />
@@ -320,10 +320,10 @@ const WholesaleOrdersManager = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
-                    <FileText className="w-4 h-4 mr-2" /> Confirmação de Pedido
+                    <FileText className="w-4 h-4 mr-2" /> Gerar Guia
                   </Button>
                   <Button variant="outline" onClick={() => downloadOrderStockPdf(selectedOrder as never)}>
-                    <ClipboardCheck className="w-4 h-4 mr-2" /> Controle de Estoque
+                    <ClipboardCheck className="w-4 h-4 mr-2" /> Gerar Estoque
                   </Button>
                 </div>
               </div>
