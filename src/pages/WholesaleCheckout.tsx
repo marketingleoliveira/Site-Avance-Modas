@@ -83,8 +83,12 @@ const WholesaleCheckout = () => {
   });
 
   const subtotal = getTotalPrice();
-  const shippingCost = shippingQuote?.cost ?? 0;
+  const FREE_SHIPPING_THRESHOLD = 1500;
+  const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const rawShippingCost = shippingQuote?.cost ?? 0;
+  const shippingCost = freeShipping ? 0 : rawShippingCost;
   const totalPrice = subtotal + shippingCost;
+  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   // Peso total do carrinho (kg) — usa o peso de cada variante Shopify ou um padrão.
   const totalWeightKg = items.reduce((sum, item) => {
@@ -489,13 +493,24 @@ const WholesaleCheckout = () => {
                   <div className="flex-1 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="font-semibold">
-                        {("source" in shippingQuote && shippingQuote.source !== "estimated")
+                        {freeShipping
+                          ? "Frete grátis · Pedido acima de R$ 1.500"
+                          : ("source" in shippingQuote && shippingQuote.source !== "estimated")
                           ? `Frete Loggi · ${shippingQuote.serviceName ?? "Cotação Shopify"}`
                           : `Frete estimado · ${shippingQuote.region}`}
                       </span>
                       <span className="font-bold text-primary flex items-center gap-2">
                         {quoteLoading && <Loader2 className="h-3 w-3 animate-spin" />}
-                        {formatPrice(shippingQuote.cost)}
+                        {freeShipping ? (
+                          <>
+                            <span className="text-xs line-through text-muted-foreground font-normal">
+                              {formatPrice(rawShippingCost)}
+                            </span>
+                            <span>GRÁTIS</span>
+                          </>
+                        ) : (
+                          formatPrice(shippingQuote.cost)
+                        )}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -508,6 +523,12 @@ const WholesaleCheckout = () => {
                       )}
                     </p>
                   </div>
+                </div>
+              )}
+
+              {!freeShipping && remainingForFreeShipping > 0 && (
+                <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3 text-xs text-muted-foreground">
+                  Faltam <strong className="text-primary">{formatPrice(remainingForFreeShipping)}</strong> para você ganhar <strong className="text-primary">frete grátis</strong> no pedido atacado.
                 </div>
               )}
             </CardContent>
@@ -629,7 +650,13 @@ const WholesaleCheckout = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Frete</span>
                   <span className="font-medium">
-                    {shippingQuote ? formatPrice(shippingCost) : "A calcular"}
+                    {freeShipping ? (
+                      <span className="text-primary font-semibold">GRÁTIS</span>
+                    ) : shippingQuote ? (
+                      formatPrice(shippingCost)
+                    ) : (
+                      "A calcular"
+                    )}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
