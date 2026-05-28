@@ -95,6 +95,13 @@ const WholesaleCheckout = () => {
   const hasWholesaleItems = items.some((item) => item.lineId?.startsWith("local-"));
   const canAccessCheckout = isAtacado || hasWholesaleItems;
 
+  // Recalcula o frete sempre que o peso total mudar (qtd ou CEP).
+  useEffect(() => {
+    if (!isValidCep(form.cep)) return;
+    const quote = calculateShipping(form.cep, totalWeightKg);
+    setShippingQuote(quote);
+  }, [totalWeightKg, form.cep]);
+
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount);
 
