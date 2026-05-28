@@ -184,6 +184,8 @@ const STOREFRONT_QUERY = `
                   name
                   value
                 }
+                weight
+                weightUnit
               }
             }
           }
@@ -243,6 +245,8 @@ const PRODUCT_BY_HANDLE_QUERY = `
               name
               value
             }
+            weight
+            weightUnit
           }
         }
       }
