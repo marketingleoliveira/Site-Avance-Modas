@@ -40,12 +40,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import {
   calculateShipping,
+  DEFAULT_ITEM_WEIGHT_KG,
   fetchAddressByCep,
   formatCep,
   formatDocument,
   formatPhone,
   isValidCep,
   isValidDocument,
+  toKilograms,
   type ShippingQuote,
 } from "@/lib/shipping-loggi";
 
@@ -78,6 +80,18 @@ const WholesaleCheckout = () => {
   const subtotal = getTotalPrice();
   const shippingCost = shippingQuote?.cost ?? 0;
   const totalPrice = subtotal + shippingCost;
+
+  // Peso total do carrinho (kg) — usa o peso de cada variante Shopify ou um padrão.
+  const totalWeightKg = items.reduce((sum, item) => {
+    const variant = item.product.node.variants.edges.find(
+      (v) => v.node.id === item.variantId
+    )?.node;
+    const kg = variant
+      ? toKilograms(variant.weight, variant.weightUnit) || DEFAULT_ITEM_WEIGHT_KG
+      : DEFAULT_ITEM_WEIGHT_KG;
+    return sum + kg * item.quantity;
+  }, 0);
+
   const hasWholesaleItems = items.some((item) => item.lineId?.startsWith("local-"));
   const canAccessCheckout = isAtacado || hasWholesaleItems;
 
@@ -101,7 +115,7 @@ const WholesaleCheckout = () => {
     try {
       const [address, quote] = await Promise.all([
         fetchAddressByCep(formatted),
-        Promise.resolve(calculateShipping(formatted)),
+        Promise.resolve(calculateShipping(formatted, totalWeightKg)),
       ]);
 
       setShippingQuote(quote);
