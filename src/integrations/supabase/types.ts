@@ -334,10 +334,15 @@ export type Database = {
           cart_items: Json
           created_at: string
           currency_code: string
+          customer_document: string | null
           customer_email: string
           customer_name: string
           customer_whatsapp: string
           id: string
+          payment_method: string | null
+          shipping_address: Json
+          shipping_cost: number
+          shipping_region: string | null
           status: string
           total_amount: number
           updated_at: string
@@ -347,10 +352,15 @@ export type Database = {
           cart_items?: Json
           created_at?: string
           currency_code?: string
+          customer_document?: string | null
           customer_email: string
           customer_name: string
           customer_whatsapp: string
           id?: string
+          payment_method?: string | null
+          shipping_address?: Json
+          shipping_cost?: number
+          shipping_region?: string | null
           status?: string
           total_amount?: number
           updated_at?: string
@@ -360,10 +370,15 @@ export type Database = {
           cart_items?: Json
           created_at?: string
           currency_code?: string
+          customer_document?: string | null
           customer_email?: string
           customer_name?: string
           customer_whatsapp?: string
           id?: string
+          payment_method?: string | null
+          shipping_address?: Json
+          shipping_cost?: number
+          shipping_region?: string | null
           status?: string
           total_amount?: number
           updated_at?: string
