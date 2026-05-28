@@ -429,7 +429,7 @@ const WholesaleCheckout = () => {
                       <span className="font-bold text-primary">{formatPrice(shippingQuote.cost)}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Prazo estimado: {shippingQuote.estimatedDays}
+                      Prazo estimado: {shippingQuote.estimatedDays} · Peso considerado: {shippingQuote.weightKg.toFixed(1).replace(".", ",")}kg
                     </p>
                   </div>
                 </div>
