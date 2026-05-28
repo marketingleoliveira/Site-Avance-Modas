@@ -252,15 +252,22 @@ const WholesaleCheckout = () => {
     setSending(true);
 
     try {
-      const cartData = items.map((item) => ({
-        title: item.product.node.title,
-        variantTitle: item.variantTitle,
-        quantity: item.quantity,
-        price: item.price.amount,
-        currencyCode: item.price.currencyCode,
-        selectedOptions: item.selectedOptions,
-        imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
-      }));
+      const cartData = items.map((item) => {
+        const variantNode = item.product.node.variants.edges.find(
+          (v) => v.node.id === item.variantId
+        )?.node;
+        return {
+          title: item.product.node.title,
+          variantTitle: item.variantTitle,
+          variantId: item.variantId,
+          sku: variantNode?.sku ?? null,
+          quantity: item.quantity,
+          price: item.price.amount,
+          currencyCode: item.price.currencyCode,
+          selectedOptions: item.selectedOptions,
+          imageUrl: item.product.node.images?.edges?.[0]?.node?.url || null,
+        };
+      });
 
       const { error } = await supabase.from("wholesale_orders").insert({
         customer_name: form.name.trim(),
