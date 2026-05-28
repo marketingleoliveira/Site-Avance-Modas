@@ -339,6 +339,7 @@ export type Database = {
           customer_name: string
           customer_whatsapp: string
           id: string
+          order_number: string | null
           payment_method: string | null
           shipping_address: Json
           shipping_cost: number
@@ -357,6 +358,7 @@ export type Database = {
           customer_name: string
           customer_whatsapp: string
           id?: string
+          order_number?: string | null
           payment_method?: string | null
           shipping_address?: Json
           shipping_cost?: number
@@ -375,6 +377,7 @@ export type Database = {
           customer_name?: string
           customer_whatsapp?: string
           id?: string
+          order_number?: string | null
           payment_method?: string | null
           shipping_address?: Json
           shipping_cost?: number
