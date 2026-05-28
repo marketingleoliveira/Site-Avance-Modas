@@ -87,6 +87,8 @@ export interface ShopifyProduct {
             name: string;
             value: string;
           }>;
+          weight?: number;
+          weightUnit?: 'GRAMS' | 'KILOGRAMS' | 'OUNCES' | 'POUNDS';
         };
       }>;
     };
