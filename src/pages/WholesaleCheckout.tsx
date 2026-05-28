@@ -50,6 +50,10 @@ import {
   toKilograms,
   type ShippingQuote,
 } from "@/lib/shipping-loggi";
+import {
+  getRealShippingQuote,
+  type RealShippingQuote,
+} from "@/lib/shopify-shipping-quote";
 
 type PaymentMethod = "pix" | "credit_card_3x";
 
@@ -61,7 +65,8 @@ const WholesaleCheckout = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [acceptedRules, setAcceptedRules] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
-  const [shippingQuote, setShippingQuote] = useState<ShippingQuote | null>(null);
+  const [shippingQuote, setShippingQuote] = useState<RealShippingQuote | ShippingQuote | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -95,12 +100,70 @@ const WholesaleCheckout = () => {
   const hasWholesaleItems = items.some((item) => item.lineId?.startsWith("local-"));
   const canAccessCheckout = isAtacado || hasWholesaleItems;
 
-  // Recalcula o frete sempre que o peso total mudar (qtd ou CEP).
+  // Cotação real via Shopify quando endereço estiver completo;
+  // fallback estimado (peso) enquanto o resto do endereço não chega.
   useEffect(() => {
-    if (!isValidCep(form.cep)) return;
-    const quote = calculateShipping(form.cep, totalWeightKg);
-    setShippingQuote(quote);
-  }, [totalWeightKg, form.cep]);
+    if (!isValidCep(form.cep)) {
+      setShippingQuote(null);
+      return;
+    }
+
+    const addressReady =
+      form.street.trim() &&
+      form.number.trim() &&
+      form.city.trim() &&
+      form.state.trim().length === 2;
+
+    if (!addressReady) {
+      // Mostra prévia estimada enquanto o endereço completa.
+      setShippingQuote(calculateShipping(form.cep, totalWeightKg));
+      return;
+    }
+
+    let cancelled = false;
+    setQuoteLoading(true);
+
+    const quoteItems = items.map((item) => {
+      const variant = item.product.node.variants.edges.find(
+        (v) => v.node.id === item.variantId
+      )?.node;
+      return {
+        productTitle: item.product.node.title,
+        variantId: item.variantId,
+        selectedOptions: item.selectedOptions,
+        quantity: item.quantity,
+        weight: variant?.weight,
+        weightUnit: variant?.weightUnit,
+      };
+    });
+
+    const timer = setTimeout(() => {
+      getRealShippingQuote(quoteItems, {
+        cep: form.cep,
+        street: form.street,
+        number: form.number,
+        complement: form.complement,
+        city: form.city,
+        state: form.state,
+      })
+        .then((quote) => {
+          if (cancelled) return;
+          setShippingQuote(
+            quote ?? calculateShipping(form.cep, totalWeightKg)
+          );
+        })
+        .finally(() => {
+          if (!cancelled) setQuoteLoading(false);
+        });
+    }, 400);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      setQuoteLoading(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.cep, form.street, form.number, form.city, form.state, form.complement, totalWeightKg]);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount);
@@ -425,11 +488,24 @@ const WholesaleCheckout = () => {
                   <Truck className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div className="flex-1 text-sm">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-semibold">Frete Loggi · {shippingQuote.region}</span>
-                      <span className="font-bold text-primary">{formatPrice(shippingQuote.cost)}</span>
+                      <span className="font-semibold">
+                        {("source" in shippingQuote && shippingQuote.source !== "estimated")
+                          ? `Frete Loggi · ${shippingQuote.serviceName ?? "Cotação Shopify"}`
+                          : `Frete estimado · ${shippingQuote.region}`}
+                      </span>
+                      <span className="font-bold text-primary flex items-center gap-2">
+                        {quoteLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+                        {formatPrice(shippingQuote.cost)}
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Prazo estimado: {shippingQuote.estimatedDays} · Peso considerado: {shippingQuote.weightKg.toFixed(1).replace(".", ",")}kg
+                      Prazo: {shippingQuote.estimatedDays} · Peso: {shippingQuote.weightKg.toFixed(1).replace(".", ",")}kg
+                      {"source" in shippingQuote && shippingQuote.source === "mixed" && (
+                        <> · {shippingQuote.matchedItems}/{shippingQuote.totalItems} itens cotados via Shopify</>
+                      )}
+                      {"source" in shippingQuote && shippingQuote.source === "estimated" && (
+                        <> · valor estimado — preencha o endereço completo para cotação real</>
+                      )}
                     </p>
                   </div>
                 </div>
