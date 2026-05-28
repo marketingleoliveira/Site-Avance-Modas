@@ -268,8 +268,8 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   drawHeader(
     ctx,
     logo,
-    "CONFIRMAÇÃO DE PEDIDO",
-    "Resumo Financeiro — Pedido Atacado",
+    "GUIA DE SOLICITAÇÃO DE PEDIDO",
+    "Dados do cliente, pagamento e frete — Pedido Atacado",
     `Pedido #${order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
 
@@ -290,7 +290,7 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
     doc.setFont("helvetica", "normal");
   };
 
-  const labelCol = 90;
+  const labelCol = 140;
   const kv = (label: string, value: string) => {
     doc.setFont("helvetica", "bold");
     doc.text(`${label}:`, margin, y);
@@ -328,50 +328,23 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   kv("Região de frete", order.shipping_region || "—");
   kv("Valor do frete", fmtMoney(order.shipping_cost ?? 0, order.currency_code));
 
-  y += 6;
-  sectionTitle("Resumo dos Itens");
+  // Footer meta on this single page
+  drawFooterMeta(ctx);
 
-  autoTable(doc, {
-    startY: y,
-    head: [["SKU", "Produto", "Tam.", "Cor", "Qtd", "Valor"]],
-    body: order.cart_items.map((item) => [
-      item.sku || "—",
-      item.title,
-      pickOption(item, "Tamanho") || pickOption(item, "Tamanho Superior") || "—",
-      pickOption(item, "Cor") || "—",
-      String(item.quantity),
-      fmtMoney(parseFloat(item.price) * item.quantity, item.currencyCode),
-    ]),
-    styles: { fontSize: 9, cellPadding: 4, lineColor: [200, 200, 200], lineWidth: 0.3 },
-    headStyles: { fillColor: [30, 30, 30], textColor: 255, fontStyle: "bold" },
-    alternateRowStyles: { fillColor: [250, 250, 250] },
-    margin: { left: margin, right: margin, bottom: 200 },
-    columnStyles: {
-      0: { cellWidth: 55, fontStyle: "bold" },
-      1: { cellWidth: "auto" },
-      2: { halign: "center", cellWidth: 35 },
-      3: { cellWidth: 60 },
-      4: { halign: "center", cellWidth: 35 },
-      5: { halign: "right", cellWidth: 75 },
-    },
-    didDrawPage: () => drawFooterMeta(ctx),
-  });
-
-  // TOTAL block (own row, no overlap)
-  const afterTable =
-    ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y) + 14;
-  const totalBoxH = 32;
+  // TOTAL block (own row)
+  const afterTable = y + 14;
+  const totalBoxH = 36;
   doc.setFillColor(...RED);
   doc.rect(margin, afterTable, pageWidth - margin * 2, totalBoxH, "F");
   doc.setTextColor(255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("TOTAL DO PEDIDO", margin + 14, afterTable + 21);
+  doc.text("TOTAL DO PEDIDO", margin + 14, afterTable + 23);
   doc.setFontSize(14);
   doc.text(
     fmtMoney(order.total_amount, order.currency_code),
     pageWidth - margin - 14,
-    afterTable + 22,
+    afterTable + 24,
     { align: "right" }
   );
   doc.setTextColor(0);
@@ -379,6 +352,6 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   drawSignatureBlocks(ctx, afterTable + totalBoxH + 50, ["Marketing", "Diretoria"]);
 
   doc.save(
-    `pedido_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
+    `guia_solicitacao_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
   );
 }
