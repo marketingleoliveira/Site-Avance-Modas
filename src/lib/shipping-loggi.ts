@@ -5,6 +5,7 @@ export interface ShippingQuote {
   region: string;
   cost: number;
   estimatedDays: string;
+  weightKg: number;
 }
 
 const onlyDigits = (s: string) => (s || "").replace(/\D/g, "");
@@ -20,52 +21,100 @@ export function isValidCep(cep: string): boolean {
 }
 
 /**
- * Tabela fixa por faixa de CEP.
- * Baseado em faixas oficiais dos Correios/Loggi.
+ * Tabela de frete por região (CEP) — base (até 1kg) + valor por kg adicional.
+ * Modelo igual ao do checkout do Shopify (weight-based shipping rates).
  */
-export function calculateShipping(cep: string): ShippingQuote | null {
+interface RegionRate {
+  region: string;
+  base: number; // R$ até 1kg
+  perKg: number; // R$ por kg adicional acima de 1kg
+  estimatedDays: string;
+}
+
+function getRegionRate(cep: string): RegionRate | null {
   const d = onlyDigits(cep);
   if (d.length !== 8) return null;
   const prefix = parseInt(d.slice(0, 5), 10);
 
-  // São Paulo Capital (01000-05999, 08000-08499)
   if ((prefix >= 1000 && prefix <= 5999) || (prefix >= 8000 && prefix <= 8499)) {
-    return { region: "SP - Capital", cost: 25, estimatedDays: "1-2 dias úteis" };
+    return { region: "SP - Capital", base: 22, perKg: 6, estimatedDays: "1-2 dias úteis" };
   }
-  // Grande SP (06000-09999 demais)
   if (prefix >= 6000 && prefix <= 9999) {
-    return { region: "SP - Grande SP", cost: 35, estimatedDays: "2-3 dias úteis" };
+    return { region: "SP - Grande SP", base: 28, perKg: 7, estimatedDays: "2-3 dias úteis" };
   }
-  // Interior SP (11000-19999)
   if (prefix >= 11000 && prefix <= 19999) {
-    return { region: "SP - Interior", cost: 45, estimatedDays: "3-5 dias úteis" };
+    return { region: "SP - Interior", base: 35, perKg: 9, estimatedDays: "3-5 dias úteis" };
   }
-  // Rio de Janeiro (20000-28999)
   if (prefix >= 20000 && prefix <= 28999) {
-    return { region: "Rio de Janeiro", cost: 55, estimatedDays: "3-5 dias úteis" };
+    return { region: "Rio de Janeiro", base: 42, perKg: 11, estimatedDays: "3-5 dias úteis" };
   }
-  // Espírito Santo / Minas Gerais (29000-39999)
   if (prefix >= 29000 && prefix <= 39999) {
-    return { region: "MG / ES", cost: 65, estimatedDays: "4-6 dias úteis" };
+    return { region: "MG / ES", base: 48, perKg: 12, estimatedDays: "4-6 dias úteis" };
   }
-  // Sul (Paraná, SC, RS - 80000-99999)
   if (prefix >= 80000 && prefix <= 99999) {
-    return { region: "Região Sul", cost: 75, estimatedDays: "5-7 dias úteis" };
+    return { region: "Região Sul", base: 55, perKg: 14, estimatedDays: "5-7 dias úteis" };
   }
-  // Centro-Oeste (70000-78999)
   if (prefix >= 70000 && prefix <= 78999) {
-    return { region: "Centro-Oeste", cost: 85, estimatedDays: "5-8 dias úteis" };
+    return { region: "Centro-Oeste", base: 62, perKg: 16, estimatedDays: "5-8 dias úteis" };
   }
-  // Nordeste (40000-65999)
   if (prefix >= 40000 && prefix <= 65999) {
-    return { region: "Nordeste", cost: 95, estimatedDays: "6-9 dias úteis" };
+    return { region: "Nordeste", base: 70, perKg: 18, estimatedDays: "6-9 dias úteis" };
   }
-  // Norte (66000-69999)
   if (prefix >= 66000 && prefix <= 69999) {
-    return { region: "Região Norte", cost: 110, estimatedDays: "7-12 dias úteis" };
+    return { region: "Região Norte", base: 85, perKg: 22, estimatedDays: "7-12 dias úteis" };
   }
-  return { region: "Outras regiões", cost: 100, estimatedDays: "7-10 dias úteis" };
+  return { region: "Outras regiões", base: 75, perKg: 18, estimatedDays: "7-10 dias úteis" };
 }
+
+/**
+ * Calcula o frete com base no CEP e no peso total (em kg) dos itens.
+ * Modelo: base até 1kg + valor por kg adicional (igual ao weight-based rates do Shopify).
+ * Arredonda peso para cima a cada 0,5kg.
+ */
+export function calculateShipping(cep: string, weightKg: number): ShippingQuote | null {
+  const rate = getRegionRate(cep);
+  if (!rate) return null;
+
+  const safeWeight = Math.max(0.1, weightKg || 0);
+  // arredonda para cima em incrementos de 0,5kg
+  const billableWeight = Math.ceil(safeWeight * 2) / 2;
+  const additional = Math.max(0, billableWeight - 1);
+  const cost = rate.base + additional * rate.perKg;
+
+  return {
+    region: rate.region,
+    cost: Math.round(cost * 100) / 100,
+    estimatedDays: rate.estimatedDays,
+    weightKg: billableWeight,
+  };
+}
+
+/**
+ * Converte qualquer unidade Shopify para kilogramas.
+ */
+export function toKilograms(
+  weight: number | undefined,
+  unit: string | undefined
+): number {
+  if (!weight || weight <= 0) return 0;
+  switch (unit) {
+    case "GRAMS":
+      return weight / 1000;
+    case "OUNCES":
+      return weight * 0.0283495;
+    case "POUNDS":
+      return weight * 0.453592;
+    case "KILOGRAMS":
+    default:
+      return weight;
+  }
+}
+
+/**
+ * Peso padrão por peça quando o produto Shopify não informa peso.
+ * Considera ~300g por peça de roupa (estimativa segura).
+ */
+export const DEFAULT_ITEM_WEIGHT_KG = 0.3;
 
 export interface ViaCepResponse {
   cep?: string;

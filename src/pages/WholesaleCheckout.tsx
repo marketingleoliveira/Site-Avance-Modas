@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,12 +40,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import {
   calculateShipping,
+  DEFAULT_ITEM_WEIGHT_KG,
   fetchAddressByCep,
   formatCep,
   formatDocument,
   formatPhone,
   isValidCep,
   isValidDocument,
+  toKilograms,
   type ShippingQuote,
 } from "@/lib/shipping-loggi";
 
@@ -78,8 +80,27 @@ const WholesaleCheckout = () => {
   const subtotal = getTotalPrice();
   const shippingCost = shippingQuote?.cost ?? 0;
   const totalPrice = subtotal + shippingCost;
+
+  // Peso total do carrinho (kg) — usa o peso de cada variante Shopify ou um padrão.
+  const totalWeightKg = items.reduce((sum, item) => {
+    const variant = item.product.node.variants.edges.find(
+      (v) => v.node.id === item.variantId
+    )?.node;
+    const kg = variant
+      ? toKilograms(variant.weight, variant.weightUnit) || DEFAULT_ITEM_WEIGHT_KG
+      : DEFAULT_ITEM_WEIGHT_KG;
+    return sum + kg * item.quantity;
+  }, 0);
+
   const hasWholesaleItems = items.some((item) => item.lineId?.startsWith("local-"));
   const canAccessCheckout = isAtacado || hasWholesaleItems;
+
+  // Recalcula o frete sempre que o peso total mudar (qtd ou CEP).
+  useEffect(() => {
+    if (!isValidCep(form.cep)) return;
+    const quote = calculateShipping(form.cep, totalWeightKg);
+    setShippingQuote(quote);
+  }, [totalWeightKg, form.cep]);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount);
@@ -101,7 +122,7 @@ const WholesaleCheckout = () => {
     try {
       const [address, quote] = await Promise.all([
         fetchAddressByCep(formatted),
-        Promise.resolve(calculateShipping(formatted)),
+        Promise.resolve(calculateShipping(formatted, totalWeightKg)),
       ]);
 
       setShippingQuote(quote);
@@ -408,7 +429,7 @@ const WholesaleCheckout = () => {
                       <span className="font-bold text-primary">{formatPrice(shippingQuote.cost)}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Prazo estimado: {shippingQuote.estimatedDays}
+                      Prazo estimado: {shippingQuote.estimatedDays} · Peso considerado: {shippingQuote.weightKg.toFixed(1).replace(".", ",")}kg
                     </p>
                   </div>
                 </div>

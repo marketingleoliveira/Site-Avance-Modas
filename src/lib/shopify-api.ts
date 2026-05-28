@@ -87,6 +87,8 @@ export interface ShopifyProduct {
             name: string;
             value: string;
           }>;
+          weight?: number;
+          weightUnit?: 'GRAMS' | 'KILOGRAMS' | 'OUNCES' | 'POUNDS';
         };
       }>;
     };
@@ -182,6 +184,8 @@ const STOREFRONT_QUERY = `
                   name
                   value
                 }
+                weight
+                weightUnit
               }
             }
           }
@@ -241,6 +245,8 @@ const PRODUCT_BY_HANDLE_QUERY = `
               name
               value
             }
+            weight
+            weightUnit
           }
         }
       }
