@@ -216,10 +216,10 @@ export async function downloadOrderStockPdf(order: OrderForExport) {
     logo,
     "CONTROLE DE ESTOQUE",
     "Check de disponibilidade — Pedido Atacado",
-    `Pedido #${order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
+    `Pedido #${order.order_number || order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
 
-  let y = 110;
+  let y = 130;
 
   // Customer ref (single line)
   doc.setFont("helvetica", "bold");
@@ -267,7 +267,7 @@ export async function downloadOrderStockPdf(order: OrderForExport) {
   drawSignatureBlocks(ctx, afterTable + 40, ["E-commerce"]);
 
   doc.save(
-    `controle_estoque_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
+    `controle_estoque_${safeFilename(order.customer_name)}_${order.order_number || order.id.slice(0, 8)}.pdf`
   );
 }
 
@@ -287,10 +287,10 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
     logo,
     "GUIA DE SOLICITAÇÃO DE PEDIDO",
     "Dados do cliente, pagamento e frete — Pedido Atacado",
-    `Pedido #${order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
+    `Pedido #${order.order_number || order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
 
-  let y = 110;
+  let y = 130;
 
   const sectionTitle = (title: string) => {
     doc.setFont("helvetica", "bold");
@@ -369,6 +369,6 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   drawSignatureBlocks(ctx, afterTable + totalBoxH + 50, ["Marketing", "Diretoria"]);
 
   doc.save(
-    `guia_solicitacao_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
+    `guia_solicitacao_${safeFilename(order.customer_name)}_${order.order_number || order.id.slice(0, 8)}.pdf`
   );
 }
