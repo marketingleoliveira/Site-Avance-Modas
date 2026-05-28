@@ -162,8 +162,7 @@ export function downloadOrderGuidePdf(order: OrderForExport) {
   });
 
   // Total
-  // @ts-expect-error – lastAutoTable is added by jspdf-autotable
-  const endY = (doc as any).lastAutoTable.finalY + 16;
+  const endY = ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y) + 16;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text("TOTAL DO PEDIDO:", pageWidth - margin - 150, endY);
