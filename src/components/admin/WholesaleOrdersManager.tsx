@@ -201,6 +201,22 @@ const WholesaleOrdersManager = () => {
                   <Button variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
                     <Eye className="w-4 h-4 mr-1" /> Ver
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    title="Baixar guia do pedido (PDF)"
+                    onClick={() => downloadOrderGuidePdf(order as never)}
+                  >
+                    <FileText className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    title="Baixar relatório de estoque (Excel)"
+                    onClick={() => downloadOrderStockXlsx(order as never)}
+                  >
+                    <FileSpreadsheet className="w-4 h-4" />
+                  </Button>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
