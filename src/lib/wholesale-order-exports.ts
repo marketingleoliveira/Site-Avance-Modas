@@ -39,7 +39,7 @@ export interface OrderForExport {
   cart_items: CartItemData[];
 }
 
-const RED: [number, number, number] = [220, 38, 38];
+const RED: [number, number, number] = [0, 0, 0];
 
 const fmtMoney = (v: number, currency = "BRL") =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(v || 0);
