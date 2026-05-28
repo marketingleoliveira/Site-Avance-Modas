@@ -318,6 +318,14 @@ const WholesaleOrdersManager = () => {
                     <Trash2 className="w-4 h-4 mr-1" /> Excluir
                   </Button>
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
+                    <FileText className="w-4 h-4 mr-2" /> Guia do Pedido (PDF)
+                  </Button>
+                  <Button variant="outline" onClick={() => downloadOrderStockXlsx(selectedOrder as never)}>
+                    <FileSpreadsheet className="w-4 h-4 mr-2" /> Relatório Estoque (Excel)
+                  </Button>
+                </div>
               </div>
             </div>
           )}
