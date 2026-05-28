@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2, Trash2, FileText, FileSpreadsheet } from "lucide-react";
-import { downloadOrderGuidePdf, downloadOrderStockXlsx } from "@/lib/wholesale-order-exports";
+import { Package, Eye, RefreshCw, Loader2, Trash2, FileText, ClipboardCheck } from "lucide-react";
+import { downloadOrderGuidePdf, downloadOrderStockPdf } from "@/lib/wholesale-order-exports";
 
 interface CartItemData {
   title: string;
@@ -204,7 +204,7 @@ const WholesaleOrdersManager = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    title="Baixar guia do pedido (PDF)"
+                    title="Confirmação de Pedido (PDF) — Marketing e Diretoria"
                     onClick={() => downloadOrderGuidePdf(order as never)}
                   >
                     <FileText className="w-4 h-4" />
@@ -212,10 +212,10 @@ const WholesaleOrdersManager = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    title="Baixar relatório de estoque (Excel)"
-                    onClick={() => downloadOrderStockXlsx(order as never)}
+                    title="Controle de Estoque (PDF) — E-commerce"
+                    onClick={() => downloadOrderStockPdf(order as never)}
                   >
-                    <FileSpreadsheet className="w-4 h-4" />
+                    <ClipboardCheck className="w-4 h-4" />
                   </Button>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => setDeleteOrderId(order.id)}>
                     <Trash2 className="w-4 h-4" />
@@ -320,10 +320,10 @@ const WholesaleOrdersManager = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
-                    <FileText className="w-4 h-4 mr-2" /> Guia do Pedido (PDF)
+                    <FileText className="w-4 h-4 mr-2" /> Confirmação de Pedido
                   </Button>
-                  <Button variant="outline" onClick={() => downloadOrderStockXlsx(selectedOrder as never)}>
-                    <FileSpreadsheet className="w-4 h-4 mr-2" /> Relatório Estoque (Excel)
+                  <Button variant="outline" onClick={() => downloadOrderStockPdf(selectedOrder as never)}>
+                    <ClipboardCheck className="w-4 h-4 mr-2" /> Controle de Estoque
                   </Button>
                 </div>
               </div>

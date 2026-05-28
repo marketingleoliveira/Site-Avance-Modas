@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import * as XLSX from "xlsx";
+import logoUrl from "@/assets/logo-avance.png";
 
 interface CartItemData {
   title: string;
@@ -38,6 +38,8 @@ export interface OrderForExport {
   cart_items: CartItemData[];
 }
 
+const RED: [number, number, number] = [220, 38, 38];
+
 const fmtMoney = (v: number, currency = "BRL") =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(v || 0);
 
@@ -61,83 +63,273 @@ function pickOption(item: CartItemData, name: string) {
   )?.value || "";
 }
 
-/** PDF guide with all customer info from a wholesale order. */
-export function downloadOrderGuidePdf(order: OrderForExport) {
+let cachedLogo: { dataUrl: string; w: number; h: number } | null = null;
+
+async function loadLogo(): Promise<typeof cachedLogo> {
+  if (cachedLogo) return cachedLogo;
+  try {
+    const res = await fetch(logoUrl);
+    const blob = await res.blob();
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      img.onerror = () => resolve({ w: 1, h: 1 });
+      img.src = dataUrl;
+    });
+    cachedLogo = { dataUrl, w: dims.w, h: dims.h };
+    return cachedLogo;
+  } catch {
+    return null;
+  }
+}
+
+/* ---------------- Shared layout helpers ---------------- */
+
+interface DrawCtx {
+  doc: jsPDF;
+  pageWidth: number;
+  pageHeight: number;
+  margin: number;
+}
+
+function drawHeader(ctx: DrawCtx, logo: typeof cachedLogo, title: string, subtitle: string, orderRef: string) {
+  const { doc, pageWidth, margin } = ctx;
+  // Red band
+  doc.setFillColor(...RED);
+  doc.rect(0, 0, pageWidth, 80, "F");
+
+  // Logo on white pill (left)
+  if (logo) {
+    const logoBoxW = 90;
+    const logoBoxH = 56;
+    const ratio = logo.h / logo.w;
+    let drawW = logoBoxW;
+    let drawH = drawW * ratio;
+    if (drawH > logoBoxH) {
+      drawH = logoBoxH;
+      drawW = drawH / ratio;
+    }
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(margin, 12, logoBoxW, logoBoxH, 4, 4, "F");
+    doc.addImage(
+      logo.dataUrl,
+      "PNG",
+      margin + (logoBoxW - drawW) / 2,
+      12 + (logoBoxH - drawH) / 2,
+      drawW,
+      drawH
+    );
+  }
+
+  doc.setTextColor(255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text(title, margin + (logo ? 110 : 0), 38);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text(subtitle, margin + (logo ? 110 : 0), 56);
+  doc.setFontSize(9);
+  doc.text(orderRef, pageWidth - margin, 56, { align: "right" });
+  doc.setTextColor(0);
+}
+
+function drawSignatureBlocks(
+  ctx: DrawCtx,
+  startY: number,
+  labels: string[]
+) {
+  const { doc, pageWidth, margin, pageHeight } = ctx;
+  const usableW = pageWidth - margin * 2;
+  const gap = 24;
+  const boxW = (usableW - gap * (labels.length - 1)) / labels.length;
+  const boxH = 90;
+  // Push to bottom if there's room
+  const y = Math.max(startY, pageHeight - margin - boxH - 30);
+
+  doc.setDrawColor(180);
+  doc.setLineWidth(0.5);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(60);
+
+  labels.forEach((label, i) => {
+    const x = margin + i * (boxW + gap);
+    // Signature line
+    const lineY = y + boxH - 22;
+    doc.line(x + 10, lineY, x + boxW - 10, lineY);
+    // Label
+    doc.text(label, x + boxW / 2, lineY + 14, { align: "center" });
+  });
+  doc.setTextColor(0);
+}
+
+function drawFooterMeta(ctx: DrawCtx) {
+  const { doc, pageWidth, margin, pageHeight } = ctx;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(140);
+  doc.text(
+    "Avance Modas — CNPJ 61.705.129/0001-90 — Documento interno gerado automaticamente",
+    pageWidth / 2,
+    pageHeight - 18,
+    { align: "center" }
+  );
+  doc.setTextColor(0);
+}
+
+/* ---------------- PDF 1 — Controle de Disponibilidade ---------------- */
+
+export async function downloadOrderStockPdf(order: OrderForExport) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 40;
-  let y = margin;
+  const ctx: DrawCtx = { doc, pageWidth, pageHeight, margin };
 
-  // Header
-  doc.setFillColor(220, 38, 38);
-  doc.rect(0, 0, pageWidth, 60, "F");
-  doc.setTextColor(255);
-  doc.setFontSize(18);
-  doc.setFont("helvetica", "bold");
-  doc.text("AVANCE MODAS", margin, 28);
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-  doc.text("Guia de Pedido — Atacado", margin, 46);
-  doc.setFontSize(9);
-  doc.text(
-    `Pedido #${order.id.slice(0, 8).toUpperCase()}  |  ${fmtDate(order.created_at)}`,
-    pageWidth - margin,
-    46,
-    { align: "right" }
+  const logo = await loadLogo();
+
+  drawHeader(
+    ctx,
+    logo,
+    "CONTROLE DE ESTOQUE",
+    "Check de disponibilidade — Pedido Atacado",
+    `Pedido #${order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
 
-  y = 90;
-  doc.setTextColor(0);
+  let y = 110;
 
-  const section = (title: string) => {
+  // Customer ref (single line)
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text("Cliente:", margin, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(order.customer_name, margin + 50, y);
+  y += 18;
+
+  autoTable(doc, {
+    startY: y,
+    head: [["SKU", "Produto", "Tam.", "Cor", "Qtd", "Check"]],
+    body: order.cart_items.map((item) => [
+      item.sku || "—",
+      item.title,
+      pickOption(item, "Tamanho") || pickOption(item, "Tamanho Superior") || "—",
+      pickOption(item, "Cor") || "—",
+      String(item.quantity),
+      "",
+    ]),
+    styles: { fontSize: 9, cellPadding: 5, lineColor: [200, 200, 200], lineWidth: 0.3 },
+    headStyles: { fillColor: [30, 30, 30], textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [250, 250, 250] },
+    margin: { left: margin, right: margin, bottom: 160 },
+    columnStyles: {
+      0: { cellWidth: 60, fontStyle: "bold" },
+      1: { cellWidth: "auto" },
+      2: { halign: "center", cellWidth: 40 },
+      3: { cellWidth: 70 },
+      4: { halign: "center", cellWidth: 35 },
+      5: { cellWidth: 50 },
+    },
+    didDrawPage: () => drawFooterMeta(ctx),
+  });
+
+  const afterTable =
+    ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y) + 30;
+
+  // Totals strip (qty)
+  const totalQty = order.cart_items.reduce((s, i) => s + i.quantity, 0);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text(`Total de peças: ${totalQty}`, margin, afterTable);
+
+  drawSignatureBlocks(ctx, afterTable + 40, ["E-commerce"]);
+
+  doc.save(
+    `controle_estoque_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
+  );
+}
+
+/* ---------------- PDF 2 — Confirmação de Pedido (valores) ---------------- */
+
+export async function downloadOrderGuidePdf(order: OrderForExport) {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 40;
+  const ctx: DrawCtx = { doc, pageWidth, pageHeight, margin };
+
+  const logo = await loadLogo();
+
+  drawHeader(
+    ctx,
+    logo,
+    "CONFIRMAÇÃO DE PEDIDO",
+    "Resumo Financeiro — Pedido Atacado",
+    `Pedido #${order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
+  );
+
+  let y = 110;
+
+  const sectionTitle = (title: string) => {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(220, 38, 38);
-    doc.text(title, margin, y);
+    doc.setFontSize(11);
+    doc.setTextColor(...RED);
+    doc.text(title.toUpperCase(), margin, y);
     y += 4;
-    doc.setDrawColor(220, 38, 38);
+    doc.setDrawColor(...RED);
+    doc.setLineWidth(0.8);
     doc.line(margin, y, pageWidth - margin, y);
     y += 14;
     doc.setTextColor(0);
-    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
   };
 
+  const labelCol = 90;
   const kv = (label: string, value: string) => {
     doc.setFont("helvetica", "bold");
     doc.text(`${label}:`, margin, y);
     doc.setFont("helvetica", "normal");
-    const valueLines = doc.splitTextToSize(value || "—", pageWidth - margin * 2 - 110);
-    doc.text(valueLines, margin + 110, y);
-    y += 14 * Math.max(1, valueLines.length);
+    const lines = doc.splitTextToSize(value || "—", pageWidth - margin * 2 - labelCol);
+    doc.text(lines, margin + labelCol, y);
+    y += 13 * Math.max(1, lines.length);
   };
 
-  section("Dados do Cliente");
+  // Two-column layout for short fields
+  sectionTitle("Dados do Cliente");
   kv("Nome", order.customer_name);
+  kv("CPF/CNPJ", order.customer_document || "—");
   kv("E-mail", order.customer_email);
   kv("WhatsApp", order.customer_whatsapp);
-  kv("CPF/CNPJ", order.customer_document || "—");
 
-  y += 8;
-  section("Endereço de Entrega");
+  y += 6;
+  sectionTitle("Endereço de Entrega");
   const addr = order.shipping_address || {};
   kv("CEP", addr.cep || "—");
   kv(
     "Logradouro",
     [addr.street, addr.number].filter(Boolean).join(", ") +
-      (addr.complement ? ` — ${addr.complement}` : "")
+      (addr.complement ? ` — ${addr.complement}` : "") || "—"
   );
   kv("Bairro", addr.neighborhood || "—");
   kv("Cidade/UF", [addr.city, addr.state].filter(Boolean).join(" / ") || "—");
 
-  y += 8;
-  section("Pagamento e Frete");
-  kv("Forma de pagamento", order.payment_method ? paymentLabels[order.payment_method] || order.payment_method : "—");
+  y += 6;
+  sectionTitle("Pagamento e Frete");
+  kv(
+    "Forma de pagamento",
+    order.payment_method ? paymentLabels[order.payment_method] || order.payment_method : "—"
+  );
   kv("Região de frete", order.shipping_region || "—");
   kv("Valor do frete", fmtMoney(order.shipping_cost ?? 0, order.currency_code));
 
-  y += 12;
-  section("Itens do Pedido");
+  y += 6;
+  sectionTitle("Resumo dos Itens");
 
   autoTable(doc, {
     startY: y,
@@ -150,70 +342,43 @@ export function downloadOrderGuidePdf(order: OrderForExport) {
       String(item.quantity),
       fmtMoney(parseFloat(item.price) * item.quantity, item.currencyCode),
     ]),
-    styles: { fontSize: 9, cellPadding: 4 },
-    headStyles: { fillColor: [30, 30, 30], textColor: 255 },
-    margin: { left: margin, right: margin },
+    styles: { fontSize: 9, cellPadding: 4, lineColor: [200, 200, 200], lineWidth: 0.3 },
+    headStyles: { fillColor: [30, 30, 30], textColor: 255, fontStyle: "bold" },
+    alternateRowStyles: { fillColor: [250, 250, 250] },
+    margin: { left: margin, right: margin, bottom: 200 },
     columnStyles: {
-      0: { cellWidth: 55 },
+      0: { cellWidth: 55, fontStyle: "bold" },
       1: { cellWidth: "auto" },
+      2: { halign: "center", cellWidth: 35 },
+      3: { cellWidth: 60 },
       4: { halign: "center", cellWidth: 35 },
-      5: { halign: "right", cellWidth: 65 },
+      5: { halign: "right", cellWidth: 75 },
     },
+    didDrawPage: () => drawFooterMeta(ctx),
   });
 
-  // Total
-  const endY = ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y) + 16;
+  // TOTAL block (own row, no overlap)
+  const afterTable =
+    ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y) + 14;
+  const totalBoxH = 32;
+  doc.setFillColor(...RED);
+  doc.rect(margin, afterTable, pageWidth - margin * 2, totalBoxH, "F");
+  doc.setTextColor(255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("TOTAL DO PEDIDO:", pageWidth - margin - 150, endY);
-  doc.setTextColor(220, 38, 38);
+  doc.text("TOTAL DO PEDIDO", margin + 14, afterTable + 21);
+  doc.setFontSize(14);
   doc.text(
     fmtMoney(order.total_amount, order.currency_code),
-    pageWidth - margin,
-    endY,
+    pageWidth - margin - 14,
+    afterTable + 22,
     { align: "right" }
   );
+  doc.setTextColor(0);
 
-  doc.save(`guia_pedido_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`);
-}
+  drawSignatureBlocks(ctx, afterTable + totalBoxH + 50, ["Marketing", "Diretoria"]);
 
-/** Excel report (estoque) — SKU, Produto, Tamanho, Cor, Qntd, Valor. */
-export function downloadOrderStockXlsx(order: OrderForExport) {
-  const rows = order.cart_items.map((item) => ({
-    SKU: item.sku || "",
-    Produto: item.title,
-    Tamanho:
-      pickOption(item, "Tamanho") || pickOption(item, "Tamanho Superior") || "",
-    Cor: pickOption(item, "Cor") || "",
-    Qntd: item.quantity,
-    Valor: parseFloat(item.price),
-  }));
-
-  const ws = XLSX.utils.json_to_sheet(rows, {
-    header: ["SKU", "Produto", "Tamanho", "Cor", "Qntd", "Valor"],
-  });
-
-  // Format currency on column F (Valor)
-  const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
-  for (let R = 1; R <= range.e.r; R++) {
-    const cell = ws[XLSX.utils.encode_cell({ r: R, c: 5 })];
-    if (cell) cell.z = '"R$" #,##0.00';
-  }
-
-  ws["!cols"] = [
-    { wch: 10 },
-    { wch: 45 },
-    { wch: 10 },
-    { wch: 14 },
-    { wch: 6 },
-    { wch: 12 },
-  ];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Controle de Estoque");
-
-  XLSX.writeFile(
-    wb,
-    `estoque_pedido_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.xlsx`
+  doc.save(
+    `pedido_${safeFilename(order.customer_name)}_${order.id.slice(0, 8)}.pdf`
   );
 }
