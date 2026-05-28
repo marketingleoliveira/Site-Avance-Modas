@@ -24,6 +24,7 @@ interface ShippingAddress {
 
 export interface OrderForExport {
   id: string;
+  order_number?: string | null;
   created_at: string;
   customer_name: string;
   customer_email: string;
@@ -100,14 +101,16 @@ interface DrawCtx {
 
 function drawHeader(ctx: DrawCtx, logo: typeof cachedLogo, title: string, subtitle: string, orderRef: string) {
   const { doc, pageWidth, margin } = ctx;
+  const bandH = 96;
   // Red band
   doc.setFillColor(...RED);
-  doc.rect(0, 0, pageWidth, 80, "F");
+  doc.rect(0, 0, pageWidth, bandH, "F");
 
   // Logo on white pill (left)
+  const logoBoxW = 90;
+  const logoBoxH = 56;
+  const textX = margin + (logo ? logoBoxW + 20 : 0);
   if (logo) {
-    const logoBoxW = 90;
-    const logoBoxH = 56;
     const ratio = logo.h / logo.w;
     let drawW = logoBoxW;
     let drawH = drawW * ratio;
@@ -116,26 +119,40 @@ function drawHeader(ctx: DrawCtx, logo: typeof cachedLogo, title: string, subtit
       drawW = drawH / ratio;
     }
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(margin, 12, logoBoxW, logoBoxH, 4, 4, "F");
+    doc.roundedRect(margin, 20, logoBoxW, logoBoxH, 4, 4, "F");
     doc.addImage(
       logo.dataUrl,
       "PNG",
       margin + (logoBoxW - drawW) / 2,
-      12 + (logoBoxH - drawH) / 2,
+      20 + (logoBoxH - drawH) / 2,
       drawW,
       drawH
     );
   }
 
+  // Right column reserved for order ref so subtitle never collides
+  const rightColW = 170;
+  const textMaxW = pageWidth - textX - margin - rightColW - 10;
+
   doc.setTextColor(255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text(title, margin + (logo ? 110 : 0), 38);
+  doc.setFontSize(16);
+  const titleLines = doc.splitTextToSize(title, textMaxW);
+  doc.text(titleLines[0], textX, 40);
+
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(subtitle, margin + (logo ? 110 : 0), 56);
   doc.setFontSize(9);
-  doc.text(orderRef, pageWidth - margin, 56, { align: "right" });
+  const subLines = doc.splitTextToSize(subtitle, textMaxW);
+  doc.text(subLines[0], textX, 58);
+
+  // Order ref stacked on the right, no overlap
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text(orderRef.split("•")[0].trim(), pageWidth - margin, 40, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  const rest = orderRef.split("•").slice(1).join("•").trim();
+  if (rest) doc.text(rest, pageWidth - margin, 56, { align: "right" });
   doc.setTextColor(0);
 }
 
