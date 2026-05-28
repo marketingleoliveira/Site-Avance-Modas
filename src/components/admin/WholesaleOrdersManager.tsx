@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2, Trash2 } from "lucide-react";
+import { Package, Eye, RefreshCw, Loader2, Trash2, FileText, FileSpreadsheet } from "lucide-react";
+import { downloadOrderGuidePdf, downloadOrderStockXlsx } from "@/lib/wholesale-order-exports";
 
 interface CartItemData {
   title: string;
@@ -32,6 +33,11 @@ interface WholesaleOrder {
   status: string;
   admin_notes: string | null;
   currency_code: string;
+  customer_document?: string | null;
+  payment_method?: string | null;
+  shipping_address?: Record<string, unknown> | null;
+  shipping_cost?: number | null;
+  shipping_region?: string | null;
 }
 
 const statusLabels: Record<string, string> = {
