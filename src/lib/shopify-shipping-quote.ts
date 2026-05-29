@@ -194,17 +194,14 @@ export async function getRealShippingQuote(
 
   const shopifyQuote = await fetchShopifyDeliveryQuote(matched, address);
 
-  // Fallback estimado para itens não mapeados (peso default).
-  let estimatedExtra = 0;
-  let estimatedWeightKg = 0;
+  // IMPORTANT: não somamos frete estimado extra para itens não mapeados.
+  // A cotação Shopify (mesma usada no checkout Varejo) já considera peso/CEP
+  // e somar um valor estimado por cima inflava o frete do atacado em relação
+  // ao varejo equivalente.
   if (unmatched.length > 0) {
-    for (const it of unmatched) {
-      const kg =
-        toKilograms(it.weight, it.weightUnit) || DEFAULT_ITEM_WEIGHT_KG;
-      estimatedWeightKg += kg * it.quantity;
-    }
-    const estQuote = calculateShipping(address.cep, estimatedWeightKg);
-    estimatedExtra = estQuote?.cost ?? 0;
+    console.warn(
+      `[shipping-quote] ${unmatched.length} item(ns) atacado sem equivalente Varejo — usando cotação Shopify dos ${matched.length} mapeados.`
+    );
   }
 
   if (!shopifyQuote && matched.length === 0) {
@@ -236,7 +233,7 @@ export async function getRealShippingQuote(
 
   return {
     region: "Cotação Loggi (Shopify)",
-    cost: Math.round((shopifyQuote.cost + estimatedExtra) * 100) / 100,
+    cost: Math.round(shopifyQuote.cost * 100) / 100,
     estimatedDays: "Conforme transportadora",
     weightKg: Math.round(totalWeightKg * 10) / 10,
     source,
