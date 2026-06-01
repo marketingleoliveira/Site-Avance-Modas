@@ -359,10 +359,10 @@ const WholesaleOrdersManager = () => {
                   Salvar Alterações
                 </Button>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
+                  <Button variant="outline" onClick={() => downloadOrderGuidePdf({ ...selectedOrder, cart_items: editedItems, total_amount: editedTotal + (selectedOrder.shipping_cost || 0) } as never)}>
                     <FileText className="w-4 h-4 mr-2" /> Gerar Guia
                   </Button>
-                  <Button variant="outline" onClick={() => downloadOrderStockPdf(selectedOrder as never)}>
+                  <Button variant="outline" onClick={() => downloadOrderStockPdf({ ...selectedOrder, cart_items: editedItems, total_amount: editedTotal + (selectedOrder.shipping_cost || 0) } as never)}>
                     <ClipboardCheck className="w-4 h-4 mr-2" /> Gerar Estoque
                   </Button>
                 </div>
