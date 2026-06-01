@@ -214,7 +214,7 @@ export async function downloadOrderStockPdf(order: OrderForExport) {
   drawHeader(
     ctx,
     logo,
-    "CONTROLE DE ESTOQUE",
+    "GUIA DE PRODUTOS ATACADO",
     "Check de disponibilidade — Pedido Atacado",
     `Pedido #${order.order_number || order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
@@ -285,7 +285,7 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   drawHeader(
     ctx,
     logo,
-    "GUIA DE SOLICITAÇÃO DE PEDIDO",
+    "GUIA DE SOLICITAÇÃO ATACADO",
     "Dados do cliente, pagamento e frete — Pedido Atacado",
     `Pedido #${order.order_number || order.id.slice(0, 8).toUpperCase()}  •  ${fmtDate(order.created_at)}`
   );
