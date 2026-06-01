@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck } from "lucide-react";
+import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck, Trash2, Plus, Minus } from "lucide-react";
 import { downloadOrderGuidePdf, downloadOrderStockPdf } from "@/lib/wholesale-order-exports";
+import { Input } from "@/components/ui/input";
 
 interface CartItemData {
   title: string;
@@ -62,6 +63,7 @@ const WholesaleOrdersManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [editedItems, setEditedItems] = useState<CartItemData[]>([]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -89,17 +91,43 @@ const WholesaleOrdersManager = () => {
     setSelectedOrder(order);
     setAdminNotes(order.admin_notes || "");
     setNewStatus(order.status);
+    setEditedItems(JSON.parse(JSON.stringify(order.cart_items || [])));
+  };
+
+  const editedTotal = editedItems.reduce(
+    (sum, item) => sum + parseFloat(item.price || "0") * (item.quantity || 0),
+    0
+  );
+
+  const updateItemQty = (idx: number, qty: number) => {
+    setEditedItems((prev) =>
+      prev.map((it, i) => (i === idx ? { ...it, quantity: Math.max(1, Math.floor(qty || 1)) } : it))
+    );
+  };
+
+  const removeItem = (idx: number) => {
+    setEditedItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleUpdateOrder = async () => {
     if (!selectedOrder) return;
+    if (editedItems.length === 0) {
+      toast.error("O pedido precisa ter ao menos 1 item");
+      return;
+    }
     setSaving(true);
     try {
+      const newTotal = editedItems.reduce(
+        (sum, item) => sum + parseFloat(item.price || "0") * (item.quantity || 0),
+        0
+      ) + (selectedOrder.shipping_cost || 0);
       const { error } = await supabase
         .from("wholesale_orders")
         .update({
           status: newStatus,
           admin_notes: adminNotes.trim() || null,
+          cart_items: editedItems as never,
+          total_amount: newTotal,
         })
         .eq("id", selectedOrder.id);
 
@@ -244,18 +272,36 @@ const WholesaleOrdersManager = () => {
 
               {/* Cart items */}
               <div>
-                <h4 className="font-semibold mb-3">Itens do Pedido</h4>
+                <h4 className="font-semibold mb-3">Itens do Pedido (editável)</h4>
                 <div className="space-y-2">
-                  {(selectedOrder.cart_items as CartItemData[]).map((item, i) => (
+                  {editedItems.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-secondary/30 rounded-lg border border-border/50">
                       {item.imageUrl && (
                         <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded" />
                       )}
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.selectedOptions?.map(o => o.value).join(" • ")} • Qtd: {item.quantity}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {item.selectedOptions?.map(o => o.value).join(" • ")} • {formatPrice(parseFloat(item.price), item.currencyCode)} un.
                         </p>
+                        <div className="flex items-center gap-1 mt-2">
+                          <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => updateItemQty(i, item.quantity - 1)}>
+                            <Minus className="w-3 h-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min={1}
+                            value={item.quantity}
+                            onChange={(e) => updateItemQty(i, parseInt(e.target.value, 10))}
+                            className="h-7 w-16 text-center"
+                          />
+                          <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => updateItemQty(i, item.quantity + 1)}>
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive ml-1" onClick={() => removeItem(i)}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
                       <p className="font-semibold text-sm">
                         {formatPrice(parseFloat(item.price) * item.quantity, item.currencyCode)}
@@ -263,11 +309,23 @@ const WholesaleOrdersManager = () => {
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between items-center mt-3 pt-3 border-t">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold text-primary">
-                    {formatPrice(selectedOrder.total_amount, selectedOrder.currency_code)}
-                  </span>
+                <div className="mt-3 pt-3 border-t space-y-1">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatPrice(editedTotal, selectedOrder.currency_code)}</span>
+                  </div>
+                  {!!selectedOrder.shipping_cost && (
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Frete</span>
+                      <span>{formatPrice(selectedOrder.shipping_cost, selectedOrder.currency_code)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="font-semibold">Total</span>
+                    <span className="text-xl font-bold text-primary">
+                      {formatPrice(editedTotal + (selectedOrder.shipping_cost || 0), selectedOrder.currency_code)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -301,10 +359,10 @@ const WholesaleOrdersManager = () => {
                   Salvar Alterações
                 </Button>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" onClick={() => downloadOrderGuidePdf(selectedOrder as never)}>
+                  <Button variant="outline" onClick={() => downloadOrderGuidePdf({ ...selectedOrder, cart_items: editedItems, total_amount: editedTotal + (selectedOrder.shipping_cost || 0) } as never)}>
                     <FileText className="w-4 h-4 mr-2" /> Gerar Guia
                   </Button>
-                  <Button variant="outline" onClick={() => downloadOrderStockPdf(selectedOrder as never)}>
+                  <Button variant="outline" onClick={() => downloadOrderStockPdf({ ...selectedOrder, cart_items: editedItems, total_amount: editedTotal + (selectedOrder.shipping_cost || 0) } as never)}>
                     <ClipboardCheck className="w-4 h-4 mr-2" /> Gerar Estoque
                   </Button>
                 </div>
