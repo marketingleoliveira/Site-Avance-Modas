@@ -366,7 +366,7 @@ export async function downloadOrderGuidePdf(order: OrderForExport) {
   );
   doc.setTextColor(0);
 
-  drawSignatureBlocks(ctx, afterTable + totalBoxH + 50, ["Marketing", "Diretoria"]);
+  drawSignatureBlocks(ctx, afterTable + totalBoxH + 50, ["Marketing", "Financeiro", "Diretoria"]);
 
   doc.save(
     `guia_solicitacao_${safeFilename(order.customer_name)}_${order.order_number || order.id.slice(0, 8)}.pdf`
