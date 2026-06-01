@@ -291,6 +291,9 @@ const WholesaleOrdersManager = () => {
               {/* Cart items */}
               <div>
                 <h4 className="font-semibold mb-3">Itens do Pedido (editável)</h4>
+                <div className="mb-3">
+                  <WholesaleOrderProductPicker onAdd={addPickedItem} />
+                </div>
                 <div className="space-y-2">
                   {editedItems.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-secondary/30 rounded-lg border border-border/50">
