@@ -272,18 +272,36 @@ const WholesaleOrdersManager = () => {
 
               {/* Cart items */}
               <div>
-                <h4 className="font-semibold mb-3">Itens do Pedido</h4>
+                <h4 className="font-semibold mb-3">Itens do Pedido (editável)</h4>
                 <div className="space-y-2">
-                  {(selectedOrder.cart_items as CartItemData[]).map((item, i) => (
+                  {editedItems.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-secondary/30 rounded-lg border border-border/50">
                       {item.imageUrl && (
                         <img src={item.imageUrl} alt={item.title} className="w-12 h-12 object-cover rounded" />
                       )}
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.selectedOptions?.map(o => o.value).join(" • ")} • Qtd: {item.quantity}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {item.selectedOptions?.map(o => o.value).join(" • ")} • {formatPrice(parseFloat(item.price), item.currencyCode)} un.
                         </p>
+                        <div className="flex items-center gap-1 mt-2">
+                          <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => updateItemQty(i, item.quantity - 1)}>
+                            <Minus className="w-3 h-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min={1}
+                            value={item.quantity}
+                            onChange={(e) => updateItemQty(i, parseInt(e.target.value, 10))}
+                            className="h-7 w-16 text-center"
+                          />
+                          <Button type="button" variant="outline" size="icon" className="h-7 w-7" onClick={() => updateItemQty(i, item.quantity + 1)}>
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive ml-1" onClick={() => removeItem(i)}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
                       <p className="font-semibold text-sm">
                         {formatPrice(parseFloat(item.price) * item.quantity, item.currencyCode)}
@@ -291,11 +309,23 @@ const WholesaleOrdersManager = () => {
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-between items-center mt-3 pt-3 border-t">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold text-primary">
-                    {formatPrice(selectedOrder.total_amount, selectedOrder.currency_code)}
-                  </span>
+                <div className="mt-3 pt-3 border-t space-y-1">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>{formatPrice(editedTotal, selectedOrder.currency_code)}</span>
+                  </div>
+                  {!!selectedOrder.shipping_cost && (
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Frete</span>
+                      <span>{formatPrice(selectedOrder.shipping_cost, selectedOrder.currency_code)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="font-semibold">Total</span>
+                    <span className="text-xl font-bold text-primary">
+                      {formatPrice(editedTotal + (selectedOrder.shipping_cost || 0), selectedOrder.currency_code)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
