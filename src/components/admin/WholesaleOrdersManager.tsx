@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck } from "lucide-react";
+import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck, Trash2, Plus, Minus } from "lucide-react";
 import { downloadOrderGuidePdf, downloadOrderStockPdf } from "@/lib/wholesale-order-exports";
+import { Input } from "@/components/ui/input";
 
 interface CartItemData {
   title: string;
@@ -62,6 +63,7 @@ const WholesaleOrdersManager = () => {
   const [newStatus, setNewStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [editedItems, setEditedItems] = useState<CartItemData[]>([]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -89,17 +91,43 @@ const WholesaleOrdersManager = () => {
     setSelectedOrder(order);
     setAdminNotes(order.admin_notes || "");
     setNewStatus(order.status);
+    setEditedItems(JSON.parse(JSON.stringify(order.cart_items || [])));
+  };
+
+  const editedTotal = editedItems.reduce(
+    (sum, item) => sum + parseFloat(item.price || "0") * (item.quantity || 0),
+    0
+  );
+
+  const updateItemQty = (idx: number, qty: number) => {
+    setEditedItems((prev) =>
+      prev.map((it, i) => (i === idx ? { ...it, quantity: Math.max(1, Math.floor(qty || 1)) } : it))
+    );
+  };
+
+  const removeItem = (idx: number) => {
+    setEditedItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleUpdateOrder = async () => {
     if (!selectedOrder) return;
+    if (editedItems.length === 0) {
+      toast.error("O pedido precisa ter ao menos 1 item");
+      return;
+    }
     setSaving(true);
     try {
+      const newTotal = editedItems.reduce(
+        (sum, item) => sum + parseFloat(item.price || "0") * (item.quantity || 0),
+        0
+      ) + (selectedOrder.shipping_cost || 0);
       const { error } = await supabase
         .from("wholesale_orders")
         .update({
           status: newStatus,
           admin_notes: adminNotes.trim() || null,
+          cart_items: editedItems as never,
+          total_amount: newTotal,
         })
         .eq("id", selectedOrder.id);
 
