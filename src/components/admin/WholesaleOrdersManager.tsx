@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Package, Eye, RefreshCw, Loader2, FileText, ClipboardCheck, Trash2, Plus, Minus } from "lucide-react";
 import { downloadOrderGuidePdf, downloadOrderStockPdf } from "@/lib/wholesale-order-exports";
 import { Input } from "@/components/ui/input";
+import WholesaleOrderProductPicker, { type PickerCartItem } from "./WholesaleOrderProductPicker";
 
 interface CartItemData {
   title: string;
@@ -107,6 +108,23 @@ const WholesaleOrdersManager = () => {
 
   const removeItem = (idx: number) => {
     setEditedItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const addPickedItem = (item: PickerCartItem) => {
+    setEditedItems((prev) => {
+      // merge if same variant already in cart
+      const key = item.variantId || `${item.title}__${item.variantTitle}`;
+      const idx = prev.findIndex((p) => {
+        const pk = (p as unknown as { variantId?: string }).variantId || `${p.title}__${p.variantTitle}`;
+        return pk === key;
+      });
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = { ...copy[idx], quantity: copy[idx].quantity + item.quantity };
+        return copy;
+      }
+      return [...prev, item as unknown as CartItemData];
+    });
   };
 
   const handleUpdateOrder = async () => {
@@ -273,6 +291,9 @@ const WholesaleOrdersManager = () => {
               {/* Cart items */}
               <div>
                 <h4 className="font-semibold mb-3">Itens do Pedido (editável)</h4>
+                <div className="mb-3">
+                  <WholesaleOrderProductPicker onAdd={addPickedItem} />
+                </div>
                 <div className="space-y-2">
                   {editedItems.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-secondary/30 rounded-lg border border-border/50">
