@@ -1594,7 +1594,11 @@ const AdminPanel = () => {
                         }`}
                       >
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{subscriber.email}</p>
+                          <p className="font-medium text-sm">
+                            {subscriber.whatsapp
+                              ? subscriber.whatsapp.replace(/^(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3')
+                              : subscriber.email || '—'}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             Inscrito em {new Date(subscriber.subscribed_at).toLocaleDateString('pt-BR', {
                               day: '2-digit',
