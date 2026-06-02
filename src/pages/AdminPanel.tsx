@@ -30,7 +30,8 @@ import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
   id: string;
-  email: string;
+  email: string | null;
+  whatsapp: string | null;
   subscribed_at: string;
   source: string;
   is_active: boolean;
@@ -480,9 +481,10 @@ const AdminPanel = () => {
     }
 
     const csvContent = [
-      ['Email', 'Data de Inscrição', 'Fonte', 'Ativo'],
+      ['WhatsApp', 'Email', 'Data de Inscrição', 'Fonte', 'Ativo'],
       ...subscribers.map(s => [
-        s.email,
+        s.whatsapp || '',
+        s.email || '',
         new Date(s.subscribed_at).toLocaleDateString('pt-BR'),
         s.source,
         s.is_active ? 'Sim' : 'Não'
@@ -1592,7 +1594,11 @@ const AdminPanel = () => {
                         }`}
                       >
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{subscriber.email}</p>
+                          <p className="font-medium text-sm">
+                            {subscriber.whatsapp
+                              ? subscriber.whatsapp.replace(/^(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3')
+                              : subscriber.email || '—'}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             Inscrito em {new Date(subscriber.subscribed_at).toLocaleDateString('pt-BR', {
                               day: '2-digit',
