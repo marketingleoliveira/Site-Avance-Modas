@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
-import { X, Mail, Sparkles } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { z } from "zod";
 
-const emailSchema = z.string().trim().email({ message: "E-mail inválido" }).max(255);
+const formatWhatsapp = (value: string) => {
+  const d = value.replace(/\D/g, "").slice(0, 11);
+  if (d.length <= 2) return d.length ? `(${d}` : "";
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+};
 
 interface NewsletterPopupProps {
   delayMs?: number;
@@ -15,7 +20,7 @@ interface NewsletterPopupProps {
 
 const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,10 +47,9 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
     e.preventDefault();
     setError("");
 
-    // Validate email
-    const result = emailSchema.safeParse(email);
-    if (!result.success) {
-      setError(result.error.errors[0].message);
+    const digits = whatsapp.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) {
+      setError("Informe um WhatsApp válido com DDD");
       return;
     }
 
@@ -54,15 +58,15 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
     try {
       const { error: dbError } = await supabase
         .from("newsletter_subscribers")
-        .insert({ 
-          email: result.data,
+        .insert({
+          whatsapp: digits,
           source: "popup_varejo"
         });
 
       if (dbError) {
         if (dbError.code === "23505") {
           toast.info("Você já está inscrito!", {
-            description: "Este e-mail já está cadastrado na nossa lista.",
+            description: "Este WhatsApp já está cadastrado na nossa lista.",
           });
           localStorage.setItem("newsletter_subscribed", "true");
           setOpen(false);
@@ -110,7 +114,7 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
             <div className="flex justify-center mb-4">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center">
-                  <Mail className="w-8 h-8 text-primary-foreground" />
+                  <MessageCircle className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-accent animate-pulse" />
               </div>
@@ -130,11 +134,12 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <Input
-                  type="email"
-                  placeholder="Seu melhor e-mail"
-                  value={email}
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="Seu WhatsApp com DDD"
+                  value={whatsapp}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setWhatsapp(formatWhatsapp(e.target.value));
                     setError("");
                   }}
                   className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-accent focus:ring-accent h-12"
