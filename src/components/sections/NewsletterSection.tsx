@@ -5,16 +5,24 @@ import { ArrowRight, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+const formatWhatsapp = (value: string) => {
+  const d = value.replace(/\D/g, "").slice(0, 11);
+  if (d.length <= 2) return d.length ? `(${d}` : "";
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+};
+
 const NewsletterSection = () => {
-  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      toast.error("Por favor, insira um e-mail válido");
+
+    const digits = whatsapp.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) {
+      toast.error("Por favor, insira um WhatsApp válido com DDD");
       return;
     }
 
@@ -23,14 +31,14 @@ const NewsletterSection = () => {
     try {
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert({ 
-          email: email.toLowerCase().trim(),
+        .insert({
+          whatsapp: digits,
           source: 'website'
         });
 
       if (error) {
         if (error.code === '23505') {
-          toast.info("Este e-mail já está cadastrado!");
+          toast.info("Este WhatsApp já está cadastrado!");
         } else {
           throw error;
         }
@@ -38,8 +46,8 @@ const NewsletterSection = () => {
         setSubscribed(true);
         toast.success("Cadastro realizado com sucesso! 🎉");
       }
-      
-      setEmail("");
+
+      setWhatsapp("");
     } catch (error) {
       console.error('Error subscribing:', error);
       toast.error("Erro ao cadastrar. Tente novamente.");
@@ -67,10 +75,11 @@ const NewsletterSection = () => {
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 sm:gap-2 max-w-md mx-auto">
               <Input
-                type="email"
-                placeholder="Seu e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="tel"
+                inputMode="numeric"
+                placeholder="Seu WhatsApp"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(formatWhatsapp(e.target.value))}
                 className="flex-1 h-10 sm:h-11 bg-background border-border text-sm"
                 required
                 disabled={loading}
