@@ -75,8 +75,6 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
               alt={slide.promo_subtitle || `Slide ${index + 1}`}
               className="w-full h-full object-cover object-top"
             />
-            {/* Subtle gradient for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-l from-black/40 via-black/10 to-transparent" />
           </div>
         ))}
       </div>
