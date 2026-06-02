@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { getSiteSetting, updateSiteSetting, uploadSiteImage, HeroSettings, StoreSelectorSettings, FeaturesSettings, ContactSettings, LayoutSettings, ProductSectionsSettings, ProductSection, InstagramSettings, AtacadoSettings, VideosSettings, PromoBannerSettings, AnnouncementSettings, CountdownBannerSettings, createAdminUser } from "@/lib/site-settings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard, HeadphonesIcon } from "lucide-react";
+import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard, HeadphonesIcon, MessageCircle } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
@@ -219,7 +219,7 @@ const AdminPanel = () => {
       items: [
         { id: "sac", label: "SAC - Atendimento", icon: <MessageSquare className="w-4 h-4" />, badge: pendingSacCount > 0 ? String(pendingSacCount) : undefined, badgeType: 'warning' as const },
         { id: "support-tickets", label: "Suporte em Tempo Real", icon: <HeadphonesIcon className="w-4 h-4" />, badge: openSupportCount > 0 ? String(openSupportCount) : undefined, badgeType: 'warning' as const },
-        { id: "newsletter", label: "Newsletter", icon: <Mail className="w-4 h-4" />, badge: newSubscribersCount > 0 ? `+${newSubscribersCount}` : undefined, badgeType: 'info' as const },
+        { id: "newsletter", label: "Contatos WhatsApp", icon: <MessageCircle className="w-4 h-4" />, badge: newSubscribersCount > 0 ? `+${newSubscribersCount}` : undefined, badgeType: 'info' as const },
         { id: "admins", label: "Administradores", icon: <Shield className="w-4 h-4" /> },
         { id: "docs", label: "Documentação", icon: <BookOpen className="w-4 h-4" /> },
       ]
@@ -1551,10 +1551,10 @@ const AdminPanel = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
-                    Inscritos na Newsletter
+                    Contatos WhatsApp
                   </CardTitle>
                   <CardDescription>
-                    Gerencie os e-mails cadastrados na newsletter
+                    Gerencie os contatos de WhatsApp capturados no site
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -1575,14 +1575,14 @@ const AdminPanel = () => {
                 </div>
               ) : subscribers.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
-                  <Mail className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Nenhum inscrito ainda</p>
-                  <p className="text-sm mt-1">Os e-mails cadastrados aparecerão aqui</p>
+                  <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhum contato ainda</p>
+                  <p className="text-sm mt-1">Os números de WhatsApp capturados aparecerão aqui</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm text-muted-foreground border-b pb-2">
-                    <span>Total: <strong className="text-foreground">{subscribers.length}</strong> inscritos</span>
+                    <span>Total: <strong className="text-foreground">{subscribers.length}</strong> contatos</span>
                     <span>Ativos: <strong className="text-green-600">{subscribers.filter(s => s.is_active).length}</strong></span>
                   </div>
                   <div className="max-h-[400px] overflow-y-auto space-y-2">
@@ -1600,7 +1600,7 @@ const AdminPanel = () => {
                               : subscriber.email || '—'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Inscrito em {new Date(subscriber.subscribed_at).toLocaleDateString('pt-BR', {
+                            Capturado em {new Date(subscriber.subscribed_at).toLocaleDateString('pt-BR', {
                               day: '2-digit',
                               month: 'short',
                               year: 'numeric',
