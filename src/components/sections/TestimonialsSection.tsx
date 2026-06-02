@@ -56,9 +56,8 @@ const TestimonialsSection = () => {
           </div>
         ) : (
           <div className="testimonials-marquee group/marquee relative overflow-hidden">
-            {/* Edge fades */}
+            {/* Edge fade - left only */}
             <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-secondary/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-secondary/80 to-transparent z-10" />
 
             <div className="testimonials-track flex gap-4 sm:gap-6 w-max py-6">
               {loopItems.map((t, idx) => (
