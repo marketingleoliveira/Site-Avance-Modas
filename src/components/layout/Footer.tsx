@@ -133,7 +133,7 @@ const SecurityBadgeImage = ({
 }) => (
   <div
     className={cn(
-      "flex items-center justify-center transition-all duration-500 hover:scale-110 drop-shadow-[0_2px_8px_rgba(255,255,255,0.25)]",
+      "flex items-center justify-center px-3 py-2 rounded-xl bg-white shadow-lg ring-1 ring-black/5 transition-all duration-500 hover:scale-110 hover:shadow-xl",
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
     )}
     style={{ transitionDelay: `${delay}ms` }}
@@ -144,7 +144,7 @@ const SecurityBadgeImage = ({
       loading="lazy"
       width={1024}
       height={1024}
-      className={cn("h-16 sm:h-20 w-auto object-contain", className)}
+      className={cn("h-14 sm:h-16 w-auto object-contain", className)}
     />
   </div>
 );
