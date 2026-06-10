@@ -45,7 +45,7 @@ const PixLogo = ({ className }: { className?: string }) => (
  * - "De: R$ X" riscado (quando há preço original) + "Economize N%"
  * - "R$ Y" em destaque (preço cheio)
  * - "ou R$ Z no Pix [logo Pix] (3% off)"
- * - "até Nx de R$ W sem juros" (até 4x, parcela mínima R$10)
+ * - "até Nx de R$ W sem juros" (até 3x, parcela mínima R$10)
  */
 const PriceDisplay = ({
   amount,
@@ -72,8 +72,8 @@ const PriceDisplay = ({
     : 0;
   const pixPrice = price * 0.97; // 3% off no Pix
 
-  // Até 4x sem juros, parcela mínima R$10
-  const maxInstallments = 4;
+  // Até 3x sem juros, parcela mínima R$10
+  const maxInstallments = 3;
   const minInstallment = 10;
   let installments = maxInstallments;
   while (installments > 1 && price / installments < minInstallment) {
