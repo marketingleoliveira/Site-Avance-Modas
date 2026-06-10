@@ -22,7 +22,7 @@ const defaultSettings: AnnouncementSettings = {
   messages: [
     "FRETE GRÁTIS ACIMA DE R$299",
     "GRADE ABERTA - QUALQUER QUANTIDADE",
-    "ATÉ 6X SEM JUROS"
+    "ATÉ 3X SEM JUROS"
   ],
   interval: 4000
 };
