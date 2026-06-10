@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Package, Shield, Lock, BadgeCheck } from "lucide-react";
+import { Mail, Phone, MapPin, Package } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
+import badgeSsl from "@/assets/badge-ssl.png";
+import badgeGoogleSafe from "@/assets/badge-google-safe.png";
+import badgeReclameAqui from "@/assets/badge-reclameaqui.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
 import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
@@ -114,27 +117,35 @@ const BoletoIcon = () => (
   </svg>
 );
 
-// Security badges
-const SecurityBadge = ({
-  icon: Icon,
-  label,
+// Security badge image
+const SecurityBadgeImage = ({
+  src,
+  alt,
   delay,
   isVisible,
+  className,
 }: {
-  icon: React.ElementType;
-  label: string;
+  src: string;
+  alt: string;
   delay: number;
   isVisible: boolean;
+  className?: string;
 }) => (
   <div
     className={cn(
-      "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 transition-all duration-500 hover:bg-primary-foreground/20 hover:border-primary-foreground/40 hover:scale-105 group",
+      "flex items-center justify-center p-2 rounded-lg bg-white/95 backdrop-blur-sm border border-primary-foreground/10 shadow-sm transition-all duration-500 hover:bg-white hover:scale-105 hover:shadow-md",
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
     )}
     style={{ transitionDelay: `${delay}ms` }}
   >
-    <Icon className="w-3.5 h-3.5 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
-    <span className="text-[9px] sm:text-[10px] font-medium text-primary-foreground/90 whitespace-nowrap">{label}</span>
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      width={1024}
+      height={1024}
+      className={cn("h-10 sm:h-12 w-auto object-contain", className)}
+    />
   </div>
 );
 
@@ -247,10 +258,10 @@ const Footer = () => {
                 <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/50 font-medium">
                   Compra Segura
                 </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <SecurityBadge icon={Shield} label="Site Protegido" delay={700} isVisible={footerVisible} />
-                  <SecurityBadge icon={Lock} label="SSL Secure" delay={800} isVisible={footerVisible} />
-                  <SecurityBadge icon={BadgeCheck} label="Loja Verificada" delay={900} isVisible={footerVisible} />
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <SecurityBadgeImage src={badgeSsl} alt="Site Seguro SSL 256 Bits" delay={700} isVisible={footerVisible} />
+                  <SecurityBadgeImage src={badgeGoogleSafe} alt="Google Safe Browsing" delay={800} isVisible={footerVisible} />
+                  <SecurityBadgeImage src={badgeReclameAqui} alt="ReclameAqui - Loja Verificada" delay={900} isVisible={footerVisible} />
                 </div>
               </div>
             </AnimatedSection>
