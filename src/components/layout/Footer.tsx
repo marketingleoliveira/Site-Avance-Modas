@@ -4,7 +4,6 @@ import { Mail, Phone, MapPin, Package } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import badgeSsl from "@/assets/badge-ssl.png";
 import badgeGoogleSafe from "@/assets/badge-google-safe.png";
-import badgeReclameAqui from "@/assets/badge-reclameaqui.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
 import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
@@ -258,10 +257,9 @@ const Footer = () => {
                 <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/50 font-medium">
                   Compra Segura
                 </p>
-                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
                   <SecurityBadgeImage src={badgeSsl} alt="Site Seguro SSL 256 Bits" delay={700} isVisible={footerVisible} />
                   <SecurityBadgeImage src={badgeGoogleSafe} alt="Google Safe Browsing" delay={800} isVisible={footerVisible} />
-                  <SecurityBadgeImage src={badgeReclameAqui} alt="ReclameAqui - Loja Verificada" delay={900} isVisible={footerVisible} />
                 </div>
               </div>
             </AnimatedSection>
