@@ -617,6 +617,27 @@ const AdminPanel = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-4 pb-6 border-b">
+                <Label className="text-base font-semibold">Banner do Topo (Header)</Label>
+                <p className="text-sm text-muted-foreground">
+                  Imagem horizontal exibida no topo da página de entrada. Recomendado: 1920x640px.
+                </p>
+                {storeSelector?.header_banner_image && (
+                  <img
+                    src={storeSelector.header_banner_image}
+                    alt="Banner do topo"
+                    className="w-full max-h-56 object-cover rounded-lg border"
+                  />
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleStoreSelectorImageUpload(file, 'header_banner_image');
+                  }}
+                />
+              </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <Label>Imagem Atacado</Label>

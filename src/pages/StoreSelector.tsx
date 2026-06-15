@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import logoAvance from "@/assets/logo-avance.png";
 import { useStoreContext } from "@/stores/storeContextStore";
-import { ArrowRight, ShoppingBag, Store, Gem, Heart, Star, Truck, ShieldCheck, Repeat, Headphones, Sparkles } from "lucide-react";
+import { ArrowRight, ShoppingBag, Store, Truck, ShieldCheck, Repeat, Headphones } from "lucide-react";
+import defaultBanner from "@/assets/store-selector-banner.jpg";
+import { useStoreSelectorSettings } from "@/hooks/useSiteSettings";
 
 const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
+  const { settings } = useStoreSelectorSettings();
+  const bannerImage = settings?.header_banner_image || defaultBanner;
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-[#fafafa]">
@@ -40,43 +43,15 @@ const StoreSelector = () => {
 
       <div className="relative z-10 w-full max-w-3xl mx-auto">
         <div className="w-full">
-        {/* Logo & Title */}
-        <div className="text-center mb-10 animate-fade-in">
+        {/* Header Banner */}
+        <div className="mb-10 animate-fade-in rounded-3xl overflow-hidden shadow-[0_10px_40px_-15px_hsl(0_0%_0%/0.15)] border border-border/40 bg-white">
           <img
-            src={logoAvance}
-            alt="Avance Modas"
-            className="h-20 sm:h-24 mx-auto mb-4 object-contain"
+            src={bannerImage}
+            alt="Avance Modas — Moda Fitness Premium"
+            className="w-full h-auto object-cover"
+            width={1920}
+            height={640}
           />
-          {/* Premium badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/40 bg-white/80 backdrop-blur-sm mb-5 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-accent" />
-            <span className="text-[11px] font-bold tracking-[0.2em] text-accent uppercase">Moda Fitness Premium</span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2">
-            Avance <span className="text-accent">Modas</span>
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base mt-3 tracking-wide">
-            Moda fitness que transforma seu estilo ✨
-          </p>
-
-          {/* Feature pills */}
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-8">
-            {[
-              { Icon: Gem, title: "QUALIDADE", desc: "Produtos premium" },
-              { Icon: Heart, title: "CONFORTO", desc: "Para o seu dia a dia" },
-              { Icon: Star, title: "ESTILO", desc: "Looks que inspiram" },
-            ].map(({ Icon, title, desc }) => (
-              <div key={title} className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-white shadow-sm border border-border/60 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-accent" />
-                </div>
-                <div className="text-left">
-                  <p className="text-[11px] font-bold tracking-wider text-foreground leading-tight">{title}</p>
-                  <p className="text-[11px] text-muted-foreground leading-tight">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Cards */}
