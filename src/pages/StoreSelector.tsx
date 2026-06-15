@@ -12,18 +12,18 @@ const StoreSelector = () => {
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center bg-[#fafafa]">
       {/* Full-width Header Banner (1920x500) */}
-      <div className="relative z-10 w-full animate-fade-in">
+      <div className="relative z-10 w-full animate-fade-in overflow-hidden">
         <img
           src={bannerImage}
           alt="Avance Modas — Moda Fitness Premium"
-          className="w-full block"
-          style={{ aspectRatio: '1920 / 500', objectFit: 'cover' }}
-          width={1920}
-          height={500}
+          className="w-full h-auto block object-cover object-center"
+          style={{ aspectRatio: '1920 / 500' }}
+          loading="eager"
+          decoding="async"
         />
       </div>
 
-      <div className="w-full flex items-center justify-center p-4 flex-1">
+      <div className="w-full flex items-center justify-center px-4 py-6 sm:p-8 flex-1">
       {/* Decorative wavy lines — top left & bottom right */}
       <svg className="pointer-events-none absolute top-0 left-0 w-64 h-64 text-accent/30" viewBox="0 0 200 200" fill="none" aria-hidden="true">
         <path d="M0 40 Q 50 0, 100 40 T 200 40" stroke="currentColor" strokeWidth="1.5" fill="none" />
