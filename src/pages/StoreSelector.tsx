@@ -145,6 +145,7 @@ const StoreSelector = () => {
         </div>
         </div>
       </div>
+      </div>
     </div>
   );
 };
