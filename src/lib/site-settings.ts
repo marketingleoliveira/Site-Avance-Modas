@@ -31,6 +31,7 @@ export interface StoreSelectorSettings {
   atacado_image: string;
   varejo_image: string;
   background_image: string;
+  header_banner_image?: string;
   [key: string]: string;
 }
 
