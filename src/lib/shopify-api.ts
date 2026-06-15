@@ -115,6 +115,9 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
       query,
       variables,
     }),
+    // Always request fresh data from Shopify so inventory/availability
+    // is consistent across devices and sessions (avoids stale CDN/browser caches).
+    cache: 'no-store',
   });
 
   if (response.status === 402) {
