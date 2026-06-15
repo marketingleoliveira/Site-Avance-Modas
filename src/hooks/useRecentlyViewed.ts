@@ -73,8 +73,9 @@ export function useRecentlyViewed() {
 }
 
 // Singleton cache for product data (in-memory)
+// Short TTL so inventory/availability stays in sync with Shopify across devices.
 const productCache = new Map<string, { product: ShopifyProduct; timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 30 * 1000; // 30 seconds
 
 export function getCachedProduct(handle: string): ShopifyProduct | null {
   const cached = productCache.get(handle);
