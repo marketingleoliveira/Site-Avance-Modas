@@ -618,7 +618,22 @@ const AdminPanel = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4 pb-6 border-b">
-                <Label className="text-base font-semibold">Banner do Topo (Header)</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-base font-semibold">Banner do Topo (Header)</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="header-banner-toggle" className="text-sm font-normal text-muted-foreground">
+                      {storeSelector?.header_banner_enabled !== false ? "Ativo" : "Inativo"}
+                    </Label>
+                    <Switch
+                      id="header-banner-toggle"
+                      checked={storeSelector?.header_banner_enabled !== false}
+                      onCheckedChange={(checked) => {
+                        if (!storeSelector) return;
+                        setStoreSelector({ ...storeSelector, header_banner_enabled: checked });
+                      }}
+                    />
+                  </div>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   Imagem horizontal exibida no topo da página de entrada. Recomendado: 1920x640px.
                 </p>
