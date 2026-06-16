@@ -8,20 +8,23 @@ const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
   const { settings } = useStoreSelectorSettings();
   const bannerImage = settings?.header_banner_image || defaultBanner;
+  const bannerEnabled = settings?.header_banner_enabled !== false;
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center bg-[#fafafa]">
       {/* Full-width Header Banner (1920x500) */}
-      <div className="relative z-10 w-full animate-fade-in overflow-hidden">
-        <img
-          src={bannerImage}
-          alt="Avance Modas — Moda Fitness Premium"
-          className="w-full h-auto block object-cover object-center"
-          style={{ aspectRatio: '1920 / 500' }}
-          loading="eager"
-          decoding="async"
-        />
-      </div>
+      {bannerEnabled && (
+        <div className="relative z-10 w-full animate-fade-in overflow-hidden">
+          <img
+            src={bannerImage}
+            alt="Avance Modas — Moda Fitness Premium"
+            className="w-full h-auto block object-cover object-center"
+            style={{ aspectRatio: '1920 / 500' }}
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      )}
 
       <div className="w-full flex items-center justify-center px-4 py-6 sm:p-8 flex-1">
       {/* Decorative wavy lines — top left & bottom right */}

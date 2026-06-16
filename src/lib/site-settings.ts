@@ -32,7 +32,8 @@ export interface StoreSelectorSettings {
   varejo_image: string;
   background_image: string;
   header_banner_image?: string;
-  [key: string]: string;
+  header_banner_enabled?: boolean;
+  [key: string]: string | boolean | undefined;
 }
 
 export interface FeatureItem {
