@@ -70,7 +70,7 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60" />
 
-            <div className="relative p-8 sm:p-9 text-center">
+            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[180px]">
               {settings?.atacado_image && (
                 <img
                   src={settings.atacado_image}
@@ -82,7 +82,7 @@ const StoreSelector = () => {
                   loading="lazy"
                 />
               )}
-              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto sm:mx-0 mb-5">
                 <ShoppingBag className="w-7 h-7 text-white" />
               </div>
 
@@ -111,7 +111,7 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
 
-            <div className="relative p-8 sm:p-9 text-center">
+            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[180px]">
               {settings?.varejo_image && (
                 <img
                   src={settings.varejo_image}
@@ -123,7 +123,7 @@ const StoreSelector = () => {
                   loading="lazy"
                 />
               )}
-              <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto mb-5">
+              <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5">
                 <Store className="w-7 h-7 text-white" />
               </div>
 
