@@ -7,6 +7,7 @@ import HeroSectionDynamic from "@/components/sections/HeroSectionDynamic";
 import FeaturesSectionDynamic from "@/components/sections/FeaturesSectionDynamic";
 import NewsletterSection from "@/components/sections/NewsletterSection";
 import ProductSectionsDynamic from "@/components/sections/ProductSectionsDynamic";
+import OnlineUsersCounter from "@/components/sections/OnlineUsersCounter";
 import ModelVideosSection from "@/components/sections/ModelVideosSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import BrandWordsMarquee from "@/components/sections/BrandWordsMarquee";
@@ -31,6 +32,7 @@ const InicioVarejo = () => {
       <main className="flex-1">
         <HeroSectionDynamic type="VAREJO" />
         <FeaturesSectionDynamic />
+        <OnlineUsersCounter />
         <ProductSectionsDynamic type="VAREJO" />
         <TestimonialsSection />
         <BrandWordsMarquee />
