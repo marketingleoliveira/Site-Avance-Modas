@@ -70,9 +70,28 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60" />
 
-            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[140px] lg:pr-[170px]">
+            <div className="relative p-8 sm:p-9 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-4 text-center sm:text-left">
+              <div className="flex-1 min-w-0">
+                <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto sm:mx-0 mb-5">
+                  <ShoppingBag className="w-7 h-7 text-white" />
+                </div>
+
+                <h2 className="text-2xl lg:text-3xl font-black text-foreground mb-2 tracking-tight break-words">
+                  ATACADO
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                  Compras em quantidade com preços especiais para revendedores
+                </p>
+
+                {/* Animated banner button */}
+                <div className="relative overflow-hidden rounded-xl bg-foreground text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  <span>Acessar Atacado</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
               {settings?.atacado_image && (
-                <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-[110px] lg:w-[140px] h-[180px] lg:h-[220px] items-center justify-center pointer-events-none">
+                <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none">
                   <img
                     src={settings.atacado_image}
                     alt="Atacado"
@@ -81,23 +100,6 @@ const StoreSelector = () => {
                   />
                 </div>
               )}
-              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto sm:mx-0 mb-5">
-                <ShoppingBag className="w-7 h-7 text-white" />
-              </div>
-
-              <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-2 tracking-tight">
-                ATACADO
-              </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-                Compras em quantidade com preços especiais para revendedores
-              </p>
-
-              {/* Animated banner button */}
-              <div className="relative overflow-hidden rounded-xl bg-foreground text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
-                <span>Acessar Atacado</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </div>
             </div>
           </Link>
 
@@ -110,9 +112,28 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
 
-            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[140px] lg:pr-[170px]">
+            <div className="relative p-8 sm:p-9 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-4 text-center sm:text-left">
+              <div className="flex-1 min-w-0">
+                <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5">
+                  <Store className="w-7 h-7 text-white" />
+                </div>
+
+                <h2 className="text-2xl lg:text-3xl font-black text-foreground mb-2 tracking-tight break-words">
+                  VAREJO
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                  Compras unitárias com toda a qualidade Avance Modas
+                </p>
+
+                {/* Animated banner button */}
+                <div className="relative overflow-hidden rounded-xl bg-accent text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  <span>Acessar Varejo</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
               {settings?.varejo_image && (
-                <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-[110px] lg:w-[140px] h-[180px] lg:h-[220px] items-center justify-center pointer-events-none">
+                <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none">
                   <img
                     src={settings.varejo_image}
                     alt="Varejo"
@@ -121,23 +142,6 @@ const StoreSelector = () => {
                   />
                 </div>
               )}
-              <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5">
-                <Store className="w-7 h-7 text-white" />
-              </div>
-
-              <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-2 tracking-tight">
-                VAREJO
-              </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-                Compras unitárias com toda a qualidade Avance Modas
-              </p>
-
-              {/* Animated banner button */}
-              <div className="relative overflow-hidden rounded-xl bg-accent text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
-                <span>Acessar Varejo</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </div>
             </div>
           </Link>
         </div>
