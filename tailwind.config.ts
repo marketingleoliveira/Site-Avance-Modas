@@ -111,6 +111,16 @@ export default {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-12px)" },
         },
+        "pulse-ring": {
+          "0%, 100%": {
+            boxShadow: "0 0 0 0 hsl(var(--accent) / 0.55)",
+            transform: "scale(1)",
+          },
+          "50%": {
+            boxShadow: "0 0 0 10px hsl(var(--accent) / 0)",
+            transform: "scale(1.04)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -122,6 +132,7 @@ export default {
         "slide-up": "slide-up 0.2s ease-in forwards",
         ripple: "ripple 0.6s linear forwards",
         float: "float 6s ease-in-out infinite",
+        "pulse-ring": "pulse-ring 1.4s ease-in-out infinite",
       },
     },
   },

@@ -33,6 +33,7 @@ export interface StoreSelectorSettings {
   background_image: string;
   header_banner_image?: string;
   header_banner_enabled?: boolean;
+  homepage_enabled?: boolean;
   [key: string]: string | boolean | undefined;
 }
 

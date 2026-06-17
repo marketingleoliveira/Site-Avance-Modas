@@ -619,6 +619,27 @@ const AdminPanel = () => {
             <CardContent className="space-y-6">
               <div className="space-y-4 pb-6 border-b">
                 <div className="flex items-center justify-between">
+                  <Label className="text-base font-semibold">Homepage (Página de Seleção)</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="homepage-toggle" className="text-sm font-normal text-muted-foreground">
+                      {storeSelector?.homepage_enabled !== false ? "Ativa" : "Desativada"}
+                    </Label>
+                    <Switch
+                      id="homepage-toggle"
+                      checked={storeSelector?.homepage_enabled !== false}
+                      onCheckedChange={(checked) => {
+                        if (!storeSelector) return;
+                        setStoreSelector({ ...storeSelector, homepage_enabled: checked });
+                      }}
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Quando desativada, o usuário que acessar a raiz do site (<code>/</code>) será redirecionado diretamente para a página de Varejo, sem ver a tela de escolha entre Atacado e Varejo. Lembre-se de clicar em "Salvar Configurações" abaixo.
+                </p>
+              </div>
+              <div className="space-y-4 pb-6 border-b">
+                <div className="flex items-center justify-between">
                   <Label className="text-base font-semibold">Banner do Topo (Header)</Label>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="header-banner-toggle" className="text-sm font-normal text-muted-foreground">
