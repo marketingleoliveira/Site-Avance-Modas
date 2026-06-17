@@ -1,9 +1,10 @@
 import { useState, useCallback, MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail, RefreshCw } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail, RefreshCw, Repeat } from "lucide-react";
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
+import { useStoreContext } from "@/stores/storeContextStore";
 
 const navLinks = [
   { name: "Início", href: "/varejo" },
@@ -36,6 +37,16 @@ const Header = () => {
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
+  const storeType = useStoreContext((s) => s.storeType);
+  const setStoreType = useStoreContext((s) => s.setStoreType);
+
+  // Determine current store context (pathname takes precedence over persisted store)
+  const isAtacadoContext =
+    location.pathname.startsWith("/atacado") ||
+    (!location.pathname.startsWith("/varejo") && storeType === "atacado");
+  const otherStore = isAtacadoContext
+    ? { label: "Varejo", href: "/varejo", type: "varejo" as const }
+    : { label: "Atacado", href: "/atacado", type: "atacado" as const };
 
   const handleToggleMenu = useCallback(() => {
     if (mobileMenuOpen) {
