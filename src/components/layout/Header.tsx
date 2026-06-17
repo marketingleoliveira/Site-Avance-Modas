@@ -129,6 +129,17 @@ const Header = () => {
 
           {/* Right Actions - Search bar + icons */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {/* Switch store (blinking) */}
+            <Link
+              to={otherStore.href}
+              onClick={() => setStoreType(otherStore.type)}
+              aria-label={`Ir para ${otherStore.label}`}
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase bg-accent text-accent-foreground shadow-[0_0_0_0_hsl(var(--accent)/0.6)] animate-pulse-ring hover:animate-none hover:bg-accent/90 transition-colors"
+            >
+              <Repeat className="w-4 h-4" />
+              {otherStore.label}
+            </Link>
+
             {/* SAC Button (desktop) */}
             <Link
               to="/sac"
@@ -174,6 +185,17 @@ const Header = () => {
             >
               <Search className="w-[18px] h-[18px]" />
             </button>
+
+            {/* Switch store (mobile, blinking) */}
+            <Link
+              to={otherStore.href}
+              onClick={() => setStoreType(otherStore.type)}
+              aria-label={`Ir para ${otherStore.label}`}
+              className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider uppercase bg-accent text-accent-foreground animate-pulse-ring"
+            >
+              <Repeat className="w-3.5 h-3.5" />
+              {otherStore.label}
+            </Link>
 
             <CartDrawer />
             
