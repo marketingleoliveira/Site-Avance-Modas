@@ -30,6 +30,22 @@ import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
+// Gate that decides whether the homepage selector renders or redirects to /varejo
+const HomeGate = () => {
+  const { settings, loading } = useStoreSelectorSettings();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  if (settings?.homepage_enabled === false) {
+    return <Navigate to="/varejo" replace />;
+  }
+  return <StoreSelector />;
+};
+
 // Component that uses the cart sync hook and checks maintenance mode
 const AppContent = () => {
   useCartSync();
