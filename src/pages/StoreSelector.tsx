@@ -70,23 +70,22 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60" />
 
-            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[180px]">
+            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[140px] lg:pr-[170px]">
               {settings?.atacado_image && (
-                <img
-                  src={settings.atacado_image}
-                  alt="Atacado"
-                  width={150}
-                  height={250}
-                  className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 object-contain pointer-events-none"
-                  style={{ width: 150, height: 250 }}
-                  loading="lazy"
-                />
+                <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-[110px] lg:w-[140px] h-[180px] lg:h-[220px] items-center justify-center pointer-events-none">
+                  <img
+                    src={settings.atacado_image}
+                    alt="Atacado"
+                    className="max-w-full max-h-full w-auto h-auto object-contain"
+                    loading="lazy"
+                  />
+                </div>
               )}
               <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center mx-auto sm:mx-0 mb-5">
                 <ShoppingBag className="w-7 h-7 text-white" />
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
+              <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-2 tracking-tight">
                 ATACADO
               </h2>
               <p className="text-muted-foreground text-sm leading-relaxed mb-8">
@@ -111,23 +110,22 @@ const StoreSelector = () => {
             {/* Top accent bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
 
-            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[180px]">
+            <div className="relative p-8 sm:p-9 text-center sm:text-left sm:pr-[140px] lg:pr-[170px]">
               {settings?.varejo_image && (
-                <img
-                  src={settings.varejo_image}
-                  alt="Varejo"
-                  width={150}
-                  height={250}
-                  className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 object-contain pointer-events-none"
-                  style={{ width: 150, height: 250 }}
-                  loading="lazy"
-                />
+                <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 w-[110px] lg:w-[140px] h-[180px] lg:h-[220px] items-center justify-center pointer-events-none">
+                  <img
+                    src={settings.varejo_image}
+                    alt="Varejo"
+                    className="max-w-full max-h-full w-auto h-auto object-contain"
+                    loading="lazy"
+                  />
+                </div>
               )}
               <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5">
                 <Store className="w-7 h-7 text-white" />
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground mb-2 tracking-tight">
+              <h2 className="text-3xl lg:text-4xl font-black text-foreground mb-2 tracking-tight">
                 VAREJO
               </h2>
               <p className="text-muted-foreground text-sm leading-relaxed mb-8">
