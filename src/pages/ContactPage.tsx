@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { MessageCircle, Mail, MapPin, Instagram, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Helmet } from "react-helmet-async";
 
 interface ContactSettings {
   whatsapp_number: string;
@@ -66,6 +67,16 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Contato — Avance Modas | Atendimento e WhatsApp</title>
+        <meta name="description" content="Fale com a Avance Modas: WhatsApp, e-mail, endereço e Instagram. Atendimento humano para clientes do varejo e revendedores do atacado." />
+        <link rel="canonical" href="https://avancemodas.com.br/contato" />
+        <meta property="og:title" content="Contato — Avance Modas" />
+        <meta property="og:description" content="Canais de atendimento Avance Modas: WhatsApp, e-mail e Instagram para varejo e atacado." />
+        <meta property="og:url" content="https://avancemodas.com.br/contato" />
+        <meta name="twitter:title" content="Contato — Avance Modas" />
+        <meta name="twitter:description" content="Canais de atendimento Avance Modas: WhatsApp, e-mail e Instagram para varejo e atacado." />
+      </Helmet>
       <Header />
       
       {/* Hero Section */}

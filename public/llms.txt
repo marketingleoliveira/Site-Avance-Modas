@@ -1,0 +1,25 @@
+# Avance Modas
+
+> Fabricante brasileira de moda fitness feminina, com vendas diretas no atacado (revendedores) e no varejo (consumidor final). Tecido tecnológico com proteção UV 50+ e Aloe Vera.
+
+## Pages
+
+- [Home](/): Escolha entre a loja Atacado e a loja Varejo da Avance Modas.
+- [Varejo](/varejo): Loja varejo — compra unitária de moda fitness feminina.
+- [Atacado](/atacado): Loja atacado — preços e quantidades para revendedores.
+- [Sobre](/sobre): História, fabricação própria e diferenciais da Avance Modas.
+- [Contato](/contato): Canais de atendimento (WhatsApp, e-mail, Instagram).
+- [SAC](/sac): Abertura de chamados de suporte e reclamações.
+- [Rastreio](/rastreio): Acompanhamento de pedidos via Loggi.
+- [Private Label](/private-label): Serviço de produção white-label para marcas.
+- [Depoimentos](/depoimentos): Avaliações reais de clientes.
+
+## Categorias
+
+- [Shorts](/categoria/shorts): Shorts fitness femininos.
+- [Bermudas](/categoria/bermudas): Bermudas fitness femininas.
+- [Leggings](/categoria/leggings): Leggings com compressão e tecido tecnológico.
+- [Tops](/categoria/tops): Tops fitness com sustentação.
+- [Blusas](/categoria/blusas): Blusas fitness femininas.
+- [Conjuntos](/categoria/conjuntos): Conjuntos coordenados (top + bottom).
+- [Promoções](/categoria/promocoes): Produtos em oferta.

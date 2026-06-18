@@ -3,10 +3,21 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import { ChevronRight, Factory, Sparkles, Store, Truck, Award, Users } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const AboutPage = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Sobre a Avance Modas — Fabricante de Moda Fitness Feminina</title>
+        <meta name="description" content="Conheça a Avance Modas: fabricante própria de moda fitness feminina no atacado e varejo, com tecido tecnológico, UV 50+ e Aloe Vera." />
+        <link rel="canonical" href="https://avancemodas.com.br/sobre" />
+        <meta property="og:title" content="Sobre a Avance Modas — Fabricante de Moda Fitness Feminina" />
+        <meta property="og:description" content="Fabricação própria, tecido tecnológico e atendimento direto: atacado e varejo de moda fitness feminina." />
+        <meta property="og:url" content="https://avancemodas.com.br/sobre" />
+        <meta name="twitter:title" content="Sobre a Avance Modas — Fabricante de Moda Fitness Feminina" />
+        <meta name="twitter:description" content="Fabricação própria, tecido tecnológico e atendimento direto: atacado e varejo de moda fitness feminina." />
+      </Helmet>
       <AnnouncementBar />
       <Header />
 
@@ -29,7 +40,7 @@ const AboutPage = () => {
               Quem Somos
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 tracking-tight">
-              Avance Modas
+              Sobre a Avance Modas — Fabricação Própria de Moda Fitness
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
               Somos fabricantes e vendedores diretos de moda fitness, atuando tanto no

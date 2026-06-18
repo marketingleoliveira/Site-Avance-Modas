@@ -19,8 +19,8 @@ const trimToLimit = (s: string, max = 155) => {
 };
 
 const CategorySEO = ({ category, title, description, image, productCount }: CategorySEOProps) => {
-  const pageTitle = "Moda Fitness Varejo e Atacado | Avance Modas";
-  const baseDesc = `${title} – ${description} | Moda Fitness Varejo e Atacado | Avance Modas. Tecido tecnológico, UV 50+ e Aloe Vera.`;
+  const pageTitle = `${title} | Avance Modas`;
+  const baseDesc = `${title} – ${description} Moda fitness feminina com tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo ou atacado.`;
   const cleanDesc = trimToLimit(baseDesc);
   const url = `${SITE}/categoria/${category}`;
   const ogImage = image || FALLBACK_IMAGE;

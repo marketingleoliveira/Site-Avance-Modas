@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useStoreContext } from "@/stores/storeContextStore";
 import { ArrowRight, ShoppingBag, Store, Truck, ShieldCheck, Repeat, Headphones } from "lucide-react";
 import defaultBanner from "@/assets/store-selector-banner.jpg";
@@ -12,6 +13,14 @@ const StoreSelector = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col items-center bg-[#fafafa]">
+      <Helmet>
+        <title>Avance Modas — Moda Fitness no Atacado e Varejo</title>
+        <meta name="description" content="Escolha sua loja Avance Modas: atacado para revendedores ou varejo para consumo final. Moda fitness feminina com tecido tecnológico, UV 50+ e Aloe Vera." />
+        <link rel="canonical" href="https://avancemodas.com.br/" />
+        <meta property="og:url" content="https://avancemodas.com.br/" />
+        <meta property="og:title" content="Avance Modas — Moda Fitness no Atacado e Varejo" />
+      </Helmet>
+      <h1 className="sr-only">Avance Modas — Escolha sua Loja de Moda Fitness</h1>
       {/* Full-width Header Banner (1920x500) */}
       {bannerEnabled && (
         <div className="relative z-10 w-full animate-fade-in overflow-hidden">
@@ -94,7 +103,7 @@ const StoreSelector = () => {
                 <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none">
                   <img
                     src={settings.atacado_image}
-                    alt="Atacado"
+                    alt="Coleção Atacado Avance Modas"
                     className="max-w-full max-h-full w-auto h-auto object-contain"
                     loading="lazy"
                   />
@@ -136,7 +145,7 @@ const StoreSelector = () => {
                 <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none">
                   <img
                     src={settings.varejo_image}
-                    alt="Varejo"
+                    alt="Coleção Varejo Avance Modas"
                     className="max-w-full max-h-full w-auto h-auto object-contain"
                     loading="lazy"
                   />

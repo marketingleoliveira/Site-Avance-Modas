@@ -159,7 +159,7 @@ export const CartDrawer = () => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <button className="p-2 hover:bg-secondary rounded-full transition-colors relative">
+        <button aria-label="Abrir carrinho" className="p-2 hover:bg-secondary rounded-full transition-colors relative">
           <ShoppingBag className="w-5 h-5" />
           {totalItems > 0 && (
             <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-accent text-accent-foreground border-0">
@@ -259,6 +259,7 @@ export const CartDrawer = () => {
                             className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                             disabled={isLoading}
+                            aria-label="Diminuir quantidade"
                           >
                             <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
@@ -287,6 +288,7 @@ export const CartDrawer = () => {
                             className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                             disabled={isLoading}
+                            aria-label="Aumentar quantidade"
                           >
                             <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </Button>
@@ -296,6 +298,7 @@ export const CartDrawer = () => {
                             className="h-6 w-6 sm:h-7 sm:w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-0.5 sm:ml-1"
                             onClick={() => removeItem(item.variantId)}
                             disabled={isLoading}
+                            aria-label="Remover produto"
                           >
                             <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </Button>
