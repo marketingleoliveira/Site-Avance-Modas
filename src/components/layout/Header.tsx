@@ -21,13 +21,7 @@ const navLinks = [
     ]
   },
   { name: "Promoções", href: "/categoria/promocoes" },
-  { 
-    name: "Sobre Nós", 
-    href: "/sobre",
-    submenu: [
-      { name: "Depoimentos", href: "/depoimentos" },
-    ]
-  },
+  { name: "Depoimentos", href: "/depoimentos" },
   { name: "Rastreio", href: "/rastreio" },
 ];
 
