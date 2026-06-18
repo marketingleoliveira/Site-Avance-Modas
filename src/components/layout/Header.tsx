@@ -143,14 +143,6 @@ const Header = () => {
             </Link>
 
             {/* Contato Button (desktop) */}
-            <Link
-              to="/contato"
-              className="hidden lg:flex items-center gap-2 px-5 py-2 bg-primary text-primary-foreground rounded-full font-semibold text-xs tracking-wider uppercase hover:bg-primary/90 transition-all duration-300"
-            >
-              <Mail className="w-4 h-4" />
-              Contato
-            </Link>
-
             {/* Trocas Button (desktop) */}
             <a
               href="https://troqueavancemodas.lovable.app"
@@ -260,14 +252,6 @@ const Header = () => {
               >
                 <Headphones className="w-4 h-4" />
                 SAC
-              </Link>
-              <Link
-                to="/contato"
-                onClick={handleCloseMenu}
-                className="flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-full font-semibold text-xs tracking-wider uppercase hover:bg-primary/90 transition-all duration-300"
-              >
-                <Mail className="w-4 h-4" />
-                Contato
               </Link>
               <a
                 href="https://troqueavancemodas.lovable.app"
