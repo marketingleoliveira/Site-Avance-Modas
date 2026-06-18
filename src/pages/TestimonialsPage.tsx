@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import { ChevronRight, Star, Quote, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Helmet } from "react-helmet-async";
 
 interface Testimonial {
   id: string;
@@ -38,6 +39,39 @@ const TestimonialsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Depoimentos de Clientes — Avance Modas Moda Fitness</title>
+        <meta name="description" content="Veja depoimentos reais de clientes Avance Modas. Avaliações 5 estrelas de quem treina com nossas leggings, tops, shorts e conjuntos fitness." />
+        <link rel="canonical" href="https://avancemodas.com.br/depoimentos" />
+        <meta property="og:title" content="Depoimentos de Clientes — Avance Modas" />
+        <meta property="og:description" content="Avaliações reais de clientes Avance Modas: moda fitness com tecido tecnológico aprovado por quem treina." />
+        <meta property="og:url" content="https://avancemodas.com.br/depoimentos" />
+        <meta name="twitter:title" content="Depoimentos de Clientes — Avance Modas" />
+        <meta name="twitter:description" content="Avaliações reais de clientes Avance Modas: moda fitness aprovada por quem treina." />
+        {testimonials.length > 0 && (
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: "Avance Modas — Moda Fitness Feminina",
+            url: "https://avancemodas.com.br/depoimentos",
+            brand: { "@type": "Brand", name: "Avance Modas" },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: (testimonials.reduce((s, t) => s + t.rating, 0) / testimonials.length).toFixed(1),
+              reviewCount: testimonials.length,
+              bestRating: 5,
+              worstRating: 1,
+            },
+            review: testimonials.slice(0, 10).map((t) => ({
+              "@type": "Review",
+              author: { "@type": "Person", name: t.customer_name },
+              reviewRating: { "@type": "Rating", ratingValue: t.rating, bestRating: 5 },
+              reviewBody: t.comment,
+              datePublished: t.created_at,
+            })),
+          })}</script>
+        )}
+      </Helmet>
       <AnnouncementBar />
       <Header />
 

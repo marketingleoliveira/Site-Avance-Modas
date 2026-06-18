@@ -67,7 +67,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-[72px]">
           {/* Logo */}
           <Link to="/" className="flex items-center flex-shrink-0 group/logo">
-            <img src={logo} alt="Avance" className="w-[60px] h-[60px] object-contain transition-all duration-300 group-hover/logo:scale-105 group-hover/logo:brightness-110" />
+            <img src={logo} alt="Logotipo Avance Modas" className="w-[60px] h-[60px] object-contain transition-all duration-300 group-hover/logo:scale-105 group-hover/logo:brightness-110" />
           </Link>
 
           {/* Desktop Navigation - Centered */}

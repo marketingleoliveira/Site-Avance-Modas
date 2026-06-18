@@ -23,7 +23,7 @@ const ProductSEO = ({
   available,
   brand = "Avance Modas",
 }: ProductSEOProps) => {
-  const baseDesc = `Moda Fitness Varejo e Atacado | Avance Modas — ${title}. Tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo ou atacado.`;
+  const baseDesc = `${title} — Moda fitness feminina Avance Modas com tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo ou atacado.`;
   // Trim safely on word boundary to fit ~155 chars
   const trimToLimit = (s: string, max = 155) => {
     const clean = stripHtml(s);
@@ -32,7 +32,7 @@ const ProductSEO = ({
     return cut.slice(0, cut.lastIndexOf(" ")).trim() + "…";
   };
   const cleanDesc = trimToLimit(baseDesc);
-  const pageTitle = "Moda Fitness Varejo e Atacado | Avance Modas";
+  const pageTitle = `${title} | Avance Modas`;
   const url = `https://avancemodas.com.br/produto/${handle}`;
   const fallbackImage = "https://avancemodas.com.br/favicon-512.png?v=5";
   const ogImage = image || fallbackImage;
@@ -65,7 +65,7 @@ const ProductSEO = ({
       <link rel="canonical" href={url} />
 
       <meta property="og:type" content="product" />
-      <meta property="og:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
+      <meta property="og:title" content={pageTitle} />
       <meta property="og:description" content={cleanDesc} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={ogImage} />
@@ -75,7 +75,7 @@ const ProductSEO = ({
       <meta property="product:availability" content={available ? "in stock" : "out of stock"} />
 
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Moda Fitness Varejo e Atacado | Avance Modas" />
+      <meta name="twitter:title" content={pageTitle} />
       <meta name="twitter:description" content={cleanDesc} />
       <meta name="twitter:image" content={ogImage} />
       <meta name="twitter:image:alt" content={title} />
