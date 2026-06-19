@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import CountdownBanner from "@/components/sections/CountdownBanner";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
@@ -25,6 +26,17 @@ const InicioVarejo = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Varejo Avance Modas — Moda Fitness Feminina Premium</title>
+        <meta name="description" content="Compre moda fitness feminina no varejo Avance Modas: leggings, tops, shorts e conjuntos com tecido tecnológico, UV 50+ e Aloe Vera. Envio para todo o Brasil." />
+        <link rel="canonical" href="https://avancemodas.com.br/varejo" />
+        <meta property="og:title" content="Varejo Avance Modas — Moda Fitness Feminina Premium" />
+        <meta property="og:description" content="Leggings, tops, shorts e conjuntos com tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo com envio para todo o Brasil." />
+        <meta property="og:url" content="https://avancemodas.com.br/varejo" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content="Varejo Avance Modas — Moda Fitness Feminina Premium" />
+        <meta name="twitter:description" content="Leggings, tops, shorts e conjuntos com tecido tecnológico, UV 50+ e Aloe Vera." />
+      </Helmet>
       <CountdownBanner />
       <AnnouncementBar />
       <Header />

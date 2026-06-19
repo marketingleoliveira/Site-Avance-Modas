@@ -103,7 +103,7 @@ const AboutPage = () => {
                 <div className="w-14 h-14 mb-4 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                   {item.icon}
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                <h2 className="font-semibold text-foreground mb-2 text-base">{item.title}</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
             ))}

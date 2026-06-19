@@ -190,6 +190,8 @@ const Header = () => {
             <button 
               className="lg:hidden p-2 hover:bg-secondary rounded-full transition-colors active:scale-95"
               onClick={handleToggleMenu}
+              aria-label="Menu"
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
