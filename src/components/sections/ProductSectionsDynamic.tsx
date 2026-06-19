@@ -207,20 +207,11 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     );
   }
 
-  const sectionTitle = type === 'ATACADO' ? 'PRODUTOS ATACADO' : 'PRODUTOS VAREJO';
-
   return (
     <section className="py-12 bg-background" id="produtos">
       <div className="container">
         {/* Section Header with Category Filters */}
         <div className="mb-10">
-          {/* Title Row */}
-          <div className="flex items-center justify-center mb-8">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight uppercase text-center">
-              {sectionTitle}
-            </h2>
-          </div>
-
           {type === 'ATACADO' && atacadoSettings.show_minimum_order_notice && (
             <div className="flex justify-center mb-6 -mt-4">
               <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-amber-800 shadow-sm">
