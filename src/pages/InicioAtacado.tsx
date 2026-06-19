@@ -57,6 +57,17 @@ const InicioAtacado = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Atacado Avance Modas — Moda Fitness no Atacado</title>
+        <meta name="description" content="Compre moda fitness feminina no atacado direto da fábrica: leggings, tops, shorts e conjuntos com preços exclusivos para lojistas. Pedido mínimo e envio nacional." />
+        <link rel="canonical" href="https://avancemodas.com.br/atacado" />
+        <meta property="og:title" content="Atacado Avance Modas — Moda Fitness no Atacado" />
+        <meta property="og:description" content="Moda fitness feminina no atacado direto da fábrica com preços exclusivos para lojistas. Envio para todo o Brasil." />
+        <meta property="og:url" content="https://avancemodas.com.br/atacado" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content="Atacado Avance Modas — Moda Fitness no Atacado" />
+        <meta name="twitter:description" content="Moda fitness feminina no atacado direto da fábrica com preços exclusivos para lojistas." />
+      </Helmet>
       <CountdownBanner />
       <AnnouncementBar />
       <Header />
