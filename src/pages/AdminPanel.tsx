@@ -1994,6 +1994,7 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-secondary flex">
+      <RouteSEO title="Painel Admin | Avance Modas" description="Painel administrativo." path="/admin" noindex />
       {/* Sidebar */}
       <aside 
         className={cn(
