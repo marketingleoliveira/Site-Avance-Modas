@@ -70,10 +70,13 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
                 : "opacity-0 scale-105"
             )}
           >
-            <img 
+            <img
               src={slide.image_url || heroFallback}
               alt={slide.promo_subtitle || `Slide ${index + 1}`}
               className="w-full h-full object-cover object-top"
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              {...(index === 0 ? { fetchpriority: "high" as const } : {})}
             />
           </div>
         ))}

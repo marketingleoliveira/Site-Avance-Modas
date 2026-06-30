@@ -27,6 +27,8 @@ import SizeChartManager from "@/components/admin/SizeChartManager";
 import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import CouponsManager from "@/components/admin/CouponsManager";
+import GuidesManager from "@/components/admin/GuidesManager";
+import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -202,6 +204,8 @@ const AdminPanel = () => {
         { id: "instagram", label: "Instagram", icon: <Instagram className="w-4 h-4" /> },
         { id: "contact", label: "Contato", icon: <Phone className="w-4 h-4" /> },
         { id: "private-label", label: "Private Label", icon: <Tag className="w-4 h-4" /> },
+        { id: "guides", label: "Guias (SEO)", icon: <BookOpen className="w-4 h-4" /> },
+        { id: "search-console", label: "Search Console", icon: <LayoutDashboard className="w-4 h-4" /> },
       ]
     },
     {
@@ -1986,6 +1990,42 @@ const AdminPanel = () => {
 
       case "testimonials":
         return <TestimonialsManager />;
+
+      case "guides":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Guias (Hub de SEO)
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie artigos pilares publicados em /guias.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GuidesManager />
+            </CardContent>
+          </Card>
+        );
+
+      case "search-console":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LayoutDashboard className="w-5 h-5" />
+                Google Search Console
+              </CardTitle>
+              <CardDescription>
+                Consultas, páginas, CTR, posição média e inspeção de URLs — direto do Search Console.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SearchConsoleDashboard />
+            </CardContent>
+          </Card>
+        );
 
       default:
         return null;

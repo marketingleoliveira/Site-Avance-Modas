@@ -23,3 +23,13 @@
 - [Blusas](/categoria/blusas): Blusas fitness femininas.
 - [Conjuntos](/categoria/conjuntos): Conjuntos coordenados (top + bottom).
 - [Promoções](/categoria/promocoes): Produtos em oferta.
+
+## Guias (hub de conteúdo)
+
+- [Guias](/guias): Hub de conteúdo educativo sobre moda fitness, tecidos e revenda.
+- [Guia da Poliamida](/guias/guia-poliamida-moda-fitness): O tecido tecnológico da moda fitness.
+- [Guia da Legging Fitness](/guias/guia-legging-fitness): Como escolher legging sem transparência.
+- [Como lavar roupa fitness](/guias/como-lavar-roupa-fitness): Preservar elasticidade e cor da poliamida.
+- [Revenda Fitness Atacado](/guias/revenda-moda-fitness-atacado): Guia para começar a revender no atacado.
+- [Moda Fitness para Musculação](/guias/moda-fitness-musculacao): Peças ideais para treinar musculação.
+- [Poliamida x Poliéster x Suplex](/guias/poliamida-vs-poliester-vs-suplex): Comparativo dos principais tecidos fitness.

@@ -50,6 +50,60 @@ export type Database = {
         }
         Relationships: []
       }
+      guides: {
+        Row: {
+          body_md: string
+          category: string
+          created_at: string
+          excerpt: string
+          faq: Json
+          hero_image: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          reading_minutes: number
+          related_slugs: string[]
+          slug: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          category?: string
+          created_at?: string
+          excerpt: string
+          faq?: Json
+          hero_image?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          reading_minutes?: number
+          related_slugs?: string[]
+          slug: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          category?: string
+          created_at?: string
+          excerpt?: string
+          faq?: Json
+          hero_image?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          reading_minutes?: number
+          related_slugs?: string[]
+          slug?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string

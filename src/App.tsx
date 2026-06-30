@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,25 +8,28 @@ import { useCartSync } from "@/hooks/useCartSync";
 import { useMaintenanceMode } from "@/hooks/useMaintenanceMode";
 import { useStoreSelectorSettings } from "@/hooks/useSiteSettings";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
+// Eager: storefront entry routes (LCP-critical, frequently the first paint)
 import StoreSelector from "./pages/StoreSelector";
-import InicioAtacado from "./pages/InicioAtacado";
 import InicioVarejo from "./pages/InicioVarejo";
-import ShopifyProductPage from "./pages/ShopifyProductPage";
-import CategoryPage from "./pages/CategoryPage";
-import ContactPage from "./pages/ContactPage";
-import AdminLogin from "./pages/AdminLogin";
-import AdminPanel from "./pages/AdminPanel";
-import TrackingPage from "./pages/TrackingPage";
-import PrivateLabelPage from "./pages/PrivateLabelPage";
-import SACPage from "./pages/SACPage";
-import SupportPage from "./pages/SupportPage";
-import AboutPage from "./pages/AboutPage";
-import TestimonialsPage from "./pages/TestimonialsPage";
-import MaintenancePage from "./pages/MaintenancePage";
-import WholesaleCheckout from "./pages/WholesaleCheckout";
-import WholesaleConfirmation from "./pages/WholesaleConfirmation";
-
-import NotFound from "./pages/NotFound";
+import InicioAtacado from "./pages/InicioAtacado";
+// Lazy: everything else — keeps initial bundle small.
+const ShopifyProductPage = lazy(() => import("./pages/ShopifyProductPage"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const TrackingPage = lazy(() => import("./pages/TrackingPage"));
+const PrivateLabelPage = lazy(() => import("./pages/PrivateLabelPage"));
+const SACPage = lazy(() => import("./pages/SACPage"));
+const SupportPage = lazy(() => import("./pages/SupportPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage"));
+const MaintenancePage = lazy(() => import("./pages/MaintenancePage"));
+const WholesaleCheckout = lazy(() => import("./pages/WholesaleCheckout"));
+const WholesaleConfirmation = lazy(() => import("./pages/WholesaleConfirmation"));
+const GuidesHub = lazy(() => import("./pages/GuidesHub"));
+const GuideDetail = lazy(() => import("./pages/GuideDetail"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -71,7 +75,14 @@ const AppContent = () => {
   
   return (
     <>
-      <Routes>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        }
+      >
+        <Routes>
         <Route path="/" element={<HomeGate />} />
         <Route path="/atacado" element={<InicioAtacado />} />
         <Route path="/varejo" element={<InicioVarejo />} />
@@ -86,11 +97,14 @@ const AppContent = () => {
         <Route path="/depoimentos" element={<TestimonialsPage />} />
         <Route path="/atacado/checkout" element={<WholesaleCheckout />} />
         <Route path="/atacado/confirmacao" element={<WholesaleConfirmation />} />
-        
+        <Route path="/guias" element={<GuidesHub />} />
+        <Route path="/guias/:slug" element={<GuideDetail />} />
+
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </Suspense>
       <WhatsAppButton />
     </>
   );
