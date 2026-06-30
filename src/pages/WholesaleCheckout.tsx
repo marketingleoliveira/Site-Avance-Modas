@@ -54,6 +54,7 @@ import {
   getRealShippingQuote,
   type RealShippingQuote,
 } from "@/lib/shopify-shipping-quote";
+import RouteSEO from "@/components/seo/RouteSEO";
 
 type PaymentMethod = "pix" | "credit_card_3x";
 
@@ -309,6 +310,12 @@ const WholesaleCheckout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <RouteSEO
+        title="Checkout Atacado | Avance Modas"
+        description="Finalize seu pedido no atacado da Avance Modas."
+        path="/atacado/checkout"
+        noindex
+      />
       <Header />
 
       <main className="flex-1 container mx-auto max-w-4xl px-4 py-6 sm:py-8">
