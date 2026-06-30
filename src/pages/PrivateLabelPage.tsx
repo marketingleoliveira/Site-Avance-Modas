@@ -6,6 +6,7 @@ import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Package, Sparkles, Truck, MessageCircle, CheckCircle } from "lucide-react";
 import { getSiteSetting } from "@/lib/site-settings";
+import RouteSEO from "@/components/seo/RouteSEO";
 
 interface PrivateLabelSettings {
   enabled: boolean;
@@ -111,6 +112,15 @@ const PrivateLabelPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <RouteSEO
+        title="Private Label Fitness — Fabricação para sua Marca | Avance Modas"
+        description="Serviço Private Label da Avance Modas: fabricamos moda fitness feminina sob sua marca, com tecido tecnológico, UV 50+, Aloe Vera e tiragens flexíveis."
+        path="/private-label"
+        breadcrumbs={[
+          { name: "Início", path: "/" },
+          { name: "Private Label", path: "/private-label" },
+        ]}
+      />
       <AnnouncementBar />
       <Header />
       
