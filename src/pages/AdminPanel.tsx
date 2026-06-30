@@ -27,6 +27,8 @@ import SizeChartManager from "@/components/admin/SizeChartManager";
 import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import CouponsManager from "@/components/admin/CouponsManager";
+import GuidesManager from "@/components/admin/GuidesManager";
+import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -202,6 +204,8 @@ const AdminPanel = () => {
         { id: "instagram", label: "Instagram", icon: <Instagram className="w-4 h-4" /> },
         { id: "contact", label: "Contato", icon: <Phone className="w-4 h-4" /> },
         { id: "private-label", label: "Private Label", icon: <Tag className="w-4 h-4" /> },
+        { id: "guides", label: "Guias (SEO)", icon: <BookOpen className="w-4 h-4" /> },
+        { id: "search-console", label: "Search Console", icon: <LayoutDashboard className="w-4 h-4" /> },
       ]
     },
     {
