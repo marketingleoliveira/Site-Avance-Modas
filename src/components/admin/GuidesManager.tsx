@@ -51,7 +51,7 @@ const GuidesManager = () => {
       .select("*")
       .order("updated_at", { ascending: false });
     if (error) toast.error(error.message);
-    setGuides((data as Guide[]) ?? []);
+    setGuides(((data as unknown) as Guide[]) ?? []);
     setLoading(false);
   }
 
