@@ -2,5 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/
+Disallow: /atacado/checkout
+Disallow: /atacado/confirmacao
+Disallow: /suporte
 
 Sitemap: https://avancemodas.com.br/sitemap.xml
