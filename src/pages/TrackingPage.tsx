@@ -12,6 +12,7 @@ import {
   Copy
 } from "lucide-react";
 import { toast } from "sonner";
+import RouteSEO from "@/components/seo/RouteSEO";
 import loggiLogo from "@/assets/loggi-logo.png";
 
 // Build Loggi tracking URL - using app.loggi.com/rastreador format
@@ -38,6 +39,15 @@ export default function TrackingPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <RouteSEO
+        title="Rastreio de Pedidos — Loggi e Correios | Avance Modas"
+        description="Acompanhe seu pedido Avance Modas. Rastreie entregas Loggi e Correios pelo código de rastreio diretamente da nossa página de acompanhamento."
+        path="/rastreio"
+        breadcrumbs={[
+          { name: "Início", path: "/" },
+          { name: "Rastreio", path: "/rastreio" },
+        ]}
+      />
       <Header />
       
       <main className="flex-1 container mx-auto px-4 py-6 sm:py-8 md:py-12">
