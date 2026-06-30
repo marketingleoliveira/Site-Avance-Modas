@@ -1991,6 +1991,42 @@ const AdminPanel = () => {
       case "testimonials":
         return <TestimonialsManager />;
 
+      case "guides":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Guias (Hub de SEO)
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie artigos pilares publicados em /guias.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GuidesManager />
+            </CardContent>
+          </Card>
+        );
+
+      case "search-console":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LayoutDashboard className="w-5 h-5" />
+                Google Search Console
+              </CardTitle>
+              <CardDescription>
+                Consultas, páginas, CTR, posição média e inspeção de URLs — direto do Search Console.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SearchConsoleDashboard />
+            </CardContent>
+          </Card>
+        );
+
       default:
         return null;
     }
