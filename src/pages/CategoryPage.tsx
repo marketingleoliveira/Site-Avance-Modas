@@ -173,6 +173,11 @@ const CategoryPage = () => {
         description={config.description}
         image={products[0]?.node.images.edges[0]?.node.url}
         productCount={products.length}
+        items={products.slice(0, 20).map((p) => ({
+          handle: p.node.handle,
+          title: p.node.title,
+          image: p.node.images.edges[0]?.node.url,
+        }))}
       />
       <AnnouncementBar />
       <Header />

@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import RouteSEO from "@/components/seo/RouteSEO";
 import { toast } from "sonner";
 import { z } from "zod";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
@@ -99,6 +100,12 @@ const SupportPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <RouteSEO
+        title="Suporte ao Cliente | Avance Modas"
+        description="Fale com o suporte da Avance Modas. Tire dúvidas sobre pedidos de moda fitness varejo e atacado por chat, e-mail ou WhatsApp."
+        path="/suporte"
+        noindex
+      />
       <AnnouncementBar />
       <Header />
 

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { LogOut, Save, Image, Home, Settings, Phone, Layout, Grid, Plus, Trash2, ArrowUp, ArrowDown, Mail, Download, Users, Instagram, UserPlus, Shield, ShoppingBag, Loader2, Play, Tag, Megaphone, Truck, Percent, CreditCard, RefreshCw, Star, Gift, Clock, Check, Heart, Package, Zap, Award, ThumbsUp, Store, Wrench, BookOpen, MessageSquare, ChevronDown, ChevronRight, PanelLeft, FileText, Palette, Type, LayoutDashboard, HeadphonesIcon, MessageCircle } from "lucide-react";
 import logoAvance from "@/assets/logo-avance.png";
+import RouteSEO from "@/components/seo/RouteSEO";
 import HeroEditor from "@/components/admin/HeroEditor";
 import VideosEditor from "@/components/admin/VideosEditor";
 import PromoBannerEditor from "@/components/admin/PromoBannerEditor";
@@ -1993,6 +1994,7 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-secondary flex">
+      <RouteSEO title="Painel Admin | Avance Modas" description="Painel administrativo." path="/admin" noindex />
       {/* Sidebar */}
       <aside 
         className={cn(

@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import Header from "@/components/layout/Header";
+import RouteSEO from "@/components/seo/RouteSEO";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -248,6 +249,12 @@ const SACPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <RouteSEO
+        title="SAC — Central de Atendimento | Avance Modas"
+        description="Abra um chamado no SAC da Avance Modas. Reclamações, dúvidas e suporte sobre pedidos de moda fitness varejo e atacado. Resposta em até 48h úteis."
+        path="/sac"
+        breadcrumbs={[{ name: "Início", path: "/" }, { name: "SAC", path: "/sac" }]}
+      />
       <Header />
       
       {/* Hero Section */}
