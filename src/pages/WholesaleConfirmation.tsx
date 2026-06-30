@@ -13,6 +13,7 @@ import {
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useCartStore } from "@/stores/cartStore";
+import RouteSEO from "@/components/seo/RouteSEO";
 
 const steps = [
   {
@@ -55,6 +56,12 @@ const WholesaleConfirmation = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <RouteSEO
+        title="Pedido Atacado Recebido | Avance Modas"
+        description="Pedido atacado recebido. Nossa equipe entrará em contato em até 48h úteis."
+        path="/atacado/confirmacao"
+        noindex
+      />
       <Header />
 
       <main className="flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
