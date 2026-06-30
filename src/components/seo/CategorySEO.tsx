@@ -6,6 +6,7 @@ interface CategorySEOProps {
   description: string;
   image?: string;
   productCount?: number;
+  items?: Array<{ handle: string; title: string; image?: string }>;
 }
 
 const SITE = "https://avancemodas.com.br";
@@ -18,7 +19,7 @@ const trimToLimit = (s: string, max = 155) => {
   return cut.slice(0, cut.lastIndexOf(" ")).trim() + "…";
 };
 
-const CategorySEO = ({ category, title, description, image, productCount }: CategorySEOProps) => {
+const CategorySEO = ({ category, title, description, image, productCount, items }: CategorySEOProps) => {
   const pageTitle = `${title} | Avance Modas`;
   const baseDesc = `${title} – ${description} Moda fitness feminina com tecido tecnológico, UV 50+ e Aloe Vera. Compre no varejo ou atacado.`;
   const cleanDesc = trimToLimit(baseDesc);
@@ -39,8 +40,24 @@ const CategorySEO = ({ category, title, description, image, productCount }: Cate
         "@type": "ItemList",
         numberOfItems: productCount,
         name: title,
+        itemListElement: (items || []).slice(0, 20).map((p, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `${SITE}/produto/${p.handle}`,
+          name: p.title,
+          image: p.image,
+        })),
       },
     }),
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: `${SITE}/` },
+      { "@type": "ListItem", position: 2, name: title, item: url },
+    ],
   };
 
   return (
@@ -63,6 +80,7 @@ const CategorySEO = ({ category, title, description, image, productCount }: Cate
       <meta name="twitter:image:alt" content={`${title} - Avance Modas`} />
 
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
     </Helmet>
   );
 };
