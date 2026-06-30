@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import RouteSEO from "@/components/seo/RouteSEO";
 import logoAvance from "@/assets/logo-avance.png";
 
 const AdminLogin = () => {
@@ -119,6 +120,7 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-background flex items-center justify-center p-4">
+      <RouteSEO title="Login Admin | Avance Modas" description="Acesso restrito ao painel administrativo." path="/admin/login" noindex />
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl p-8 shadow-lg border border-border">
           <div className="text-center mb-8">
