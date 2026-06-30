@@ -275,6 +275,7 @@ const Footer = () => {
                   { href: "/varejo", label: "Produtos" },
                   { href: "/categoria/promocoes", label: "Promoções" },
                   { href: "/depoimentos", label: "Depoimentos" },
+                  { href: "/guias", label: "Guias" },
                   { href: "/contato", label: "Contato" },
                 ].map((link, index) => (
                   <li
