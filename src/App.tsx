@@ -30,7 +30,9 @@ const WholesaleConfirmation = lazy(() => import("./pages/WholesaleConfirmation")
 const GuidesHub = lazy(() => import("./pages/GuidesHub"));
 const GuideDetail = lazy(() => import("./pages/GuideDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const CommercialLanding = lazy(() => import("./pages/CommercialLanding"));
 import { Loader2 } from "lucide-react";
+import { landingPages } from "@/content/seoContent";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +101,14 @@ const AppContent = () => {
         <Route path="/atacado/confirmacao" element={<WholesaleConfirmation />} />
         <Route path="/guias" element={<GuidesHub />} />
         <Route path="/guias/:slug" element={<GuideDetail />} />
+
+        {landingPages.map((cfg) => (
+          <Route
+            key={cfg.slug}
+            path={`/${cfg.slug}`}
+            element={<CommercialLanding config={cfg} />}
+          />
+        ))}
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
