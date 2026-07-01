@@ -33,3 +33,15 @@
 - [Revenda Fitness Atacado](/guias/revenda-moda-fitness-atacado): Guia para começar a revender no atacado.
 - [Moda Fitness para Musculação](/guias/moda-fitness-musculacao): Peças ideais para treinar musculação.
 - [Poliamida x Poliéster x Suplex](/guias/poliamida-vs-poliester-vs-suplex): Comparativo dos principais tecidos fitness.
+## Landing pages comerciais
+
+- [Legging Poliamida](/legging-poliamida)
+- [Legging Cintura Alta](/legging-cintura-alta)
+- [Legging Sem Transparência](/legging-sem-transparencia)
+- [Calça Fitness](/calca-fitness)
+- [Short Fitness](/short-fitness)
+- [Conjunto Fitness](/conjunto-fitness)
+- [Roupa Fitness Feminina](/roupa-fitness-feminina)
+- [Moda Fitness](/moda-fitness)
+- [Moda Fitness Atacado](/moda-fitness-atacado)
+- [Fornecedor Moda Fitness](/fornecedor-moda-fitness)
