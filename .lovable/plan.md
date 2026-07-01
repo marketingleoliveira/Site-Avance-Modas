@@ -1,91 +1,93 @@
-# Plano de SEO profundo — Avance Modas
+# Plano — SEO/Performance Invisível (Avance Modas)
 
-Foco 100% em bastidores. Nenhuma mudança em layout, cores, tipografia, navegação ou UX. Tudo é incremental e preserva URLs já indexadas.
+Regra inegociável: **zero mudanças visuais** (layout, cores, tipografia, componentes, banners, menus). Todo o trabalho acontece em `<head>`, JSON-LD, HTML semântico, rotas novas para SEO, imagens e bundle.
 
-## Fase 1 — Fundação técnica (rápido, alto impacto)
+## 1. Auditoria técnica (bastidor)
+- Rodar `seo_chat--trigger_scan` + `seo_chat--list_findings` e corrigir tudo que estiver failing.
+- Rodar `code--dependency_scan` para pegar libs pesadas removíveis.
+- Verificar Heading hierarchy em todas as páginas (`H1` único por rota, `H2/H3` semânticos). Onde hoje o `<h2>` visual for na verdade o título principal (ex.: `CategoriesSection`), converter para `h2` real e garantir um único `h1` acima (ex.: `h1` visualmente presente ou `sr-only` quando o design não permitir).
+- `alt` descritivo em imagens (`CategoriesSection`, hero, produtos, testimonials, footer).
+- `width`/`height` em todas as `<img>` estáticas para eliminar CLS.
+- `loading="lazy"` + `decoding="async"` em imagens abaixo da dobra; `fetchpriority="high"` só no LCP.
 
-1. **Head sitewide (`index.html`)** — revisar title, description, Organization + WebSite + SearchAction JSON-LD, og/twitter, `lang="pt-BR"`, theme-color, preconnect (cdn Shopify, fonts, supabase), favicon.
-2. **Helmet por rota** — auditar todas as páginas (`Index`, `InicioVarejo`, `InicioAtacado`, `StoreSelector`, `AboutPage`, `ContactPage`, `SACPage`, `PrivateLabelPage`, `TestimonialsPage`, `TrackingPage`, `SupportPage`, `WholesaleCheckout`, `WholesaleConfirmation`, `NotFound`) garantindo title único, description única, canonical self-referencing, og:url consistente.
-3. **`NotFound`** — adicionar `<meta name="robots" content="noindex">` via Helmet e links internos para hubs principais.
-4. **Páginas internas (checkout, confirmação, admin, suporte)** — `noindex,follow` onde apropriado.
-5. **`robots.txt`** — manter; adicionar `Disallow: /atacado/checkout`, `/atacado/confirmacao`, `/suporte` se forem privadas.
-6. **`sitemap.xml`** — migrar de estático para gerador (`scripts/generate-sitemap.ts` + `predev`/`prebuild`) puxando categorias do código e produtos do Shopify, mantendo URLs já listadas.
-7. **`llms.txt`** — expandir com hubs de conteúdo novos.
+## 2. Meta titles & descriptions comerciais (CTR)
+Reescrever em todas as rotas com foco em conversão (poliamida premium, sem transparência, atacado/varejo, UV50+, fábrica própria):
+- `/` (StoreSelector), `/varejo`, `/atacado`, `/sobre`, `/contato`, `/sac`, `/rastreio`, `/private-label`, `/depoimentos`, `/guias`.
+- Todas as `/categoria/:slug` recebem título + descrição próprios via `CategorySEO` (já existe) — enriquecer copy.
+- Todos os `/produto/:handle` já usam `ProductSEO`; reforçar copy comercial no fallback.
 
-## Fase 2 — Schema.org rico
+## 3. Novas landing pages comerciais (SEO puro, sem quebrar layout)
+Criar rotas novas que **reusam componentes existentes** (`ShopifyProductGridFiltered` + `RouteSEO` + bloco FAQ). Sem novo design.
 
-- **Product** já existe em `ProductSEO.tsx`: adicionar `aggregateRating` quando houver avaliações, `material` (Poliamida/Suplex), `gtin`/`mpn` quando disponíveis, `additionalProperty` (UV 50+, Aloe Vera, compressão), `hasMerchantReturnPolicy`, `shippingDetails`.
-- **BreadcrumbList** em produto, categoria, artigos.
-- **FAQPage** em produto (FAQ por peça) e em guias.
-- **CollectionPage + ItemList** em categoria (`CategorySEO` já tem base — completar com `itemListElement`).
-- **Organization/LocalBusiness** sitewide com CNPJ, endereço, telefone, sameAs (Instagram, etc.).
-- **Article/BlogPosting** para guias (Fase 4).
+URLs (301 dos slugs equivalentes que já existirem):
+- `/legging-poliamida`
+- `/legging-cintura-alta`
+- `/legging-sem-transparencia`
+- `/calca-fitness`
+- `/short-fitness`
+- `/conjunto-fitness`
+- `/roupa-fitness-feminina`
+- `/moda-fitness`
+- `/moda-fitness-atacado`
+- `/fornecedor-moda-fitness`
+- `/moda-praia` (só se houver produtos — senão fica fora do sitemap)
 
-## Fase 3 — Conteúdo de produto (sem mudar layout)
+Cada uma:
+- `<h1>` com a keyword primária
+- 600–1000 palavras de copy original (comercial, EEAT, sem keyword stuffing)
+- Grid filtrado por keyword/tipo (Shopify search query)
+- Bloco FAQ visível + `FAQPage` JSON-LD
+- `BreadcrumbList` + `CollectionPage` + `ItemList` schemas
+- Link interno para categorias relacionadas, atacado, guias
 
-Sem alterar visual do `ShopifyProductPage`, expandir o que o componente injeta no head e em seções colapsáveis/abas já existentes:
-- descrição enriquecida puxando metafields do Shopify (gramatura, elasticidade, compressão, UV, respirabilidade, cuidados);
-- FAQ por produto (4–6 perguntas padrão renderizadas em accordion já existente ou em `<details>` semântico invisível-amigável);
-- bloco "Produtos relacionados" reforçando linkagem interna por categoria/cor/tecido.
+Componente compartilhado: `src/components/seo/CommercialLanding.tsx` (reaproveita estilo já existente do site — nada novo visual).
 
-## Fase 4 — Autoridade temática (hub semântico)
+## 4. Copy 600–1000 palavras nas categorias existentes
+Adicionar bloco de texto SEO **abaixo do grid** em `CategoryPage` (respeitando o design atual — tipografia/cores herdadas). Conteúdo carregado de um objeto `src/content/category-copy.ts` (Leggings, Shorts, Tops, Conjuntos, Bermudas, Blusas, Promoções). Inclui H2/H3 semânticos + FAQ + FAQ Schema.
 
-Criar estrutura de blog/guias **sem mudar o menu**. Acesso via footer + links internos contextuais.
+## 5. Schemas ricos (Rich Snippets)
+- `Organization` + `LocalBusiness` (endereço da fábrica) — no `index.html`
+- `WebSite` + `SearchAction` (busca interna `?q=`) — `index.html`
+- `BreadcrumbList` em todas as rotas via `RouteSEO`
+- `Product` com `Offer`, `AggregateRating` **apenas** quando houver reviews reais (política anti-fake mantida)
+- `FAQPage` nas categorias e landings
+- `ItemList` nos hubs
 
-- Rota nova `/guias` (hub) + `/guias/:slug` (artigo) com `Article` JSON-LD, breadcrumb, TOC, FAQ.
-- Conteúdo gerenciado por tabela `guides` no Lovable Cloud (com RLS pública leitura, admin escrita; novo painel em `/admin`).
-- Páginas pilares iniciais (geradas com conteúdo seed pronto):
-  - Guia da Poliamida
-  - Guia da Legging (como escolher, evitar transparência, melhor p/ academia)
-  - Poliamida x Poliéster x Suplex
-  - Como lavar roupa fitness de poliamida
-  - Guia de Revenda Fitness (atacado)
-  - Moda Fitness para Pilates / Yoga / Musculação / Corrida
-- Sitemap inclui todos os guias dinamicamente.
+## 6. Linkagem interna
+- Bloco "Categorias relacionadas" em `CategoryPage`, `ShopifyProductPage`, `GuideDetail`, novas landings.
+- Cross-links `/varejo` ↔ `/atacado` ↔ `/private-label`.
+- Rodapé já linka; adicionar links contextuais dentro dos textos SEO.
 
-## Fase 5 — Links internos automáticos
+## 7. Performance (Core Web Vitals)
+- Confirmar `React.lazy` em rotas pesadas (`AdminPanel`, `WholesaleCheckout`, `SACPage`, `ProductPage`, `CategoryPage`) — já iniciado.
+- Adicionar `vite-plugin-compression` (gzip+brotli) e `rollup` `manualChunks` (react, shopify, supabase, ui).
+- `preconnect`/`dns-prefetch` para `cdn.shopify.com`, Supabase, Google Fonts.
+- Fontes: `font-display: swap` + preload da fonte usada no LCP.
+- Imagens estáticas `src/assets/*.jpg` — passar por `vite-imagetools` gerando `.webp`.
+- Remover CSS não usado via `tailwind` purge (já ativo) e conferir `content` globs.
 
-- Componente `RelatedLinks` reutilizável que cruza categoria atual ↔ guias ↔ produtos ↔ pilares. Inserido em rodapés de seção já existentes (não cria seção visual nova; substitui blocos hoje vazios).
-- Breadcrumbs semânticas (HTML + JSON-LD) onde já existe breadcrumb visual (CategoryPage, ProductPage).
-- Anchor text rico em palavras-chave-alvo.
+## 8. Sitemap / robots / llms.txt
+- Regenerar `sitemap.xml` incluindo novas landings e mantendo URLs indexadas.
+- Manter `Disallow` para checkout/admin/suporte.
+- Atualizar `llms.txt` com as novas landings.
 
-## Fase 6 — Performance / Core Web Vitals
+## 9. Redirects 301
+Se alguma URL antiga entrar em conflito com nova landing, adicionar redirect via `<Route>` React (`<Navigate replace>`) — nada muda visualmente. Nenhuma URL indexada atual será removida.
 
-- `vite-imagetools` para imagens locais (`src/assets/*`) com `?format=avif` + `?format=webp` + fallback.
-- `loading="lazy"` + `decoding="async"` revisado em todas as `<img>`; LCP da home com `fetchpriority="high"` + `<link rel="preload">`.
-- `preconnect` para `cdn.shopify.com`, `*.myshopify.com`, Supabase, Google Fonts.
-- Font-display swap e subset; remover fontes não usadas.
-- Code-split agressivo de rotas pesadas (admin já é rota separada; garantir `React.lazy`).
-- Remover libs não usadas (audit com `bunx depcheck`).
+## 10. Relatório final
+Ao concluir, entrego resumo com: findings corrigidos, páginas criadas, schemas adicionados, ganhos esperados de performance, oportunidades futuras (backlinks, GSC follow-up).
 
-## Fase 7 — IA / Answer Engine Optimization
+---
 
-- Em todo guia e FAQ: blocos curtos "Resumo" + "Resposta direta" no início, perguntas como H2 explícitos, listas e tabelas comparativas, glossário de termos.
-- `llms.txt` expandido com mapa de hubs.
-- JSON-LD `Speakable` em respostas curtas.
+## Ordem de execução
+1. Scan SEO + fixes rápidos (meta/heading/alt).
+2. `CommercialLanding` + 10 novas rotas + sitemap + links internos.
+3. Copy SEO + FAQ nas 7 categorias.
+4. Schemas complementares (`LocalBusiness`, `WebSite SearchAction`).
+5. Performance (compression, chunks, preconnect, imagetools).
+6. Rescan + relatório.
 
-## Detalhes técnicos
-
-- **Stack:** Vite/React 18/TS/Tailwind. Helmet via `react-helmet-async` já instalado.
-- **Backend dos guias:** tabela `public.guides (id, slug unique, title, excerpt, body_md, hero_image, category, tags[], reading_minutes, published, published_at, updated_at)` + `GRANT SELECT TO anon, authenticated`, `GRANT ALL TO service_role`, RLS `published = true` para leitura pública, admin via `has_role`.
-- **Sitemap gerado:** consulta Supabase (`guides where published`) + Shopify Storefront API (produtos VAREJO + ATACADO) + rotas estáticas. Roda em `predev` e `prebuild`.
-- **Sem mudar URLs:** todas as rotas atuais permanecem. Apenas adicionamos `/guias` e `/guias/:slug`.
-
-## Ordem de execução proposta
-
-1. Fase 1 + 2 num único passo (head, schema, sitemap dinâmico, robots) — ganho imediato sem risco visual.
-2. Fase 6 (perf) — sem efeito visual.
-3. Fase 3 (enriquecimento de produto via metafields/FAQ).
-4. Fase 4 + 5 + 7 (hub de guias + linkagem + AEO) — maior, entrego em incrementos.
-
-## O que NÃO vou tocar
-
-- Layout, paleta, fontes, espaçamentos, componentes visuais.
-- Menu/header/footer (estrutura), exceto adicionar 1 link "Guias" no footer na Fase 4 — confirmo antes.
-- URLs existentes, rotas atuais, comportamento do carrinho/checkout.
-
-## Confirmações antes de executar
-
-1. Posso seguir nessa ordem (Fase 1+2 primeiro), ou prefere priorizar outra fase?
-2. Posso criar `/guias` e `/guias/:slug` (rotas novas, sem mexer no menu — acesso via footer e links internos)?
-3. Posso adicionar tabela `guides` no Lovable Cloud para o hub de conteúdo?
+## Confirmações que preciso antes de codar
+1. Posso criar as **10 novas rotas** listadas em §3 (aparecem só no sitemap/links internos, não entram no menu visual)?
+2. Posso adicionar **bloco de texto SEO ao fim das categorias** (§4) — herda tipografia atual, não muda cores/layout, mas *adiciona conteúdo* na página. Confirma que isso não fere a regra "não alterar layout"?
+3. Instalar `vite-plugin-compression` e `vite-imagetools` (§7)?
