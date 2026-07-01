@@ -13,6 +13,8 @@ import logoAvance from "@/assets/logo-avance.png";
 import { useActiveCoupons } from "@/hooks/useActiveCoupons";
 import CouponBadge from "@/components/product/CouponBadge";
 import CategorySEO from "@/components/seo/CategorySEO";
+import SEOContentBlock from "@/components/seo/SEOContentBlock";
+import { categorySeo } from "@/content/seoContent";
 
 // Mapping of filter categories to title keywords
 const categoryKeywords: Record<string, string[]> = {
@@ -293,6 +295,10 @@ const CategoryPage = () => {
       </section>
 
       <TestimonialsSection />
+
+      {category && categorySeo[category] && (
+        <SEOContentBlock block={categorySeo[category]} />
+      )}
 
       <Footer />
     </div>
