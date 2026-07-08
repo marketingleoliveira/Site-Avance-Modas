@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Sparkles } from "lucide-react";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -21,6 +21,7 @@ interface NewsletterPopupProps {
 const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
   const [open, setOpen] = useState(false);
   const [whatsapp, setWhatsapp] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -53,33 +54,35 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
       return;
     }
 
+    const cleanEmail = email.trim();
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError("Informe um e-mail válido");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { error: dbError } = await supabase
-        .from("newsletter_subscribers")
-        .insert({
-          whatsapp: digits,
-          source: "popup_varejo"
-        });
+      const { data, error: fnError } = await supabase.functions.invoke(
+        "newsletter-subscribe",
+        { body: { whatsapp: digits, email: cleanEmail || undefined, source: "popup_varejo" } }
+      );
 
-      if (dbError) {
-        if (dbError.code === "23505") {
-          toast.info("Você já está inscrito!", {
-            description: "Este WhatsApp já está cadastrado na nossa lista.",
-          });
-          localStorage.setItem("newsletter_subscribed", "true");
-          setOpen(false);
-        } else {
-          throw dbError;
-        }
+      if (fnError) throw fnError;
+
+      if (data?.alreadySubscribed) {
+        toast.info("Você já está inscrito!", {
+          description: "Este WhatsApp já está cadastrado na nossa lista.",
+        });
       } else {
         toast.success("Inscrição realizada!", {
-          description: "Você receberá nossos lançamentos em primeira mão.",
+          description: cleanEmail
+            ? "Você receberá nossos lançamentos por WhatsApp e e-mail."
+            : "Você receberá nossos lançamentos em primeira mão.",
         });
-        localStorage.setItem("newsletter_subscribed", "true");
-        setOpen(false);
       }
+      localStorage.setItem("newsletter_subscribed", "true");
+      setOpen(false);
     } catch (err) {
       console.error("Newsletter subscription error:", err);
       toast.error("Erro ao cadastrar", {
@@ -140,6 +143,21 @@ const NewsletterPopup = ({ delayMs = 5000 }: NewsletterPopupProps) => {
                   value={whatsapp}
                   onChange={(e) => {
                     setWhatsapp(formatWhatsapp(e.target.value));
+                    setError("");
+                  }}
+                  className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-accent focus:ring-accent h-12"
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <Input
+                  type="email"
+                  inputMode="email"
+                  placeholder="Seu e-mail (opcional)"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
                     setError("");
                   }}
                   className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-accent focus:ring-accent h-12"
