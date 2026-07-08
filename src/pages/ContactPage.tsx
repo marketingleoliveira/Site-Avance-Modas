@@ -26,7 +26,7 @@ const ContactPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [contactSettings, setContactSettings] = useState<ContactSettings>({
-    whatsapp_number: "5511999999999",
+    whatsapp_number: "5511932105187",
     email: "contato@avancemodas.com.br",
     address: "Endereço da loja",
     instagram: "@avancemodas"

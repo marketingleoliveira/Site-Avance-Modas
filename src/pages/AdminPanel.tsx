@@ -312,7 +312,7 @@ const AdminPanel = () => {
       setStoreSelector(selector);
       setFeatures(feat);
       setContactSettings(contact || {
-        whatsapp_number: "5511999999999",
+        whatsapp_number: "5511932105187",
         email: "contato@avancemodas.com.br",
         address: "Endereço da loja",
         instagram: "@avancemodas"
@@ -1170,9 +1170,9 @@ const AdminPanel = () => {
                   <Input
                     value={contactSettings?.whatsapp_number || ''}
                     onChange={(e) => setContactSettings(prev => prev ? {...prev, whatsapp_number: e.target.value} : null)}
-                    placeholder="5511999999999"
+                    placeholder="5511932105187"
                   />
-                  <p className="text-xs text-muted-foreground">Ex: 5511999999999 (sem + ou espaços)</p>
+                  <p className="text-xs text-muted-foreground">Ex: 5511932105187 (sem + ou espaços)</p>
                 </div>
                 <div className="space-y-2">
                   <Label>E-mail</Label>

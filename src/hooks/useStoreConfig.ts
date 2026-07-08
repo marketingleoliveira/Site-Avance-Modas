@@ -33,7 +33,7 @@ const DEFAULT_SHIPPING_SETTINGS: ShippingSettings = {
 };
 
 const DEFAULT_SOCIAL_SETTINGS: SocialSettings = {
-  whatsapp_number: '5511999999999',
+  whatsapp_number: '5511932105187',
   whatsapp_message: 'Olá! Vim pelo site e gostaria de mais informações.',
   instagram_url: 'https://instagram.com/avancemodasoficial',
   facebook_url: '',

@@ -58,7 +58,7 @@ const defaultSettings: PrivateLabelSettings = {
   cta_title: "Pronto para começar sua marca?",
   cta_description: "Entre em contato agora e solicite um orçamento personalizado. Nossa equipe está pronta para ajudar você a criar sua linha exclusiva de moda fitness.",
   cta_button_text: "Falar no WhatsApp",
-  cta_whatsapp_number: "5511999999999",
+  cta_whatsapp_number: "5511932105187",
 };
 
 const PrivateLabelPage = () => {
