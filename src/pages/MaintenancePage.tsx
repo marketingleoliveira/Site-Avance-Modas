@@ -65,7 +65,7 @@ export default function MaintenancePage() {
     return () => clearInterval(timer);
   }, [scheduledEnd, refetch]);
 
-  const whatsappNumber = socialSettings?.whatsapp_number || "5511999999999";
+  const whatsappNumber = socialSettings?.whatsapp_number || "5511932105187";
   const whatsappMessage = encodeURIComponent(socialSettings?.whatsapp_message || "Olá! Gostaria de saber quando o site volta ao ar.");
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 

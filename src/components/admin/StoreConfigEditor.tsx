@@ -706,10 +706,10 @@ export default function StoreConfigEditor({
                   <Input
                     value={localSocial.whatsapp_number}
                     onChange={(e) => setLocalSocial({ ...localSocial, whatsapp_number: e.target.value })}
-                    placeholder="5511999999999"
+                    placeholder="5511932105187"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Número com código do país (ex: 5511999999999)
+                    Número com código do país (ex: 5511932105187)
                   </p>
                 </div>
 
