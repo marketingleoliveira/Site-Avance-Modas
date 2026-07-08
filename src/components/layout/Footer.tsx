@@ -351,7 +351,7 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-2 sm:gap-3 lg:gap-4">
                 {[
-                  { icon: Phone, text: "(11) 9 8467-1276" },
+                  { icon: Phone, text: "(11) 9 3210-5187" },
                   { icon: Mail, text: "contato@avance.com.br", className: "break-all" },
                   { icon: MapPin, text: "São Paulo, SP - Brasil", iconClassName: "mt-0.5" },
                 ].map((item, index) => (
