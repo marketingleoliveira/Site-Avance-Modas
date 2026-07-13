@@ -180,10 +180,15 @@ const ShopifyProductPage = () => {
         if (!isAtacadoProduct && !node.availableForSale) return false;
         
         let sizeMatch = false;
+        let colorMatch = selectedColor ? false : true;
         
         node.selectedOptions?.forEach(opt => {
           const nameLower = opt.name.toLowerCase();
-          
+
+          if (selectedColor && (nameLower.includes('cor') || nameLower.includes('color') || nameLower.includes('colour')) && opt.value === selectedColor) {
+            colorMatch = true;
+          }
+
           if (sizeType === 'top') {
             if ((nameLower.includes('superior') || nameLower.includes('top') || nameLower.includes('blusa') || nameLower.includes('camiseta')) && opt.value === size) {
               sizeMatch = true;
@@ -199,7 +204,7 @@ const ShopifyProductPage = () => {
           }
         });
         
-        return sizeMatch;
+        return sizeMatch && colorMatch;
       });
     };
 
@@ -212,7 +217,7 @@ const ShopifyProductPage = () => {
     bottomSizes.forEach(size => bottomMap.set(size, checkAvailability(size, 'bottom')));
     
     return { regular: regularMap, top: topMap, bottom: bottomMap };
-  }, [product, sizes, topSizes, bottomSizes]);
+  }, [product, sizes, topSizes, bottomSizes, selectedColor, isAtacadoProduct]);
 
   // Pre-compute color availability map based on selected size (memoized)
   const colorAvailabilityMap = useMemo(() => {
