@@ -217,6 +217,10 @@ const PRODUCT_BY_HANDLE_QUERY = `
           amount
           currencyCode
         }
+      maxVariantPrice {
+        amount
+        currencyCode
+      }
       }
       compareAtPriceRange {
         minVariantPrice {
