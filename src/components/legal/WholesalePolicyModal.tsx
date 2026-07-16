@@ -37,6 +37,27 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
               </p>
             </div>
 
+            <div className="bg-primary/5 border border-primary/30 rounded-lg p-4 space-y-2">
+              <p className="font-semibold text-foreground text-sm">
+                📦 Composição de Valores e Custos Logísticos
+              </p>
+              <p className="text-xs">
+                Os valores apresentados para produtos e frete podem sofrer ajustes na composição
+                final do pedido em função da região de entrega, modalidade de transporte escolhida
+                e custos operacionais envolvidos no processo logístico, incluindo separação,
+                conferência, embalagem e coleta da transportadora.
+              </p>
+              <p className="text-xs">
+                Dessa forma, os valores individuais de produtos e frete poderão ser redistribuídos
+                ou ajustados, sem necessariamente representar alteração no valor total do pedido
+                aprovado pelo cliente.
+              </p>
+              <p className="text-xs">
+                O valor final do pedido será sempre informado e confirmado previamente antes da
+                conclusão da compra e emissão do faturamento.
+              </p>
+            </div>
+
             <section>
               <h3 className="text-base font-semibold text-foreground mb-2">1. Definição de Venda por Atacado</h3>
               <p>
