@@ -159,6 +159,10 @@ const STOREFRONT_QUERY = `
               amount
               currencyCode
             }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
           }
           compareAtPriceRange {
             minVariantPrice {
@@ -167,7 +171,6 @@ const STOREFRONT_QUERY = `
             }
           }
           images(first: 30) {
-
             edges {
               node {
                 url
