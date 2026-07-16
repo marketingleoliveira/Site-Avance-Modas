@@ -24,6 +24,11 @@ interface PriceDisplayProps {
    * Atacado onde não exibimos parcelamento nos cards.
    */
   showInstallments?: boolean;
+  /**
+   * Quando true, exibe "A partir de" acima do preço principal. Útil quando o
+   * produto tem variantes com preços diferentes (ex.: tamanhos G1/G2 mais caros).
+   */
+  showFromLabel?: boolean;
 }
 
 const formatBRL = (n: number, currency = "BRL") =>
@@ -56,6 +61,7 @@ const PriceDisplay = ({
   className,
   showPixBadge = false,
   showInstallments = true,
+  showFromLabel = false,
 }: PriceDisplayProps) => {
   const price = typeof amount === "string" ? parseFloat(amount) : amount;
   const compareAt = compareAtAmount
@@ -121,6 +127,12 @@ const PriceDisplay = ({
       {hasDiscount && (
         <span className={cn("text-muted-foreground line-through leading-none", sizes.from)}>
           {formatBRL(compareAt!, currencyCode)}
+        </span>
+      )}
+
+      {showFromLabel && (
+        <span className={cn("text-muted-foreground leading-none uppercase tracking-wide", sizes.from)}>
+          A partir de
         </span>
       )}
 

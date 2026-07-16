@@ -169,6 +169,8 @@ const ShopifyProductGridFiltered = ({
             const firstImage = product.node.images.edges[0]?.node;
             const price = product.node.priceRange.minVariantPrice;
             const compareAt = product.node.compareAtPriceRange?.minVariantPrice;
+            const maxPrice = product.node.priceRange.maxVariantPrice;
+            const hasPriceRange = !!maxPrice && parseFloat(maxPrice.amount) > parseFloat(price.amount);
             const colors = getColorOptions(product);
             const productCoupon = getCouponForProduct(product.node.handle);
             
@@ -254,6 +256,7 @@ const ShopifyProductGridFiltered = ({
                     size="md"
                     align="center"
                     showPixBadge={type !== 'ATACADO'}
+                    showFromLabel={hasPriceRange}
                   />
                 </div>
               </Link>

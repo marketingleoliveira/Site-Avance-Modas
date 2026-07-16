@@ -54,6 +54,10 @@ export interface ShopifyProduct {
         amount: string;
         currencyCode: string;
       };
+      maxVariantPrice?: {
+        amount: string;
+        currencyCode: string;
+      };
     };
     compareAtPriceRange: {
       minVariantPrice: {
@@ -155,6 +159,10 @@ const STOREFRONT_QUERY = `
               amount
               currencyCode
             }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
           }
           compareAtPriceRange {
             minVariantPrice {
@@ -217,6 +225,10 @@ const PRODUCT_BY_HANDLE_QUERY = `
           amount
           currencyCode
         }
+      maxVariantPrice {
+        amount
+        currencyCode
+      }
       }
       compareAtPriceRange {
         minVariantPrice {
@@ -331,7 +343,7 @@ const STOREFRONT_QUERY_PAGED = `
           description
           handle
           tags
-          priceRange { minVariantPrice { amount currencyCode } }
+          priceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
           compareAtPriceRange { minVariantPrice { amount currencyCode } }
           images(first: 1) { edges { node { url altText } } }
           variants(first: 1) {
