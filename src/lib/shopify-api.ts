@@ -343,7 +343,7 @@ const STOREFRONT_QUERY_PAGED = `
           description
           handle
           tags
-          priceRange { minVariantPrice { amount currencyCode } }
+          priceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } }
           compareAtPriceRange { minVariantPrice { amount currencyCode } }
           images(first: 1) { edges { node { url altText } } }
           variants(first: 1) {
