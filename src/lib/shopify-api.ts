@@ -167,6 +167,7 @@ const STOREFRONT_QUERY = `
             }
           }
           images(first: 30) {
+
             edges {
               node {
                 url
