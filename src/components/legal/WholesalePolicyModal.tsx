@@ -134,7 +134,26 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
             </section>
 
             <section>
-              <h3 className="text-base font-semibold text-foreground mb-2">9. Foro e Jurisdição</h3>
+              <h3 className="text-base font-semibold text-foreground mb-2">9. Composição de Valores e Custos Logísticos</h3>
+              <p>
+                Os valores apresentados para produtos e frete podem sofrer ajustes na composição
+                final do pedido em função da região de entrega, modalidade de transporte escolhida
+                e custos operacionais envolvidos no processo logístico, incluindo separação,
+                conferência, embalagem e coleta da transportadora.
+              </p>
+              <p className="mt-2">
+                Dessa forma, os valores individuais de produtos e frete poderão ser redistribuídos
+                ou ajustados, sem necessariamente representar alteração no valor total do pedido
+                aprovado pelo cliente.
+              </p>
+              <p className="mt-2">
+                O valor final do pedido será sempre informado e confirmado previamente antes da
+                conclusão da compra e emissão do faturamento.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-base font-semibold text-foreground mb-2">10. Foro e Jurisdição</h3>
               <p>
                 Fica eleito o foro da Comarca de São Paulo/SP para dirimir quaisquer 
                 controvérsias oriundas destas políticas, com renúncia expressa a qualquer outro, 
@@ -143,7 +162,7 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
             </section>
 
             <section>
-              <h3 className="text-base font-semibold text-foreground mb-2">10. Contato</h3>
+              <h3 className="text-base font-semibold text-foreground mb-2">11. Contato</h3>
               <p>
                 Para dúvidas sobre estas políticas ou para cadastro como revendedor autorizado, 
                 entre em contato pelo e-mail: atacado@avance.com.br
