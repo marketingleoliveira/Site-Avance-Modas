@@ -527,14 +527,18 @@ const AdminPanel = () => {
 
   const handleStoreSelectorImageUpload = async (file: File, imageKey: keyof StoreSelectorSettings) => {
     if (!storeSelector) return;
-    const path = `store_selector/${imageKey}-${Date.now()}.${file.name.split('.').pop()}`;
-    const url = await uploadSiteImage(file, path);
-    
-    if (url) {
-      setStoreSelector({ ...storeSelector, [imageKey]: url });
-      toast.success("Imagem enviada com sucesso!");
-    } else {
-      toast.error("Erro ao enviar imagem");
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `store_selector/${String(imageKey)}-${Date.now()}.${ext}`;
+    try {
+      const url = await uploadSiteImage(file, path);
+      if (url) {
+        setStoreSelector({ ...storeSelector, [imageKey]: url });
+        toast.success("Imagem enviada com sucesso!");
+      } else {
+        toast.error("Erro ao enviar imagem");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao enviar imagem");
     }
   };
 
@@ -546,14 +550,18 @@ const AdminPanel = () => {
     const setSetting = type === 'atacado' ? setHeroAtacado : setHeroVarejo;
     if (!settings) return;
     
-    const path = `hero_${type}/image_url-${Date.now()}.${file.name.split('.').pop()}`;
-    const url = await uploadSiteImage(file, path);
-    
-    if (url) {
-      setSetting({ ...settings, image_url: url });
-      toast.success("Imagem enviada com sucesso!");
-    } else {
-      toast.error("Erro ao enviar imagem");
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `hero_${type}/image_url-${Date.now()}.${ext}`;
+    try {
+      const url = await uploadSiteImage(file, path);
+      if (url) {
+        setSetting({ ...settings, image_url: url });
+        toast.success("Imagem enviada com sucesso!");
+      } else {
+        toast.error("Erro ao enviar imagem");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao enviar imagem");
     }
   };
 
