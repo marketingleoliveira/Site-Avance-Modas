@@ -20,6 +20,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: auth } },
     });
@@ -27,11 +28,16 @@ Deno.serve(async (req) => {
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr || !userData?.user) return json({ error: "unauthorized" }, 401);
 
-    const { data: isAdmin } = await supabase.rpc("has_role", {
-      _user_id: userData.user.id,
-      _role: "admin",
-    });
-    if (!isAdmin) return json({ error: "forbidden" }, 403);
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: roleData, error: roleError } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userData.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (roleError) return json({ error: "role_check_failed" }, 500);
+    if (!roleData) return json({ error: "forbidden" }, 403);
 
     const body = await req.json().catch(() => ({}));
     const { action, siteUrl, payload } = body as {
