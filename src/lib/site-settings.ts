@@ -191,6 +191,24 @@ export function invalidateSettingsCache(key?: string) {
   }
 }
 
+async function getUploadErrorMessage(error: unknown): Promise<string> {
+  if (!error || typeof error !== 'object') {
+    return 'Falha no upload';
+  }
+
+  const possibleContext = 'context' in error ? error.context : undefined;
+  if (possibleContext instanceof Response) {
+    try {
+      const payload = await possibleContext.clone().json() as { error?: string };
+      if (payload.error) return payload.error;
+    } catch {
+      // Keep the default error message below.
+    }
+  }
+
+  return error instanceof Error ? error.message : 'Falha no upload';
+}
+
 export async function uploadSiteImage(file: File, path: string): Promise<string | null> {
   if (!file.type.startsWith('image/')) {
     throw new Error('Arquivo inválido. Envie uma imagem.');
@@ -210,13 +228,13 @@ export async function uploadSiteImage(file: File, path: string): Promise<string 
     throw new Error(msg);
   }
 
-  const uploadPromise = supabase.storage
-    .from('site-images')
-    .upload(safePath, file, {
-      upsert: true,
-      contentType: file.type || 'image/jpeg',
-      cacheControl: '3600',
-    });
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('path', safePath);
+
+  const uploadPromise = supabase.functions.invoke<{ url?: string; error?: string }>('upload-site-image', {
+    body: formData,
+  });
 
   const timeoutPromise = new Promise<never>((_, reject) => {
     window.setTimeout(() => {
@@ -228,14 +246,18 @@ export async function uploadSiteImage(file: File, path: string): Promise<string 
 
   if (error) {
     console.error('Error uploading image:', error);
-    throw new Error(error.message || 'Falha no upload');
+    throw new Error(await getUploadErrorMessage(error));
   }
 
-  const { data: urlData } = supabase.storage
-    .from('site-images')
-    .getPublicUrl(data.path);
+  if (data?.error) {
+    throw new Error(data.error);
+  }
 
-  return urlData.publicUrl;
+  if (!data?.url) {
+    throw new Error('Upload concluído sem retornar URL da imagem.');
+  }
+
+  return data.url;
 }
 
 // Admin user management
