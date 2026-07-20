@@ -192,6 +192,10 @@ export function invalidateSettingsCache(key?: string) {
 }
 
 export async function uploadSiteImage(file: File, path: string): Promise<string | null> {
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Arquivo inválido. Envie uma imagem.');
+  }
+
   // Sanitize path: remove spaces and non-ascii chars that break the S3 key
   const safePath = path
     .normalize('NFD')
@@ -206,13 +210,21 @@ export async function uploadSiteImage(file: File, path: string): Promise<string 
     throw new Error(msg);
   }
 
-  const { data, error } = await supabase.storage
+  const uploadPromise = supabase.storage
     .from('site-images')
     .upload(safePath, file, {
       upsert: true,
       contentType: file.type || 'image/jpeg',
       cacheControl: '3600',
     });
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    window.setTimeout(() => {
+      reject(new Error('O upload demorou demais. Verifique sua conexão e tente novamente.'));
+    }, 45000);
+  });
+
+  const { data, error } = await Promise.race([uploadPromise, timeoutPromise]);
 
   if (error) {
     console.error('Error uploading image:', error);

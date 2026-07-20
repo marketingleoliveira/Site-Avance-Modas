@@ -43,13 +43,21 @@ const createEmptyVideo = (): VideoItem => ({
 });
 
 const uploadVideo = async (file: File, path: string): Promise<string | null> => {
-  const { data, error } = await supabase.storage
+  const uploadPromise = supabase.storage
     .from('site-images')
-    .upload(path, file, { upsert: true });
+    .upload(path, file, { upsert: true, contentType: file.type || 'video/mp4' });
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    window.setTimeout(() => {
+      reject(new Error('O upload demorou demais. Verifique sua conexão e tente novamente.'));
+    }, 60000);
+  });
+
+  const { data, error } = await Promise.race([uploadPromise, timeoutPromise]);
 
   if (error) {
     console.error('Error uploading video:', error);
-    return null;
+    throw new Error(error.message || 'Falha no upload do vídeo');
   }
 
   const { data: urlData } = supabase.storage
@@ -151,15 +159,21 @@ const VideosEditor = ({ settings, onChange }: VideosEditorProps) => {
 
   const handleThumbnailUpload = async (file: File, index: number) => {
     setUploadingThumbnail(index);
-    const path = `videos/thumbnail-${Date.now()}.${file.name.split('.').pop()}`;
-    const url = await uploadSiteImage(file, path);
-    setUploadingThumbnail(null);
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `videos/thumbnail-${Date.now()}.${ext}`;
+      const url = await uploadSiteImage(file, path);
 
-    if (url) {
-      updateVideo(index, 'thumbnail_url', url);
-      toast.success("Thumbnail enviada!");
-    } else {
-      toast.error("Erro ao enviar thumbnail");
+      if (url) {
+        updateVideo(index, 'thumbnail_url', url);
+        toast.success("Thumbnail enviada!");
+      } else {
+        toast.error("Erro ao enviar thumbnail");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao enviar thumbnail");
+    } finally {
+      setUploadingThumbnail(null);
     }
   };
 
@@ -170,15 +184,21 @@ const VideosEditor = ({ settings, onChange }: VideosEditorProps) => {
     }
 
     setUploadingVideo(index);
-    const path = `videos/video-${Date.now()}.${file.name.split('.').pop()}`;
-    const url = await uploadVideo(file, path);
-    setUploadingVideo(null);
+    try {
+      const ext = (file.name.split('.').pop() || 'mp4').toLowerCase();
+      const path = `videos/video-${Date.now()}.${ext}`;
+      const url = await uploadVideo(file, path);
 
-    if (url) {
-      updateVideo(index, 'video_url', url);
-      toast.success("Vídeo enviado com sucesso!");
-    } else {
-      toast.error("Erro ao enviar vídeo");
+      if (url) {
+        updateVideo(index, 'video_url', url);
+        toast.success("Vídeo enviado com sucesso!");
+      } else {
+        toast.error("Erro ao enviar vídeo");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao enviar vídeo");
+    } finally {
+      setUploadingVideo(null);
     }
   };
 

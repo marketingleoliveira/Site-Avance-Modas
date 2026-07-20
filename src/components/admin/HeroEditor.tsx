@@ -88,15 +88,21 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
 
   const handleImageUpload = async (file: File) => {
     setUploading(true);
-    const path = `hero_${type}/slide-${currentSlideIndex}-${Date.now()}.${file.name.split('.').pop()}`;
-    const url = await uploadSiteImage(file, path);
-    setUploading(false);
-    
-    if (url) {
-      updateCurrentSlide('image_url', url);
-      toast.success("Imagem enviada com sucesso!");
-    } else {
-      toast.error("Erro ao enviar imagem");
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `hero_${type}/slide-${currentSlideIndex}-${Date.now()}.${ext}`;
+      const url = await uploadSiteImage(file, path);
+      
+      if (url) {
+        updateCurrentSlide('image_url', url);
+        toast.success("Imagem enviada com sucesso!");
+      } else {
+        toast.error("Erro ao enviar imagem");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao enviar imagem");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -380,6 +386,7 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) handleImageUpload(file);
+                    e.currentTarget.value = '';
                   }}
                   disabled={uploading}
                 />
