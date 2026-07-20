@@ -192,13 +192,31 @@ export function invalidateSettingsCache(key?: string) {
 }
 
 export async function uploadSiteImage(file: File, path: string): Promise<string | null> {
+  // Sanitize path: remove spaces and non-ascii chars that break the S3 key
+  const safePath = path
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._/-]/g, '_');
+
+  // Guard against huge files (Supabase default limit ~50MB, but browsers stall well before)
+  const MAX_BYTES = 10 * 1024 * 1024;
+  if (file.size > MAX_BYTES) {
+    const msg = `Imagem muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo 10MB.`;
+    console.error(msg);
+    throw new Error(msg);
+  }
+
   const { data, error } = await supabase.storage
     .from('site-images')
-    .upload(path, file, { upsert: true });
+    .upload(safePath, file, {
+      upsert: true,
+      contentType: file.type || 'image/jpeg',
+      cacheControl: '3600',
+    });
 
   if (error) {
     console.error('Error uploading image:', error);
-    return null;
+    throw new Error(error.message || 'Falha no upload');
   }
 
   const { data: urlData } = supabase.storage
