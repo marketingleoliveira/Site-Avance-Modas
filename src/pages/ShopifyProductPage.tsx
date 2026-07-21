@@ -85,6 +85,14 @@ const ShopifyProductPage = () => {
     loadProduct();
   }, [handle, addToRecentlyViewed]);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isZooming) return;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
+
   // Check if product is a "conjunto" (set with top + bottom)
   const isConjunto = useMemo(() => {
     if (!product) return false;
