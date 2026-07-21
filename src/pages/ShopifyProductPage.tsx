@@ -662,11 +662,21 @@ const ShopifyProductPage = () => {
             <div className="space-y-2 sm:space-y-4 overflow-hidden">
               <div className="relative aspect-[4/5] bg-card rounded-lg sm:rounded-2xl overflow-hidden shadow-sm mx-auto w-full">
                 {images.length > 0 ? (
-                  <img 
-                    src={images[currentImage].node.url} 
-                    alt={images[currentImage].node.altText || product.title}
-className="w-full h-full object-contain bg-white"
-                  />
+                  <div 
+                    className="relative w-full h-full cursor-zoom-in overflow-hidden"
+                    onMouseEnter={() => setIsZooming(true)}
+                    onMouseLeave={() => setIsZooming(false)}
+                    onMouseMove={handleMouseMove}
+                  >
+                    <img 
+                      src={images[currentImage].node.url} 
+                      alt={images[currentImage].node.altText || product.title}
+                      className={`w-full h-full object-contain bg-white transition-transform duration-200 ${isZooming ? 'scale-[2.5]' : 'scale-100'}`}
+                      style={isZooming ? {
+                        transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                      } : undefined}
+                    />
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-muted">
                     <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground" />
