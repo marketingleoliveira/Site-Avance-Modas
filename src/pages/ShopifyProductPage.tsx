@@ -40,6 +40,8 @@ const ShopifyProductPage = () => {
   const [sizeTableOpen, setSizeTableOpen] = useState(false);
   const [virtualFittingOpen, setVirtualFittingOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZooming, setIsZooming] = useState(false);
   const addItem = useCartStore(state => state.addItem);
   const getCheckoutUrl = useCartStore(state => state.getCheckoutUrl);
   const [addedDialogOpen, setAddedDialogOpen] = useState(false);
