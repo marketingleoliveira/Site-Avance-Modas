@@ -34,8 +34,8 @@ const ShippingPolicyModal = ({ open, onOpenChange }: ShippingPolicyModalProps) =
               <p>
                 O frete é calculado de acordo com o peso e volume da mercadoria, sendo informado antes da finalização do pedido. 
                 Trabalhamos com entregas realizadas via transportadora e correios, os prazos também serão informados antes da 
-                finalização do pedido e nos e-mails transacionais. Nas compras, acima de R$ 149,00 para o Sudeste e R$ 250,00 
-                para as outras regiões.
+                finalização do pedido e nos e-mails transacionais. Nas compras, acima de R$ 149,00 para o Sul, Sudeste, Centro e 
+                Centroeste e R$ 250,00 para as outras regiões.
               </p>
             </section>
 
