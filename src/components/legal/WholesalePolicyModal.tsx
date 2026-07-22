@@ -37,25 +37,48 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
               </p>
             </div>
 
-            <div className="bg-primary/5 border border-primary/30 rounded-lg p-4 space-y-2">
-              <p className="font-semibold text-foreground text-sm">
+            <div className="bg-primary/5 border border-primary/30 rounded-lg p-4 space-y-3">
+              <p className="font-semibold text-foreground text-sm flex items-center gap-2">
+                <Truck className="w-4 h-4 text-primary" />
                 📦 Composição de Valores e Custos Logísticos
               </p>
-              <p className="text-xs">
-                Os valores apresentados para produtos e frete podem sofrer ajustes na composição
-                final do pedido em função da região de entrega, modalidade de transporte escolhida
-                e custos operacionais envolvidos no processo logístico, incluindo separação,
-                conferência, embalagem e coleta da transportadora.
-              </p>
-              <p className="text-xs">
-                Dessa forma, os valores individuais de produtos e frete poderão ser redistribuídos
-                ou ajustados, sem necessariamente representar alteração no valor total do pedido
-                aprovado pelo cliente.
-              </p>
-              <p className="text-xs">
-                O valor final do pedido será sempre informado e confirmado previamente antes da
-                conclusão da compra e emissão do faturamento.
-              </p>
+              
+              <div className="text-xs space-y-2 border-l-2 border-primary/20 pl-3 py-1 italic bg-primary/5 rounded-r">
+                <p className="font-medium text-foreground underline decoration-primary/30">Política de Entrega:</p>
+                <p>
+                  O frete é calculado de acordo com o peso e volume da mercadoria, sendo informado antes da finalização do pedido. 
+                  Trabalhamos com entregas realizadas via transportadora e correios, os prazos também serão informados antes da 
+                  finalização do pedido e nos e-mails transacionais. Nas compras, acima de R$ 149,00 para o Sudeste e R$ 250,00 
+                  para as outras regiões.
+                </p>
+                <p>
+                  O prazo de entrega começa a ser contato a partir do despacho da mercadoria, assim que o pedido é faturado.
+                </p>
+                <p>
+                  Serão feitas três tentativas de entrega no endereço informado pelo cliente, caso a entrega não seja realizada 
+                  por ausência do cliente ou endereço incorreto, a mercadoria irá retornar para a nossa sede. Nestes casos o 
+                  custo de reenvio será de inteira responsabilidade do cliente. Para um melhor controle do processo de entrega, 
+                  enviamos o código de rastreamento para o e-mail cadastrado após a postagem da mercadoria. O acompanhamento da 
+                  mercadoria através do código de rastreamento é de responsabilidade do cliente. E pode ser feito em nosso site.
+                </p>
+                <p>
+                  Caso você ainda tenha alguma dúvida sobre o assunto, entre em contato com nosso Setor de Atendimento ao cliente.
+                  Caso ainda tenha alguma dúvida, estamos à disposição para esclarecê-la.
+                </p>
+                <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  *Em virtude da emenda constitucional 87/2015 as mercadorias enviadas para o estado do Ceará poderão sofrer atrasos na entrega...
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-primary/10">
+                <p className="text-xs font-medium text-foreground">Ajustes Logísticos:</p>
+                <p className="text-[11px] leading-tight mt-1">
+                  Os valores apresentados para produtos e frete podem sofrer ajustes na composição
+                  final do pedido em função da região de entrega, modalidade de transporte escolhida
+                  e custos operacionais envolvidos no processo logístico, incluindo separação,
+                  conferência, embalagem e coleta da transportadora.
+                </p>
+              </div>
             </div>
 
             <section>
