@@ -4,6 +4,7 @@ import { useStoreContext } from "@/stores/storeContextStore";
 import { ArrowRight, ShoppingBag, Store, Truck, ShieldCheck, Repeat, Headphones } from "lucide-react";
 import defaultBanner from "@/assets/store-selector-banner.jpg";
 import { useStoreSelectorSettings } from "@/hooks/useSiteSettings";
+import varejoHoverAsset from "@/assets/varejo-hover.png.asset.json";
 
 const StoreSelector = () => {
   const setStoreType = useStoreContext(state => state.setStoreType);
