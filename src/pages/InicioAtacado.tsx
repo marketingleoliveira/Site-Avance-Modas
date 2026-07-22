@@ -157,7 +157,7 @@ const InicioAtacado = () => {
       
       <main className="flex-1">
         <HeroSectionDynamic type="ATACADO" />
-        <FeaturesSectionDynamic />
+        <FeaturesSectionDynamic type="ATACADO" />
         <ProductSectionsDynamic type="ATACADO" />
         <TestimonialsSection />
         <BrandWordsMarquee />
