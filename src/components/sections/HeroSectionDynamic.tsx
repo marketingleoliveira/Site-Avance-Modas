@@ -72,6 +72,7 @@ const HeroSectionDynamic = ({ type }: HeroSectionDynamicProps) => {
           >
             <img
               src={slide.image_url || heroFallback}
+              srcSet={`${slide.image_url || heroFallback} 1x, ${slide.image_url || heroFallback} 2x`}
               alt={slide.promo_subtitle || `Slide ${index + 1}`}
               className="w-full h-full object-cover object-top image-rendering-auto"
               loading={index === 0 ? "eager" : "lazy"}
