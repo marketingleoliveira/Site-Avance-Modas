@@ -209,10 +209,36 @@ async function getUploadErrorMessage(error: unknown): Promise<string> {
   return error instanceof Error ? error.message : 'Falha no upload';
 }
 
-export async function uploadSiteImage(file: File, path: string): Promise<string | null> {
+export async function uploadSiteImage(file: File, path: string, isHero: boolean = false): Promise<string | null> {
   if (!file.type.startsWith('image/')) {
     throw new Error('Arquivo inválido. Envie uma imagem.');
   }
+
+  // Recommended dimensions for Hero
+  const HERO_MIN_WIDTH = 1920;
+  const HERO_MIN_HEIGHT = 800;
+
+  if (isHero) {
+    const checkImage = (): Promise<{ width: number, height: number }> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+          resolve({ width: img.width, height: img.height });
+          URL.revokeObjectURL(img.src);
+        };
+      });
+    };
+
+    const dimensions = await checkImage();
+    if (dimensions.width < HERO_MIN_WIDTH || dimensions.height < HERO_MIN_HEIGHT) {
+      const confirmed = window.confirm(
+        `A imagem enviada (${dimensions.width}x${dimensions.height}) é menor que o recomendado para o Hero (${HERO_MIN_WIDTH}x${HERO_MIN_HEIGHT}).\n\nIsso pode causar perda de nitidez em telas grandes. Deseja continuar mesmo assim?`
+      );
+      if (!confirmed) return null;
+    }
+  }
+
 
   // Sanitize path: remove spaces and non-ascii chars that break the S3 key
   const safePath = path

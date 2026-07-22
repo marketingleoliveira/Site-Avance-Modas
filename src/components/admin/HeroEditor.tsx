@@ -91,7 +91,7 @@ const HeroEditor = ({ settings, onChange, type }: HeroEditorProps) => {
     try {
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `hero_${type}/slide-${currentSlideIndex}-${Date.now()}.${ext}`;
-      const url = await uploadSiteImage(file, path);
+      const url = await uploadSiteImage(file, path, true);
       
       if (url) {
         updateCurrentSlide('image_url', url);
