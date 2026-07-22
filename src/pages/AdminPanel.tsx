@@ -1911,6 +1911,171 @@ const AdminPanel = () => {
     }
   };
 
+  const renderFeaturesEditor = (type: 'atacado' | 'varejo') => {
+    const feat = type === 'atacado' ? featuresAtacado : featuresVarejo;
+    const setFeat = type === 'atacado' ? setFeaturesAtacado : setFeaturesVarejo;
+    const key = type === 'atacado' ? 'features_atacado' : 'features_varejo';
+
+    return (
+      <div className="space-y-6">
+        {/* Preview */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Preview ({type === 'atacado' ? 'Atacado' : 'Varejo'})</Label>
+          <div className="bg-primary text-primary-foreground rounded-lg overflow-hidden" style={{ height: '60px' }}>
+            <div className="h-full flex items-center justify-center px-4 gap-6 overflow-x-auto">
+              {feat?.items.map((item, index) => {
+                const iconMap: Record<string, React.ReactNode> = {
+                  truck: <Truck className="w-4 h-4 opacity-80" />,
+                  percent: <Percent className="w-4 h-4 opacity-80" />,
+                  tag: <Tag className="w-4 h-4 opacity-80" />,
+                  'credit-card': <CreditCard className="w-4 h-4 opacity-80" />,
+                  refresh: <RefreshCw className="w-4 h-4 opacity-80" />,
+                  shield: <Shield className="w-4 h-4 opacity-80" />,
+                  star: <Star className="w-4 h-4 opacity-80" />,
+                  gift: <Gift className="w-4 h-4 opacity-80" />,
+                  clock: <Clock className="w-4 h-4 opacity-80" />,
+                  check: <Check className="w-4 h-4 opacity-80" />,
+                  heart: <Heart className="w-4 h-4 opacity-80" />,
+                  package: <Package className="w-4 h-4 opacity-80" />,
+                  zap: <Zap className="w-4 h-4 opacity-80" />,
+                  award: <Award className="w-4 h-4 opacity-80" />,
+                  'thumbs-up': <ThumbsUp className="w-4 h-4 opacity-80" />,
+                };
+                return (
+                  <div key={index} className="flex items-center gap-2 flex-shrink-0">
+                    {iconMap[item.icon] || <Truck className="w-4 h-4 opacity-80" />}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold whitespace-nowrap">{item.title}</span>
+                      <span className="text-xs opacity-70 whitespace-nowrap">{item.description}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        
+        {/* Editor */}
+        <div className="space-y-4">
+          {feat?.items.map((item, index) => (
+            <div key={index} className="grid md:grid-cols-5 gap-4 p-4 bg-secondary rounded-lg items-end">
+              <div className="space-y-2">
+                <Label>Ícone</Label>
+                <select
+                  className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                  value={item.icon}
+                  onChange={(e) => {
+                    const newItems = [...(feat?.items || [])];
+                    newItems[index] = { ...newItems[index], icon: e.target.value };
+                    setFeat({ items: newItems });
+                  }}
+                >
+                  <option value="truck">🚚 Caminhão</option>
+                  <option value="percent">% Porcentagem</option>
+                  <option value="tag">🏷️ Tag</option>
+                  <option value="credit-card">💳 Cartão</option>
+                  <option value="refresh">🔄 Troca</option>
+                  <option value="shield">🛡️ Escudo</option>
+                  <option value="star">⭐ Estrela</option>
+                  <option value="gift">🎁 Presente</option>
+                  <option value="clock">⏰ Relógio</option>
+                  <option value="check">✓ Check</option>
+                  <option value="heart">❤️ Coração</option>
+                  <option value="package">📦 Pacote</option>
+                  <option value="zap">⚡ Raio</option>
+                  <option value="award">🏆 Prêmio</option>
+                  <option value="thumbs-up">👍 Positivo</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Título</Label>
+                <Input
+                  value={item.title}
+                  onChange={(e) => {
+                    const newItems = [...(feat?.items || [])];
+                    newItems[index] = { ...newItems[index], title: e.target.value };
+                    setFeat({ items: newItems });
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Descrição</Label>
+                <Input
+                  value={item.description}
+                  onChange={(e) => {
+                    const newItems = [...(feat?.items || [])];
+                    newItems[index] = { ...newItems[index], description: e.target.value };
+                    setFeat({ items: newItems });
+                  }}
+                />
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (index === 0) return;
+                    const newItems = [...(feat?.items || [])];
+                    [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
+                    setFeat({ items: newItems });
+                  }}
+                  disabled={index === 0}
+                >
+                  <ArrowUp className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (index === (feat?.items.length || 0) - 1) return;
+                    const newItems = [...(feat?.items || [])];
+                    [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+                    setFeat({ items: newItems });
+                  }}
+                  disabled={index === (feat?.items.length || 0) - 1}
+                >
+                  <ArrowDown className="w-4 h-4" />
+                </Button>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const newItems = feat?.items.filter((_, i) => i !== index) || [];
+                  setFeat({ items: newItems });
+                }}
+                disabled={(feat?.items.length || 0) <= 1}
+                className="text-destructive hover:text-destructive shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+        
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              const newItem = { icon: "truck", title: "Novo Benefício", description: "Descrição" };
+              setFeat({ items: [...(feat?.items || []), newItem] });
+            }}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Adicionar Benefício
+          </Button>
+          <Button 
+            onClick={() => saveSettings(key, feat)}
+            disabled={saving}
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {saving ? "Salvando..." : `Salvar ${type === 'atacado' ? 'Atacado' : 'Varejo'}`}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-secondary flex">
       <RouteSEO title="Painel Admin | Avance Modas" description="Painel administrativo." path="/admin" noindex />
