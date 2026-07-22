@@ -119,31 +119,41 @@ const StoreSelector = () => {
             onClick={() => setStoreType("varejo")}
             className="group relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.08)] hover:shadow-[0_20px_60px_-15px_hsl(0_85%_50%/0.25)] transition-all duration-500 hover:-translate-y-2 border border-border/50 animate-fade-in [animation-delay:400ms] [animation-fill-mode:both]"
           >
-            {/* Top accent bar */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60" />
+            {/* Hover Image Overlay */}
+            <div className="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <img 
+                src={varejoHoverAsset.url} 
+                alt="Varejo" 
+                className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
 
-            <div className="relative p-8 sm:p-9 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-4 text-center sm:text-left">
+            {/* Top accent bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-accent via-accent/80 to-accent/60 relative z-30" />
+
+            <div className="relative p-8 sm:p-9 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-4 text-center sm:text-left z-30">
               <div className="flex-1 min-w-0">
-                <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5">
-                  <Store className="w-7 h-7 text-white" />
+                <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mx-auto sm:mx-0 mb-5 group-hover:bg-white transition-colors duration-300">
+                  <Store className="w-7 h-7 text-white group-hover:text-accent transition-colors duration-300" />
                 </div>
 
-                <h2 className="text-2xl lg:text-3xl font-black text-foreground mb-2 tracking-tight break-words">
+                <h2 className="text-2xl lg:text-3xl font-black text-foreground mb-2 tracking-tight break-words group-hover:text-white transition-colors duration-300">
                   VAREJO
                 </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+                <p className="text-muted-foreground text-sm leading-relaxed mb-8 group-hover:text-white/90 transition-colors duration-300">
                   Compras unitárias com toda a qualidade Avance Modas
                 </p>
 
                 {/* Animated banner button */}
-                <div className="relative overflow-hidden rounded-xl bg-accent text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500">
+                <div className="relative overflow-hidden rounded-xl bg-accent text-white py-3.5 px-6 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 group-hover:tracking-[0.25em] transition-all duration-500 group-hover:bg-white group-hover:text-accent">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
                   <span>Acessar Varejo</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </div>
               {settings?.varejo_image && (
-                <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none">
+                <div className="hidden sm:flex shrink-0 w-[90px] lg:w-[110px] h-[150px] lg:h-[180px] items-center justify-center pointer-events-none group-hover:opacity-0 transition-opacity duration-300">
                   <img
                     src={settings.varejo_image}
                     alt="Coleção Varejo Avance Modas"
