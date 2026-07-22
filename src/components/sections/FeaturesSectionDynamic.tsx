@@ -20,8 +20,8 @@ const iconMap: Record<string, LucideIcon> = {
   'thumbs-up': ThumbsUp,
 };
 
-const FeaturesSectionDynamic = () => {
-  const { settings, loading } = useFeaturesSettings();
+const FeaturesSectionDynamic = ({ type = 'VAREJO' }: { type?: 'ATACADO' | 'VAREJO' }) => {
+  const { settings, loading } = useFeaturesSettings(type);
   const { settings: layoutSettings } = useLayoutSettings();
 
   const defaultItems = [

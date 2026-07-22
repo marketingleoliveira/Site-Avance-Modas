@@ -40,17 +40,26 @@ export function useStoreSelectorSettings() {
   return { settings, loading, refetch };
 }
 
-export function useFeaturesSettings() {
+export function useFeaturesSettings(type: 'ATACADO' | 'VAREJO' = 'VAREJO') {
   const [settings, setSettings] = useState<FeaturesSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refetch = useCallback(async () => {
     setLoading(true);
-    invalidateSettingsCache('features');
-    const data = await getSiteSetting<FeaturesSettings>('features');
-    setSettings(data);
+    const key = type === 'ATACADO' ? 'features_atacado' : 'features_varejo';
+    invalidateSettingsCache(key);
+    const data = await getSiteSetting<FeaturesSettings>(key);
+    
+    // Fallback to legacy 'features' if specialized key is empty
+    if (!data) {
+      const legacyData = await getSiteSetting<FeaturesSettings>('features');
+      setSettings(legacyData);
+    } else {
+      setSettings(data);
+    }
+    
     setLoading(false);
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     refetch();

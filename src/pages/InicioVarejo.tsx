@@ -43,7 +43,7 @@ const InicioVarejo = () => {
       
       <main className="flex-1">
         <HeroSectionDynamic type="VAREJO" />
-        <FeaturesSectionDynamic />
+        <FeaturesSectionDynamic type="VAREJO" />
         <OnlineUsersCounter />
         <ProductSectionsDynamic type="VAREJO" />
         <TestimonialsSection />
