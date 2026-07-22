@@ -7,6 +7,7 @@ import badgeGoogleSafe from "@/assets/badge-google-safe.png";
 import PrivacyPolicyModal from "@/components/legal/PrivacyPolicyModal";
 import TermsOfUseModal from "@/components/legal/TermsOfUseModal";
 import WholesalePolicyModal from "@/components/legal/WholesalePolicyModal";
+import ShippingPolicyModal from "@/components/legal/ShippingPolicyModal";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { cn } from "@/lib/utils";
 
@@ -186,6 +187,7 @@ const Footer = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showWholesale, setShowWholesale] = useState(false);
+  const [showShipping, setShowShipping] = useState(false);
   const { ref: footerRef, isVisible: footerVisible } = useIntersectionObserver({ threshold: 0.05 });
 
   return (
@@ -389,6 +391,7 @@ const Footer = () => {
                 { label: "Política de Privacidade", onClick: () => setShowPrivacy(true) },
                 { label: "Termos de Uso", onClick: () => setShowTerms(true) },
                 { label: "Políticas de Atacado", onClick: () => setShowWholesale(true) },
+                { label: "Política de Entrega", onClick: () => setShowShipping(true) },
               ].map((item, index) => (
                 <button
                   key={item.label}
@@ -420,6 +423,7 @@ const Footer = () => {
       <PrivacyPolicyModal open={showPrivacy} onOpenChange={setShowPrivacy} />
       <TermsOfUseModal open={showTerms} onOpenChange={setShowTerms} />
       <WholesalePolicyModal open={showWholesale} onOpenChange={setShowWholesale} />
+      <ShippingPolicyModal open={showShipping} onOpenChange={setShowShipping} />
     </>
   );
 };
