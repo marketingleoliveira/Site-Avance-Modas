@@ -1030,7 +1030,6 @@ const AdminPanel = () => {
                 {renderFeaturesEditor('atacado')}
               </div>
             </CardContent>
-            </CardContent>
           </Card>
         );
 
