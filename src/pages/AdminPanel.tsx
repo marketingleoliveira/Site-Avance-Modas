@@ -217,6 +217,7 @@ const AdminPanel = () => {
       items: [
         { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
         { id: "coupons", label: "Cupons de Desconto", icon: <Percent className="w-4 h-4" /> },
+        { id: "restock", label: "Reposição", icon: <RefreshCw className="w-4 h-4" /> },
       ]
     },
     {
@@ -1807,6 +1808,25 @@ const AdminPanel = () => {
 
       case "wholesale-orders":
         return <WholesaleOrdersManager />;
+
+      case "restock":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <RefreshCw className="w-5 h-5" />
+                Reposição de Estoque
+              </CardTitle>
+              <CardDescription>
+                Sincronizado com o estoque do Shopify. Atualiza automaticamente a cada 30 segundos e registra toda
+                reposição de produtos em tempo real.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RestockManager />
+            </CardContent>
+          </Card>
+        );
 
       case "coupons":
         return (
