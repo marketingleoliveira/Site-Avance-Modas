@@ -211,6 +211,40 @@ const mapEvent = (row: EventRow): RestockEvent => ({
   at: row.occurred_at,
 });
 
+/** Tokens usados para diferenciar tamanho de cor no título da variante. */
+const SIZE_TOKENS = new Set([
+  "PP", "P", "M", "G", "GG", "G1", "G2", "G3", "XG", "EXG", "EXGG", "XGG",
+  "U", "ÚNICO", "UNICO", "TAM ÚNICO",
+]);
+
+const isSizeToken = (value: string) => {
+  const upper = value.trim().toUpperCase();
+  return SIZE_TOKENS.has(upper) || /^\d{1,3}$/.test(upper);
+};
+
+/** Separa o título da variante do Shopify ("P / Preto") em tamanho e cor. */
+function parseVariant(variantTitle: string): { size: string | null; color: string | null } {
+  const parts = (variantTitle ?? "")
+    .split("/")
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) return { size: null, color: null };
+
+  const size = parts.find(isSizeToken) ?? null;
+  const color = parts.find((p) => !isSizeToken(p)) ?? null;
+  return { size, color };
+}
+
+interface GroupedEvents {
+  productTitle: string;
+  handle: string;
+  events: RestockEvent[];
+  restocks: number;
+  soldouts: number;
+  lastAt: string;
+}
+
 const RestockManager = () => {
   const [rows, setRows] = useState<VariantRow[]>([]);
   const [events, setEvents] = useState<RestockEvent[]>([]);
