@@ -254,6 +254,7 @@ const RestockManager = () => {
   const [autoSync, setAutoSync] = useState(true);
   const [search, setSearch] = useState("");
   const [onlyOutOfStock, setOnlyOutOfStock] = useState(false);
+  const [expandedProducts, setExpandedProducts] = useState<Record<string, boolean>>({});
   const firstRun = useRef(true);
 
   const loadEvents = useCallback(async () => {
