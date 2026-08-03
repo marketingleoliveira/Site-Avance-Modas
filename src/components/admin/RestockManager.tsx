@@ -438,6 +438,48 @@ const RestockManager = () => {
   const toggleProduct = (key: string) =>
     setExpandedProducts((prev) => ({ ...prev, [key]: !prev[key] }));
 
+  /** Agrupa as variantes filtradas por produto → tamanho → cores. */
+  const groupedVariants = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        productTitle: string;
+        handle: string;
+        sizes: Map<string, { size: string; colors: Array<{ color: string; available: boolean; quantity: number | null }> }>;
+        total: number;
+        available: number;
+      }
+    >();
+
+    for (const r of filtered) {
+      const key = r.handle || r.productTitle;
+      let group = map.get(key);
+      if (!group) {
+        group = { productTitle: r.productTitle, handle: r.handle, sizes: new Map(), total: 0, available: 0 };
+        map.set(key, group);
+      }
+      const { size, color } = parseVariant(r.variantTitle);
+      const sizeKey = size ?? "Único";
+      let sizeGroup = group.sizes.get(sizeKey);
+      if (!sizeGroup) {
+        sizeGroup = { size: sizeKey, colors: [] };
+        group.sizes.set(sizeKey, sizeGroup);
+      }
+      sizeGroup.colors.push({
+        color: color ?? r.variantTitle,
+        available: r.available,
+        quantity: r.quantity,
+      });
+      group.total += 1;
+      if (r.available) group.available += 1;
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.productTitle.localeCompare(b.productTitle));
+  }, [filtered]);
+
+  const toggleVariantGroup = (key: string) =>
+    setExpandedVariantGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const clearEvents = async () => {
     const { error } = await supabase
       .from("restock_events")
