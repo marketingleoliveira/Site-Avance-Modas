@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, RefreshCw, PackageCheck, PackageX, Search, Bell } from "lucide-react";
+import { Loader2, RefreshCw, PackageCheck, PackageX, Search, Bell, ChevronRight, Palette, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import { storefrontApiRequest } from "@/lib/shopify-api";
 import { supabase } from "@/integrations/supabase/client";
@@ -211,6 +211,40 @@ const mapEvent = (row: EventRow): RestockEvent => ({
   at: row.occurred_at,
 });
 
+/** Tokens usados para diferenciar tamanho de cor no título da variante. */
+const SIZE_TOKENS = new Set([
+  "PP", "P", "M", "G", "GG", "G1", "G2", "G3", "XG", "EXG", "EXGG", "XGG",
+  "U", "ÚNICO", "UNICO", "TAM ÚNICO",
+]);
+
+const isSizeToken = (value: string) => {
+  const upper = value.trim().toUpperCase();
+  return SIZE_TOKENS.has(upper) || /^\d{1,3}$/.test(upper);
+};
+
+/** Separa o título da variante do Shopify ("P / Preto") em tamanho e cor. */
+function parseVariant(variantTitle: string): { size: string | null; color: string | null } {
+  const parts = (variantTitle ?? "")
+    .split("/")
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) return { size: null, color: null };
+
+  const size = parts.find(isSizeToken) ?? null;
+  const color = parts.find((p) => !isSizeToken(p)) ?? null;
+  return { size, color };
+}
+
+interface GroupedEvents {
+  productTitle: string;
+  handle: string;
+  events: RestockEvent[];
+  restocks: number;
+  soldouts: number;
+  lastAt: string;
+}
+
 const RestockManager = () => {
   const [rows, setRows] = useState<VariantRow[]>([]);
   const [events, setEvents] = useState<RestockEvent[]>([]);
@@ -220,6 +254,7 @@ const RestockManager = () => {
   const [autoSync, setAutoSync] = useState(true);
   const [search, setSearch] = useState("");
   const [onlyOutOfStock, setOnlyOutOfStock] = useState(false);
+  const [expandedProducts, setExpandedProducts] = useState<Record<string, boolean>>({});
   const firstRun = useRef(true);
 
   const loadEvents = useCallback(async () => {
@@ -372,6 +407,34 @@ const RestockManager = () => {
     return { total, out, inStock: total - out };
   }, [rows]);
 
+  /** Agrupa as movimentações por produto (categoria) para exibição expansível. */
+  const groupedEvents = useMemo<GroupedEvents[]>(() => {
+    const map = new Map<string, GroupedEvents>();
+    for (const e of events) {
+      const key = e.handle || e.productTitle;
+      const group = map.get(key);
+      if (group) {
+        group.events.push(e);
+        if (e.type === "restock") group.restocks += 1;
+        else group.soldouts += 1;
+        if (e.at > group.lastAt) group.lastAt = e.at;
+      } else {
+        map.set(key, {
+          productTitle: e.productTitle,
+          handle: e.handle,
+          events: [e],
+          restocks: e.type === "restock" ? 1 : 0,
+          soldouts: e.type === "soldout" ? 1 : 0,
+          lastAt: e.at,
+        });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
+  }, [events]);
+
+  const toggleProduct = (key: string) =>
+    setExpandedProducts((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const clearEvents = async () => {
     const { error } = await supabase
       .from("restock_events")
@@ -434,28 +497,95 @@ const RestockManager = () => {
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {events.map((e) => (
-                <li key={e.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {e.type === "restock" ? (
-                      <PackageCheck className="w-4 h-4 text-primary shrink-0" />
-                    ) : (
-                      <PackageX className="w-4 h-4 text-destructive shrink-0" />
+              {groupedEvents.map((group) => {
+                const key = group.handle || group.productTitle;
+                const isOpen = !!expandedProducts[key];
+                return (
+                  <li key={key}>
+                    {/* Categoria: nome do produto (clicável) */}
+                    <button
+                      type="button"
+                      onClick={() => toggleProduct(key)}
+                      aria-expanded={isOpen}
+                      aria-label={`Ver variantes repostas de ${group.productTitle}`}
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <ChevronRight
+                          className={cn(
+                            "w-4 h-4 shrink-0 text-muted-foreground transition-transform",
+                            isOpen && "rotate-90"
+                          )}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold">{group.productTitle}</p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {group.events.length} variante(s) · {new Date(group.lastAt).toLocaleString("pt-BR")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {group.restocks > 0 && (
+                          <Badge className="gap-1">
+                            <PackageCheck className="w-3 h-3" />
+                            {group.restocks}
+                          </Badge>
+                        )}
+                        {group.soldouts > 0 && (
+                          <Badge variant="destructive" className="gap-1">
+                            <PackageX className="w-3 h-3" />
+                            {group.soldouts}
+                          </Badge>
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Variantes (cor e tamanho) detectadas */}
+                    {isOpen && (
+                      <ul className="border-t border-border bg-muted/30">
+                        {group.events.map((e) => {
+                          const { size, color } = parseVariant(e.variantTitle);
+                          return (
+                            <li
+                              key={e.id}
+                              className="flex items-center justify-between gap-3 px-4 py-2.5 pl-11"
+                            >
+                              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                {size && (
+                                  <Badge variant="outline" className="gap-1 text-xs">
+                                    <Ruler className="w-3 h-3" />
+                                    {size}
+                                  </Badge>
+                                )}
+                                {color && (
+                                  <Badge variant="outline" className="gap-1 text-xs">
+                                    <Palette className="w-3 h-3" />
+                                    {color}
+                                  </Badge>
+                                )}
+                                {!size && !color && (
+                                  <span className="text-xs text-muted-foreground">{e.variantTitle}</span>
+                                )}
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(e.at).toLocaleString("pt-BR")}
+                                </span>
+                              </div>
+                              <Badge
+                                variant={e.type === "restock" ? "default" : "destructive"}
+                                className="shrink-0 text-xs"
+                              >
+                                {e.type === "restock"
+                                  ? e.quantity != null ? `Reposto (${e.quantity})` : "Reposto"
+                                  : "Esgotou"}
+                              </Badge>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{e.productTitle}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {e.variantTitle} · {new Date(e.at).toLocaleString("pt-BR")}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant={e.type === "restock" ? "default" : "destructive"} className="shrink-0">
-                    {e.type === "restock"
-                      ? e.quantity != null ? `Reposto (${e.quantity})` : "Reposto"
-                      : "Esgotou"}
-                  </Badge>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </ScrollArea>
