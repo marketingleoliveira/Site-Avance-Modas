@@ -27,6 +27,7 @@ import SizeChartManager from "@/components/admin/SizeChartManager";
 import WholesaleOrdersManager from "@/components/admin/WholesaleOrdersManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
 import CouponsManager from "@/components/admin/CouponsManager";
+import RestockManager from "@/components/admin/RestockManager";
 import GuidesManager from "@/components/admin/GuidesManager";
 import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
 import { cn } from "@/lib/utils";
