@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, RefreshCw, PackageCheck, PackageX, Search, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { storefrontApiRequest } from "@/lib/shopify-api";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 /**
@@ -19,8 +20,7 @@ import { cn } from "@/lib/utils";
  */
 
 const POLL_MS = 30_000;
-const SNAPSHOT_KEY = "avance_restock_snapshot_v1";
-const EVENTS_KEY = "avance_restock_events_v1";
+const EVENTS_LIMIT = 200;
 
 type VariantState = {
   available: boolean;
@@ -96,16 +96,38 @@ type ApiProduct = {
   };
 };
 
-function readJSON<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
+/**
+ * Busca o inventário exato via Admin API (edge function `shopify-inventory`).
+ * Caso indisponível, cai para a Storefront API — que só devolve quantidades
+ * quando o escopo `unauthenticated_read_product_inventory` estiver liberado.
+ */
+async function fetchExactInventory(): Promise<VariantRow[] | null> {
+  const { data, error } = await supabase.functions.invoke("shopify-inventory");
+  if (error || !data?.variants) {
+    console.warn("Inventário exato indisponível, usando Storefront API:", error?.message);
+    return null;
   }
+  return (data.variants as Array<{
+    variantId: string;
+    variantTitle: string;
+    productTitle: string;
+    handle: string;
+    available: boolean;
+    quantity: number | null;
+  }>).map((v) => ({
+    key: v.variantId,
+    productTitle: v.productTitle,
+    handle: v.handle,
+    variantTitle: v.variantTitle,
+    available: !!v.available,
+    quantity: typeof v.quantity === "number" ? v.quantity : null,
+  }));
 }
 
 async function fetchAllVariants(): Promise<VariantRow[]> {
+  const exact = await fetchExactInventory();
+  if (exact && exact.length > 0) return exact;
+
   const rows: VariantRow[] = [];
   let after: string | null = null;
   let useQty = true;
@@ -148,9 +170,50 @@ async function fetchAllVariants(): Promise<VariantRow[]> {
   return rows;
 }
 
+type SnapshotRow = {
+  variant_id: string;
+  available: boolean;
+  quantity: number | null;
+};
+
+async function loadSnapshot(): Promise<Record<string, VariantState>> {
+  const { data, error } = await supabase
+    .from("restock_snapshots")
+    .select("variant_id, available, quantity");
+  if (error) {
+    console.error("Erro ao carregar snapshot de estoque:", error);
+    return {};
+  }
+  const map: Record<string, VariantState> = {};
+  for (const row of (data ?? []) as SnapshotRow[]) {
+    map[row.variant_id] = { available: row.available, quantity: row.quantity };
+  }
+  return map;
+}
+
+type EventRow = {
+  id: string;
+  event_type: "restock" | "soldout";
+  product_title: string;
+  handle: string;
+  variant_title: string;
+  quantity: number | null;
+  occurred_at: string;
+};
+
+const mapEvent = (row: EventRow): RestockEvent => ({
+  id: row.id,
+  type: row.event_type,
+  productTitle: row.product_title,
+  handle: row.handle,
+  variantTitle: row.variant_title,
+  quantity: row.quantity,
+  at: row.occurred_at,
+});
+
 const RestockManager = () => {
   const [rows, setRows] = useState<VariantRow[]>([]);
-  const [events, setEvents] = useState<RestockEvent[]>(() => readJSON<RestockEvent[]>(EVENTS_KEY, []));
+  const [events, setEvents] = useState<RestockEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
@@ -159,17 +222,37 @@ const RestockManager = () => {
   const [onlyOutOfStock, setOnlyOutOfStock] = useState(false);
   const firstRun = useRef(true);
 
+  const loadEvents = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("restock_events")
+      .select("id, event_type, product_title, handle, variant_title, quantity, occurred_at")
+      .order("occurred_at", { ascending: false })
+      .limit(EVENTS_LIMIT);
+    if (error) {
+      console.error("Erro ao carregar histórico de reposições:", error);
+      return;
+    }
+    setEvents(((data ?? []) as EventRow[]).map(mapEvent));
+  }, []);
+
   const sync = useCallback(async (silent = false) => {
     if (!silent) setSyncing(true);
     try {
       const fresh = await fetchAllVariants();
-      const previous = readJSON<Snapshot>(SNAPSHOT_KEY, {});
-      const nextSnapshot: Snapshot = {};
-      const newEvents: RestockEvent[] = [];
+      const previous = await loadSnapshot();
+      const newEvents: Array<{
+        variant_id: string;
+        event_type: "restock" | "soldout";
+        product_title: string;
+        handle: string;
+        variant_title: string;
+        quantity: number | null;
+        previous_quantity: number | null;
+        occurred_at: string;
+      }> = [];
       const now = new Date().toISOString();
 
       for (const row of fresh) {
-        nextSnapshot[row.key] = { available: row.available, quantity: row.quantity };
         const prev = previous[row.key];
         if (!prev) continue;
 
@@ -183,36 +266,54 @@ const RestockManager = () => {
 
         if (cameBack || grew) {
           newEvents.push({
-            id: `${row.key}-${now}`,
-            type: "restock",
-            productTitle: row.productTitle,
+            variant_id: row.key,
+            event_type: "restock",
+            product_title: row.productTitle,
             handle: row.handle,
-            variantTitle: row.variantTitle,
+            variant_title: row.variantTitle,
             quantity: row.quantity,
-            at: now,
+            previous_quantity: prev.quantity ?? null,
+            occurred_at: now,
           });
         } else if (prev.available && !row.available) {
           newEvents.push({
-            id: `${row.key}-out-${now}`,
-            type: "soldout",
-            productTitle: row.productTitle,
+            variant_id: row.key,
+            event_type: "soldout",
+            product_title: row.productTitle,
             handle: row.handle,
-            variantTitle: row.variantTitle,
+            variant_title: row.variantTitle,
             quantity: row.quantity,
-            at: now,
+            previous_quantity: prev.quantity ?? null,
+            occurred_at: now,
           });
         }
       }
 
-      localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(nextSnapshot));
+      // Persiste o snapshot compartilhado (upsert em lotes para respeitar limites de payload).
+      const snapshotRows = fresh.map((row) => ({
+        variant_id: row.key,
+        product_title: row.productTitle,
+        handle: row.handle,
+        variant_title: row.variantTitle,
+        available: row.available,
+        quantity: row.quantity,
+        updated_at: now,
+      }));
+      for (let i = 0; i < snapshotRows.length; i += 500) {
+        const { error: upsertError } = await supabase
+          .from("restock_snapshots")
+          .upsert(snapshotRows.slice(i, i + 500), { onConflict: "variant_id" });
+        if (upsertError) console.error("Erro ao salvar snapshot:", upsertError);
+      }
+
       setRows(fresh);
       setLastSync(new Date());
 
       if (newEvents.length && !firstRun.current) {
-        const merged = [...newEvents, ...events].slice(0, 200);
-        setEvents(merged);
-        localStorage.setItem(EVENTS_KEY, JSON.stringify(merged));
-        const restocks = newEvents.filter((e) => e.type === "restock").length;
+        const { error: insertError } = await supabase.from("restock_events").insert(newEvents);
+        if (insertError) console.error("Erro ao registrar reposições:", insertError);
+        await loadEvents();
+        const restocks = newEvents.filter((e) => e.event_type === "restock").length;
         if (restocks > 0) {
           toast.success(`${restocks} reposição(ões) de estoque detectada(s)`);
         }
@@ -225,12 +326,31 @@ const RestockManager = () => {
       setLoading(false);
       setSyncing(false);
     }
-  }, [events]);
+  }, [loadEvents]);
 
   useEffect(() => {
+    loadEvents();
     sync(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Histórico compartilhado em tempo real entre administradores.
+  useEffect(() => {
+    const channel = supabase
+      .channel("restock-events-feed")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "restock_events" },
+        () => {
+          loadEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadEvents]);
 
   useEffect(() => {
     if (!autoSync) return;
@@ -252,9 +372,17 @@ const RestockManager = () => {
     return { total, out, inStock: total - out };
   }, [rows]);
 
-  const clearEvents = () => {
+  const clearEvents = async () => {
+    const { error } = await supabase
+      .from("restock_events")
+      .delete()
+      .not("id", "is", null);
+    if (error) {
+      console.error("Erro ao limpar histórico:", error);
+      toast.error("Não foi possível limpar o histórico");
+      return;
+    }
     setEvents([]);
-    localStorage.removeItem(EVENTS_KEY);
   };
 
   if (loading) {
