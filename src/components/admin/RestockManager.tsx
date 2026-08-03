@@ -407,6 +407,34 @@ const RestockManager = () => {
     return { total, out, inStock: total - out };
   }, [rows]);
 
+  /** Agrupa as movimentações por produto (categoria) para exibição expansível. */
+  const groupedEvents = useMemo<GroupedEvents[]>(() => {
+    const map = new Map<string, GroupedEvents>();
+    for (const e of events) {
+      const key = e.handle || e.productTitle;
+      const group = map.get(key);
+      if (group) {
+        group.events.push(e);
+        if (e.type === "restock") group.restocks += 1;
+        else group.soldouts += 1;
+        if (e.at > group.lastAt) group.lastAt = e.at;
+      } else {
+        map.set(key, {
+          productTitle: e.productTitle,
+          handle: e.handle,
+          events: [e],
+          restocks: e.type === "restock" ? 1 : 0,
+          soldouts: e.type === "soldout" ? 1 : 0,
+          lastAt: e.at,
+        });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
+  }, [events]);
+
+  const toggleProduct = (key: string) =>
+    setExpandedProducts((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const clearEvents = async () => {
     const { error } = await supabase
       .from("restock_events")
