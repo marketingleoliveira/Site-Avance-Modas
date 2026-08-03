@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, RefreshCw, PackageCheck, PackageX, Search, Bell } from "lucide-react";
+import { Loader2, RefreshCw, PackageCheck, PackageX, Search, Bell, ChevronRight, Palette, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import { storefrontApiRequest } from "@/lib/shopify-api";
 import { supabase } from "@/integrations/supabase/client";
