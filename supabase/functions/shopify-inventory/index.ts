@@ -88,14 +88,26 @@ serve(async (req) => {
     }
 
     // --- Consulta ao inventário via Admin API ---
-    const shopifyToken =
-      Deno.env.get("SHOPIFY_ADMIN_API_TOKEN") || Deno.env.get("SHOPIFY_ACCESS_TOKEN");
-    if (!shopifyToken) {
-      return new Response(JSON.stringify({ error: "Token administrativo do Shopify não configurado" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Alguns projetos têm apenas um dos dois segredos válido para a Admin API,
+    // portanto tentamos ambos antes de desistir.
+    const candidateTokens = [
+      Deno.env.get("SHOPIFY_ADMIN_API_TOKEN"),
+      Deno.env.get("SHOPIFY_ACCESS_TOKEN"),
+    ].filter((t): t is string => !!t);
+
+    if (candidateTokens.length === 0) {
+      // Sem token: o cliente cai para a Storefront API.
+      return new Response(
+        JSON.stringify({
+          variants: [],
+          unavailable: true,
+          reason: "Token administrativo do Shopify não configurado",
+          syncedAt: new Date().toISOString(),
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    let shopifyToken = candidateTokens[0];
 
     const endpoint = `https://${SHOP_DOMAIN}/admin/api/${ADMIN_API_VERSION}/graphql.json`;
     const variants: Array<{
@@ -106,6 +118,38 @@ serve(async (req) => {
       available: boolean;
       quantity: number | null;
     }> = [];
+
+    // Descobre qual token é aceito pela Admin API (401/403 = credencial inválida).
+    let authorized = false;
+    for (const token of candidateTokens) {
+      const probe = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
+        body: JSON.stringify({ query: VARIANTS_QUERY, variables: { first: 1, after: null } }),
+      });
+      if (probe.ok) {
+        await probe.text();
+        shopifyToken = token;
+        authorized = true;
+        break;
+      }
+      console.error("Shopify Admin API auth falhou", probe.status, (await probe.text()).slice(0, 200));
+    }
+
+    if (!authorized) {
+      // Nenhuma credencial válida para a Admin API: devolvemos 200 com sinalização
+      // para que o painel use a Storefront API em vez de quebrar a tela.
+      return new Response(
+        JSON.stringify({
+          variants: [],
+          unavailable: true,
+          reason:
+            "Credencial da Admin API do Shopify inválida ou sem escopo de leitura de inventário",
+          syncedAt: new Date().toISOString(),
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     let after: string | null = null;
     // Limite defensivo: até 10 páginas de 250 variantes (2.500 variantes).
@@ -123,8 +167,13 @@ serve(async (req) => {
         const body = await response.text();
         console.error("Shopify Admin API error", response.status, body.slice(0, 500));
         return new Response(
-          JSON.stringify({ error: `Falha ao consultar o Shopify (${response.status})` }),
-          { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            variants,
+            unavailable: variants.length === 0,
+            reason: `Falha ao consultar o Shopify (${response.status})`,
+            syncedAt: new Date().toISOString(),
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -132,8 +181,13 @@ serve(async (req) => {
       if (payload.errors) {
         console.error("Shopify Admin GraphQL errors", JSON.stringify(payload.errors).slice(0, 500));
         return new Response(
-          JSON.stringify({ error: "Erro na consulta de inventário do Shopify" }),
-          { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({
+            variants,
+            unavailable: variants.length === 0,
+            reason: "Erro na consulta de inventário do Shopify",
+            syncedAt: new Date().toISOString(),
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
