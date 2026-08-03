@@ -74,11 +74,13 @@ serve(async (req) => {
       });
     }
 
-    const { data: isAdmin, error: roleError } = await admin.rpc("has_role", {
-      _user_id: userData.user.id,
-      _role: "admin",
-    });
-    if (roleError || !isAdmin) {
+    const { data: roleRow, error: roleError } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userData.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleError || !roleRow) {
       return new Response(JSON.stringify({ error: "Acesso restrito a administradores" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
