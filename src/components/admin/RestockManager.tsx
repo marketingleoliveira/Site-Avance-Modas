@@ -497,28 +497,95 @@ const RestockManager = () => {
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {events.map((e) => (
-                <li key={e.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {e.type === "restock" ? (
-                      <PackageCheck className="w-4 h-4 text-primary shrink-0" />
-                    ) : (
-                      <PackageX className="w-4 h-4 text-destructive shrink-0" />
+              {groupedEvents.map((group) => {
+                const key = group.handle || group.productTitle;
+                const isOpen = !!expandedProducts[key];
+                return (
+                  <li key={key}>
+                    {/* Categoria: nome do produto (clicável) */}
+                    <button
+                      type="button"
+                      onClick={() => toggleProduct(key)}
+                      aria-expanded={isOpen}
+                      aria-label={`Ver variantes repostas de ${group.productTitle}`}
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <ChevronRight
+                          className={cn(
+                            "w-4 h-4 shrink-0 text-muted-foreground transition-transform",
+                            isOpen && "rotate-90"
+                          )}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold">{group.productTitle}</p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {group.events.length} variante(s) · {new Date(group.lastAt).toLocaleString("pt-BR")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {group.restocks > 0 && (
+                          <Badge className="gap-1">
+                            <PackageCheck className="w-3 h-3" />
+                            {group.restocks}
+                          </Badge>
+                        )}
+                        {group.soldouts > 0 && (
+                          <Badge variant="destructive" className="gap-1">
+                            <PackageX className="w-3 h-3" />
+                            {group.soldouts}
+                          </Badge>
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Variantes (cor e tamanho) detectadas */}
+                    {isOpen && (
+                      <ul className="border-t border-border bg-muted/30">
+                        {group.events.map((e) => {
+                          const { size, color } = parseVariant(e.variantTitle);
+                          return (
+                            <li
+                              key={e.id}
+                              className="flex items-center justify-between gap-3 px-4 py-2.5 pl-11"
+                            >
+                              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                {size && (
+                                  <Badge variant="outline" className="gap-1 text-xs">
+                                    <Ruler className="w-3 h-3" />
+                                    {size}
+                                  </Badge>
+                                )}
+                                {color && (
+                                  <Badge variant="outline" className="gap-1 text-xs">
+                                    <Palette className="w-3 h-3" />
+                                    {color}
+                                  </Badge>
+                                )}
+                                {!size && !color && (
+                                  <span className="text-xs text-muted-foreground">{e.variantTitle}</span>
+                                )}
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(e.at).toLocaleString("pt-BR")}
+                                </span>
+                              </div>
+                              <Badge
+                                variant={e.type === "restock" ? "default" : "destructive"}
+                                className="shrink-0 text-xs"
+                              >
+                                {e.type === "restock"
+                                  ? e.quantity != null ? `Reposto (${e.quantity})` : "Reposto"
+                                  : "Esgotou"}
+                              </Badge>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{e.productTitle}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {e.variantTitle} · {new Date(e.at).toLocaleString("pt-BR")}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant={e.type === "restock" ? "default" : "destructive"} className="shrink-0">
-                    {e.type === "restock"
-                      ? e.quantity != null ? `Reposto (${e.quantity})` : "Reposto"
-                      : "Esgotou"}
-                  </Badge>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </ScrollArea>
