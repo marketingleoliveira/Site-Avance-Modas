@@ -161,6 +161,75 @@ export type Database = {
         }
         Relationships: []
       }
+      restock_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          handle: string
+          id: string
+          occurred_at: string
+          previous_quantity: number | null
+          product_title: string
+          quantity: number | null
+          variant_id: string
+          variant_title: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          handle: string
+          id?: string
+          occurred_at?: string
+          previous_quantity?: number | null
+          product_title: string
+          quantity?: number | null
+          variant_id: string
+          variant_title: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          handle?: string
+          id?: string
+          occurred_at?: string
+          previous_quantity?: number | null
+          product_title?: string
+          quantity?: number | null
+          variant_id?: string
+          variant_title?: string
+        }
+        Relationships: []
+      }
+      restock_snapshots: {
+        Row: {
+          available: boolean
+          handle: string
+          product_title: string
+          quantity: number | null
+          updated_at: string
+          variant_id: string
+          variant_title: string
+        }
+        Insert: {
+          available?: boolean
+          handle?: string
+          product_title?: string
+          quantity?: number | null
+          updated_at?: string
+          variant_id: string
+          variant_title?: string
+        }
+        Update: {
+          available?: boolean
+          handle?: string
+          product_title?: string
+          quantity?: number | null
+          updated_at?: string
+          variant_id?: string
+          variant_title?: string
+        }
+        Relationships: []
+      }
       sac_tickets: {
         Row: {
           admin_notes: string | null
