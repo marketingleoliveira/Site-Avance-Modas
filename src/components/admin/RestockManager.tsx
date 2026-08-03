@@ -258,6 +258,7 @@ const RestockManager = () => {
   const [search, setSearch] = useState("");
   const [onlyOutOfStock, setOnlyOutOfStock] = useState(false);
   const [expandedProducts, setExpandedProducts] = useState<Record<string, boolean>>({});
+  const [expandedVariantGroups, setExpandedVariantGroups] = useState<Record<string, boolean>>({});
   const firstRun = useRef(true);
 
   const loadEvents = useCallback(async () => {
@@ -438,6 +439,48 @@ const RestockManager = () => {
   const toggleProduct = (key: string) =>
     setExpandedProducts((prev) => ({ ...prev, [key]: !prev[key] }));
 
+  /** Agrupa as variantes filtradas por produto → tamanho → cores. */
+  const groupedVariants = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        productTitle: string;
+        handle: string;
+        sizes: Map<string, { size: string; colors: Array<{ color: string; available: boolean; quantity: number | null }> }>;
+        total: number;
+        available: number;
+      }
+    >();
+
+    for (const r of filtered) {
+      const key = r.handle || r.productTitle;
+      let group = map.get(key);
+      if (!group) {
+        group = { productTitle: r.productTitle, handle: r.handle, sizes: new Map(), total: 0, available: 0 };
+        map.set(key, group);
+      }
+      const { size, color } = parseVariant(r.variantTitle);
+      const sizeKey = size ?? "Único";
+      let sizeGroup = group.sizes.get(sizeKey);
+      if (!sizeGroup) {
+        sizeGroup = { size: sizeKey, colors: [] };
+        group.sizes.set(sizeKey, sizeGroup);
+      }
+      sizeGroup.colors.push({
+        color: color ?? r.variantTitle,
+        available: r.available,
+        quantity: r.quantity,
+      });
+      group.total += 1;
+      if (r.available) group.available += 1;
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.productTitle.localeCompare(b.productTitle));
+  }, [filtered]);
+
+  const toggleVariantGroup = (key: string) =>
+    setExpandedVariantGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const clearEvents = async () => {
     const { error } = await supabase
       .from("restock_events")
@@ -613,20 +656,85 @@ const RestockManager = () => {
         </div>
         <ScrollArea className="max-h-[520px]">
           <ul className="divide-y divide-border">
-            {filtered.map((r) => (
-              <li key={r.key} className="flex items-center justify-between gap-3 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{r.productTitle}</p>
-                  <p className="text-xs text-muted-foreground truncate">{r.variantTitle}</p>
-                </div>
-                <Badge variant={r.available ? "secondary" : "destructive"} className="shrink-0">
-                  {r.available
-                    ? r.quantity != null ? `${r.quantity} un.` : "Disponível"
-                    : "Esgotado"}
-                </Badge>
-              </li>
-            ))}
-            {filtered.length === 0 && (
+            {groupedVariants.map((group) => {
+              const key = group.handle || group.productTitle;
+              const isOpen = !!expandedVariantGroups[key];
+              const sizes = Array.from(group.sizes.values());
+              return (
+                <li key={key}>
+                  <button
+                    type="button"
+                    onClick={() => toggleVariantGroup(key)}
+                    aria-expanded={isOpen}
+                    aria-label={`Ver tamanhos e cores de ${group.productTitle}`}
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <ChevronRight
+                        className={cn(
+                          "w-4 h-4 shrink-0 text-muted-foreground transition-transform",
+                          isOpen && "rotate-90"
+                        )}
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{group.productTitle}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {sizes.length} tamanho(s) · {group.total} variante(s)
+                        </p>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={group.available > 0 ? "secondary" : "destructive"}
+                      className="shrink-0"
+                    >
+                      {group.available > 0 ? `${group.available} disponíveis` : "Esgotado"}
+                    </Badge>
+                  </button>
+
+                  {isOpen && (
+                    <ul className="border-t border-border bg-muted/30">
+                      {sizes.map((sizeGroup) => {
+                        const availableColors = sizeGroup.colors.filter((c) => c.available);
+                        return (
+                          <li key={sizeGroup.size} className="px-4 py-2.5 pl-11">
+                            <div className="flex items-center justify-between gap-3">
+                              <Badge variant="outline" className="gap-1 text-xs">
+                                <Ruler className="w-3 h-3" />
+                                {sizeGroup.size}
+                              </Badge>
+                              <Badge
+                                variant={availableColors.length > 0 ? "secondary" : "destructive"}
+                                className="shrink-0 gap-1 text-xs"
+                              >
+                                <Palette className="w-3 h-3" />
+                                {availableColors.length} de {sizeGroup.colors.length} cor(es)
+                              </Badge>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {sizeGroup.colors.map((c, i) => (
+                                <span
+                                  key={`${sizeGroup.size}-${c.color}-${i}`}
+                                  className={cn(
+                                    "rounded-full border px-2 py-0.5 text-[11px]",
+                                    c.available
+                                      ? "border-border text-foreground"
+                                      : "border-destructive/30 text-muted-foreground line-through"
+                                  )}
+                                >
+                                  {c.color}
+                                  {c.available && c.quantity != null ? ` (${c.quantity})` : ""}
+                                </span>
+                              ))}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+            {groupedVariants.length === 0 && (
               <li className="px-4 py-6 text-sm text-muted-foreground">Nenhuma variante encontrada.</li>
             )}
           </ul>
