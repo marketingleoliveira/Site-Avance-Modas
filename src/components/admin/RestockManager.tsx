@@ -103,8 +103,11 @@ type ApiProduct = {
  */
 async function fetchExactInventory(): Promise<VariantRow[] | null> {
   const { data, error } = await supabase.functions.invoke("shopify-inventory");
-  if (error || !data?.variants) {
-    console.warn("Inventário exato indisponível, usando Storefront API:", error?.message);
+  if (error || !data?.variants || data.unavailable || data.variants.length === 0) {
+    console.warn(
+      "Inventário exato indisponível, usando Storefront API:",
+      error?.message ?? data?.reason ?? "sem dados"
+    );
     return null;
   }
   return (data.variants as Array<{
