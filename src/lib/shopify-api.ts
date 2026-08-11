@@ -370,7 +370,8 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
     // Filter locally just to be absolutely sure no mixed products leak through
     const filtered = products.filter(product => {
       const title = product.node.title.toUpperCase();
-      return title.includes(type);
+      // Use inclusive check to avoid strict naming issues if case is slightly different
+      return title.includes(type.toUpperCase());
     });
 
     console.log(`fetchProductsByType(${type}): Found ${products.length} total, ${filtered.length} after filter`);
