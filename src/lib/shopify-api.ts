@@ -375,6 +375,7 @@ const STOREFRONT_QUERY_PAGED = `
               compareAtPrice { amount currencyCode }
               availableForSale
               selectedOptions { name value }
+              quantityAvailable
             } }
           }
           options { name values }
