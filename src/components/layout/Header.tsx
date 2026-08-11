@@ -33,10 +33,8 @@ const Header = () => {
   const storeType = useStoreContext((s) => s.storeType);
   const setStoreType = useStoreContext((s) => s.setStoreType);
 
-  // Determine current store context (pathname takes precedence over persisted store)
-  const isAtacadoContext =
-    location.pathname.startsWith("/atacado") ||
-    (!location.pathname.startsWith("/varejo") && storeType === "atacado");
+  // Determine current store context
+  const isAtacadoContext = location.pathname.startsWith("/atacado");
   const otherStore = isAtacadoContext
     ? { label: "Varejo", href: "/varejo", type: "varejo" as const }
     : { label: "Atacado", href: "/atacado", type: "atacado" as const };
