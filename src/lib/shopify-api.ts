@@ -400,6 +400,19 @@ const STOREFRONT_QUERY_PAGED = `
               price { amount currencyCode }
               compareAtPrice { amount currencyCode }
               availableForSale
+              quantityAvailable
+              inventoryItem {
+                inventoryLevels(first: 1) {
+                  edges {
+                    node {
+                      quantities(names: ["available"]) {
+                        name
+                        quantity
+                      }
+                    }
+                  }
+                }
+              }
               selectedOptions { name value }
               quantityAvailable
             } }
