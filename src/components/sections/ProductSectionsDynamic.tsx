@@ -265,7 +265,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12 bg-secondary/30 rounded-lg w-full">
             <p className="text-muted-foreground text-sm">
-              Nenhum produto {type.toLowerCase()} encontrado para a categoria selecionada.
+              quando o produto tiver varejo no nome, deverá aparecer na index varejo na sua devida categoria, quando tiver atacado, vice e versa.
             </p>
             {loading && <p className="text-xs mt-2 italic">Carregando estoque...</p>}
             {!loading && allProducts.length === 0 && (
