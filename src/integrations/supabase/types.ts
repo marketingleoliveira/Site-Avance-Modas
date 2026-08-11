@@ -104,6 +104,60 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_requests: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          items: Json
+          max_time: string
+          min_time: string
+          notes: string | null
+          purpose: string | null
+          request_number: string
+          requester_name: string | null
+          return_date: string | null
+          signatures: Json
+          status: string
+          updated_at: string
+          withdrawal_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          items?: Json
+          max_time?: string
+          min_time?: string
+          notes?: string | null
+          purpose?: string | null
+          request_number: string
+          requester_name?: string | null
+          return_date?: string | null
+          signatures?: Json
+          status?: string
+          updated_at?: string
+          withdrawal_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          items?: Json
+          max_time?: string
+          min_time?: string
+          notes?: string | null
+          purpose?: string | null
+          request_number?: string
+          requester_name?: string | null
+          return_date?: string | null
+          signatures?: Json
+          status?: string
+          updated_at?: string
+          withdrawal_date?: string | null
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
