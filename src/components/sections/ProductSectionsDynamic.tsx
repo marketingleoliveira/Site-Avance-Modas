@@ -263,16 +263,25 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-12 bg-secondary/30 rounded-lg w-full">
-            <p className="text-muted-foreground text-sm">
-              quando o produto tiver varejo no nome, deverá aparecer na index varejo na sua devida categoria, quando tiver atacado, vice e versa.
+          <div className="text-center py-16 bg-secondary/20 rounded-xl border-2 border-dashed border-secondary w-full max-w-2xl mx-auto px-6">
+            <div className="w-16 h-16 bg-secondary/50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg viewBox="0 0 24 24" className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">Nenhum produto encontrado</h3>
+            <p className="text-muted-foreground text-sm mb-6">
+              Os produtos não aparecem e seguem o padrão, resolva o que pode estar causando isso.
             </p>
-            {loading && <p className="text-xs mt-2 italic">Carregando estoque...</p>}
-            {!loading && allProducts.length === 0 && (
-              <p className="text-xs mt-2 text-red-500">
-                Se você adicionou produtos recentemente no Shopify, certifique-se de que o título contém a palavra "{type}" e que eles estão publicados no canal "Storefront".
-              </p>
-            )}
+            <div className="bg-background/50 rounded-lg p-4 text-left text-xs space-y-3 border border-secondary">
+              <p className="font-semibold text-foreground">Diagnóstico sugerido:</p>
+              <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                <li>Verifique se o título do produto no Shopify contém <span className="font-mono font-bold text-accent">[{type}]</span>.</li>
+                <li>Confirme se os produtos estão publicados no canal <span className="font-bold text-foreground">Storefront</span> (ou "Headless").</li>
+                <li>Certifique-se de que há estoque disponível no Shopify (exceto para itens de Atacado).</li>
+                <li>Verifique se a categoria selecionada acima corresponde aos termos no título do produto.</li>
+              </ul>
+            </div>
           </div>
         ) : (
           <>
