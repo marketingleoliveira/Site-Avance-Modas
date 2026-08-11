@@ -263,7 +263,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12 bg-secondary/30 rounded-lg">
             <p className="text-muted-foreground text-sm">
-              Nenhum produto encontrado para esta categoria. REVISE Todo o sistema de busca por nome no shopfy, os produtos do shopfy não estão aparecendo, e eu não consigo desconectar a loja da avance, devido a loja anterior ter sido excluida
+              Nenhum produto encontrado para esta categoria.
             </p>
           </div>
         ) : (

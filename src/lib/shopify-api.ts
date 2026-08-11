@@ -345,16 +345,18 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
   }
 }
 
-export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: number = 100): Promise<ShopifyProduct[]> {
+export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: number = 250): Promise<ShopifyProduct[]> {
   try {
-    // Fetch all products and filter by title containing the type
-    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: null });
-    if (!data) return [];
+    // Search directly for products with the type in the title
+    const query = `title:*${type}*`;
+    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
     
-    const allProducts: ShopifyProduct[] = data.data.products.edges;
+    if (!data || !data.data || !data.data.products) return [];
+    
+    const products: ShopifyProduct[] = data.data.products.edges;
     
     // Map inventory quantity
-    allProducts.forEach(p => {
+    products.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
         const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
@@ -362,9 +364,8 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
       });
     });
 
-    // Filter products that have the exact type in title (ATACADO or VAREJO)
-    // Products must explicitly contain ATACADO or VAREJO - no shared products
-    return allProducts.filter(product => {
+    // Filter locally just to be absolutely sure no mixed products leak through
+    return products.filter(product => {
       const title = product.node.title.toUpperCase();
       return title.includes(type);
     });
