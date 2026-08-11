@@ -465,8 +465,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                             }`}>
                               {isAtacado 
                                 ? 'Disponibilidade imediata' 
-                                : firstVariant.availableForSale 
-                                  ? (firstVariant.inventoryQuantity > 0 ? `${firstVariant.inventoryQuantity} em estoque` : 'Em estoque')
+                                : (firstVariant.availableForSale || (firstVariant as any).inventoryQuantity > 0)
+                                  ? ((firstVariant as any).inventoryQuantity > 0 ? `${(firstVariant as any).inventoryQuantity} em estoque` : 'Em estoque')
                                   : 'Esgotado'}
                             </span>
                           </div>
