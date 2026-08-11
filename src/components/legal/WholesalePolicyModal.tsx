@@ -25,7 +25,7 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6 text-sm text-muted-foreground">
             <div className="text-xs text-muted-foreground/70 space-y-1">
-              <p>Última atualização: Janeiro de 2026</p>
+              <p>Última atualização: Agosto de 2026</p>
               <p className="font-medium">AVANCE MODAS - CNPJ: 61.705.129/0001-90</p>
             </div>
 
@@ -46,10 +46,11 @@ const WholesalePolicyModal = ({ open, onOpenChange }: WholesalePolicyModalProps)
               <div className="text-xs space-y-2 border-l-2 border-primary/20 pl-3 py-1 italic bg-primary/5 rounded-r">
                 <p className="font-medium text-foreground underline decoration-primary/30">Política de Entrega:</p>
                 <p>
-                  O frete é calculado de acordo com o peso e volume da mercadoria, sendo informado antes da finalização do pedido. 
-                  Trabalhamos com entregas realizadas via transportadora e correios, os prazos também serão informados antes da 
-                  finalização do pedido e nos e-mails transacionais. Nas compras, acima de R$ 149,00 para o Sul, Sudeste, Centro 
-                  e Centroeste e R$ 250,00 para as outras regiões.
+                  O frete é calculado de acordo com o peso e volume da mercadoria, sendo informado antes da finalização do pedido.
+                  Trabalhamos com entregas realizadas via transportadora e correios, os prazos também serão informados antes da
+                  finalização do pedido e nos e-mails transacionais. No atacado, o frete é <strong>grátis</strong> apenas em
+                  compras acima de <strong>R$ 1.500,00</strong>. Para pedidos abaixo deste valor, o frete será calculado conforme
+                  tabela da transportadora.
                 </p>
                 <p>
                   O prazo de entrega começa a ser contato a partir do despacho da mercadoria, assim que o pedido é faturado.
