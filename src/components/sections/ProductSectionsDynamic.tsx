@@ -269,7 +269,9 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
             </p>
             {loading && <p className="text-xs mt-2 italic">Carregando estoque...</p>}
             {!loading && allProducts.length === 0 && (
-              <p className="text-xs mt-2 text-red-500">Erro: Nenhum produto carregado da API para {type}.</p>
+              <p className="text-xs mt-2 text-red-500">
+                Se você adicionou produtos recentemente no Shopify, certifique-se de que o título contém a palavra "{type}" e que eles estão publicados no canal "Storefront".
+              </p>
             )}
           </div>
         ) : (
