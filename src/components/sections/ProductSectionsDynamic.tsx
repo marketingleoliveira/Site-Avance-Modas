@@ -89,7 +89,9 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     const loadProducts = async () => {
       setLoading(true);
       // Fetch products filtered by store type directly
+      // Use 250 as limit to ensure we get all available items
       const products = await fetchProductsByType(type, 250);
+      console.log(`Loaded ${products.length} products for ${type}`);
       setAllProducts(products);
       setLoading(false);
     };
@@ -263,7 +265,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12 bg-secondary/30 rounded-lg">
             <p className="text-muted-foreground text-sm">
-              Nenhum produto encontrado para esta categoria.
+              Nenhum produto {type.toLowerCase()} encontrado para a categoria selecionada.
             </p>
           </div>
         ) : (
