@@ -381,7 +381,8 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
     const product = data.data.productByHandle;
     if (product) {
       product.variants.edges.forEach((v: any) => {
-        v.node.inventoryQuantity = v.node.quantityAvailable || 0;
+        const availableQuantity = v.node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
+        v.node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (v.node.quantityAvailable || 0);
       });
     }
     return product;
