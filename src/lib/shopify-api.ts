@@ -353,6 +353,15 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
     
     const allProducts: ShopifyProduct[] = data.data.products.edges;
     
+    // Map inventory quantity
+    allProducts.forEach(p => {
+      p.node.variants.edges.forEach(v => {
+        const node = v.node as any;
+        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
+        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+      });
+    });
+
     // Filter products that have the exact type in title (ATACADO or VAREJO)
     // Products must explicitly contain ATACADO or VAREJO - no shared products
     return allProducts.filter(product => {
