@@ -459,7 +459,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                             <span className={`text-[9px] sm:text-[10px] font-medium ${
                               isAtacado 
                                 ? 'text-emerald-600' 
-                                : firstVariant.availableForSale 
+                                : (firstVariant.availableForSale || (firstVariant as any).inventoryQuantity > 0)
                                   ? 'text-muted-foreground' 
                                   : 'text-destructive'
                             }`}>
