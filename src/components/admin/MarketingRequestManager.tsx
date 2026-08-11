@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2, FileDown, Clock } from "lucine-react";
+import { Plus, Trash2, FileDown, Clock } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { format } from "date-fns";
