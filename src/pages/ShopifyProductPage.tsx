@@ -1112,6 +1112,19 @@ const ShopifyProductPage = () => {
                     <span className="text-sm text-destructive font-medium">Esgotado</span>
                   )}
                 </div>
+                {/* Stock info shown after variant selection */}
+                {currentVariant && (
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Package className="w-4 h-4 text-muted-foreground" />
+                    <span className="font-medium text-foreground">
+                      {isAtacadoProduct 
+                        ? "Disponibilidade imediata (Atacado)" 
+                        : currentVariant.availableForSale 
+                          ? `${currentVariant.inventoryQuantity > 0 ? `${currentVariant.inventoryQuantity} unidades em estoque` : 'Disponível'}`
+                          : "Produto esgotado"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
