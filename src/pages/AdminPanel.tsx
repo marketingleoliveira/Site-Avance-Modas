@@ -30,7 +30,8 @@ import CouponsManager from "@/components/admin/CouponsManager";
 import RestockManager from "@/components/admin/RestockManager";
 import GuidesManager from "@/components/admin/GuidesManager";
 import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
-import { cn } from "@/lib/utils";
+import MarketingRequestManager from "@/components/admin/MarketingRequestManager";
+import { cn } from "@/utils/cn";
 
 interface NewsletterSubscriber {
   id: string;
@@ -218,6 +219,7 @@ const AdminPanel = () => {
         { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
         { id: "coupons", label: "Cupons de Desconto", icon: <Percent className="w-4 h-4" /> },
         { id: "restock", label: "Reposição", icon: <RefreshCw className="w-4 h-4" /> },
+        { id: "marketing-request", label: "Solicitação", icon: <FileText className="w-4 h-4" /> },
       ]
     },
     {
