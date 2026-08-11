@@ -434,6 +434,14 @@ export default function StoreConfigEditor({
                 </div>
               </div>
 
+              <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-900">
+                <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <AlertTitle className="text-blue-800 dark:text-blue-300">Dica de Busca Otimizada</AlertTitle>
+                <AlertDescription className="text-blue-700 dark:text-blue-400">
+                  Mantenha a nomenclatura rigorosa (VAREJO/ATACADO no título) para que o novo sistema de busca continue funcionando com precisão máxima.
+                </AlertDescription>
+              </Alert>
+
               {/* Connection Status Display */}
               {connectionStatus === 'success' && (
                 <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-800">
