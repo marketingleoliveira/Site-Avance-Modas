@@ -287,7 +287,7 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
     // Map quantityAvailable to inventoryQuantity
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
-        (v.node as any).inventoryQuantity = typeof (v.node as any).quantityAvailable === "number" ? (v.node as any).quantityAvailable : null;
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
       });
     });
     return products;
@@ -305,7 +305,7 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
     const products: ShopifyProduct[] = data.data.products.edges;
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
-        (v.node as any).inventoryQuantity = typeof (v.node as any).quantityAvailable === "number" ? (v.node as any).quantityAvailable : null;
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
       });
     });
     return products;
@@ -342,7 +342,7 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
     const product = data.data.productByHandle;
     if (product) {
       product.variants.edges.forEach((v: any) => {
-        v.node.inventoryQuantity = typeof v.node.quantityAvailable === "number" ? v.node.quantityAvailable : null;
+        v.node.inventoryQuantity = v.node.quantityAvailable || 0;
       });
     }
     return product;
@@ -403,7 +403,7 @@ export async function fetchProductsPaged(
     const edges = products.edges as ShopifyProduct[];
     edges.forEach(p => {
       p.node.variants.edges.forEach(v => {
-        (v.node as any).inventoryQuantity = typeof (v.node as any).quantityAvailable === "number" ? (v.node as any).quantityAvailable : null;
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
       });
     });
     return {

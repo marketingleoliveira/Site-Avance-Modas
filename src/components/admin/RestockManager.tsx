@@ -56,7 +56,7 @@ const QUERY_WITH_QTY = `
         node {
           id title handle
           variants(first: 100) {
-            edges { node { id title availableForSale } }
+            edges { node { id title availableForSale quantityAvailable } }
           }
         }
       }

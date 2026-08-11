@@ -373,9 +373,8 @@ export default function StoreConfigEditor({
                 <AlertDescription className="mt-2 space-y-2">
                   <p>1. Acesse o <strong>Admin do Shopify</strong> → Configurações → Apps e canais de vendas</p>
                   <p>2. Clique em <strong>Desenvolver apps</strong> → Criar um app</p>
-                  <p>3. Clique em <strong>Configurar escopos da Storefront API</strong></p>
-                  <p>4. Em <strong>Inventário</strong>, marque a opção <code>unauthenticated_read_product_inventory</code></p>
-                  <p>5. Salve e copie o <strong>Storefront Access Token</strong></p>
+                  <p>3. Configure as permissões da <strong>Storefront API</strong></p>
+                  <p>4. Copie o <strong>Storefront Access Token</strong></p>
                 </AlertDescription>
               </Alert>
 
