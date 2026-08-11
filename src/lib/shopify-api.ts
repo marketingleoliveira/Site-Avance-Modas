@@ -267,6 +267,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
             weight
             weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
