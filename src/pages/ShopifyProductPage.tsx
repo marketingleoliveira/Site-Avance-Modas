@@ -1120,8 +1120,8 @@ const ShopifyProductPage = () => {
                     <span className="font-medium text-foreground">
                       {isAtacadoProduct 
                         ? "Disponibilidade imediata (Atacado)" 
-                        : currentVariant.availableForSale 
-                          ? `${currentVariant.inventoryQuantity > 0 ? `${currentVariant.inventoryQuantity} unidades em estoque` : 'Disponível'}`
+                        : (currentVariant.availableForSale || (currentVariant as any).inventoryQuantity > 0)
+                          ? `${(currentVariant as any).inventoryQuantity > 0 ? `${(currentVariant as any).inventoryQuantity} unidades em estoque` : 'Disponível'}`
                           : "Produto esgotado"}
                     </span>
                   </div>
