@@ -193,6 +193,19 @@ const STOREFRONT_QUERY = `
                   currencyCode
                 }
                 availableForSale
+                quantityAvailable
+                inventoryItem {
+                  inventoryLevels(first: 1) {
+                    edges {
+                      node {
+                        quantities(names: ["available"]) {
+                          name
+                          quantity
+                        }
+                      }
+                    }
+                  }
+                }
                 selectedOptions {
                   name
                   value
