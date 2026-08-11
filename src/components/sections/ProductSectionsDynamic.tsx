@@ -89,7 +89,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     const loadProducts = async () => {
       setLoading(true);
       // Fetch products filtered by store type directly
-      const products = await fetchProductsByType(type, 100);
+      const products = await fetchProductsByType(type, 250);
       setAllProducts(products);
       setLoading(false);
     };
