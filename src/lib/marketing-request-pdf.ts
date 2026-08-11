@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
+import logo from "@/assets/logo-avance.png";
 
 export interface RequestItem {
   id: string;
@@ -57,24 +58,31 @@ export const generateRequestPDF = (request: MarketingRequestRecord) => {
   const doc = new jsPDF();
   const createdAt = request.created_at ? new Date(request.created_at) : new Date();
 
+  // Add Logo
+  try {
+    doc.addImage(logo, "PNG", 85, 10, 40, 40);
+  } catch (err) {
+    console.warn("Could not add logo to PDF:", err);
+  }
+
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("SOLICITAÇÃO DE PEÇAS - MARKETING", 105, 20, { align: "center" });
+  doc.text("SOLICITAÇÃO DE PEÇAS - MARKETING", 105, 55, { align: "center" });
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Nº da Solicitação: ${request.request_number}`, 20, 30);
-  doc.text(`Emissão: ${format(createdAt, "dd/MM/yyyy HH:mm")}`, 20, 36);
-  doc.text(`Solicitante: ${request.requester_name || "-"}`, 20, 42);
-  doc.text(`Status: ${statusLabels[request.status] || request.status}`, 130, 30);
-  doc.text(`Prazo mínimo: ${request.min_time || "-"}`, 130, 36);
-  doc.text(`Prazo máximo: ${request.max_time || "-"}`, 130, 42);
+  doc.text(`Nº da Solicitação: ${request.request_number}`, 20, 65);
+  doc.text(`Emissão: ${format(createdAt, "dd/MM/yyyy HH:mm")}`, 20, 71);
+  doc.text(`Solicitante: ${request.requester_name || "-"}`, 20, 77);
+  doc.text(`Status: ${statusLabels[request.status] || request.status}`, 130, 65);
+  doc.text(`Prazo mínimo: ${request.min_time || "-"}`, 130, 71);
+  doc.text(`Prazo máximo: ${request.max_time || "-"}`, 130, 77);
   if (request.purpose) {
-    doc.text(`Finalidade: ${request.purpose}`, 20, 48);
+    doc.text(`Finalidade: ${request.purpose}`, 20, 83);
   }
 
   autoTable(doc, {
-    startY: request.purpose ? 54 : 50,
+    startY: request.purpose ? 89 : 85,
     head: [["SKU", "Tamanho", "Cor", "Tipo de Tecido"]],
     body: request.items.map((item) => [item.sku, item.size, item.color, item.fabric]),
     theme: "grid",
