@@ -89,9 +89,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     const loadProducts = async () => {
       setLoading(true);
       // Fetch products filtered by store type directly
-      // Use 250 as limit to ensure we get all available items
       const products = await fetchProductsByType(type, 250);
-      console.log(`Loaded ${products.length} products for ${type}`);
+      console.log(`Loaded ${products.length} products for ${type}`, products);
       setAllProducts(products);
       setLoading(false);
     };
