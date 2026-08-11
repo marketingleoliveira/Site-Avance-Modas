@@ -668,65 +668,6 @@ const AdminPanel = () => {
           </Card>
         );
       
-      case "marketing-request":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Solicitação de Peças (Marketing)
-              </CardTitle>
-              <CardDescription>
-                Crie documentos PDF para solicitação de peças do estoque para a equipe de marketing.
-                Inclui campos para SKU, Tamanho, Cor e Tipo de Tecido, além de espaços para assinaturas de retirada e devolução.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MarketingRequestManager />
-            </CardContent>
-          </Card>
-        );
-      
-      case "wholesale-orders":
-        return <WholesaleOrdersManager />;
-      
-      case "coupons":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Percent className="w-5 h-5" />
-                Cupons de Desconto
-              </CardTitle>
-              <CardDescription>
-                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CouponsManager />
-            </CardContent>
-          </Card>
-        );
-      
-      case "restock":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5" />
-                Reposição de Estoque
-              </CardTitle>
-              <CardDescription>
-                Sincronizado com o estoque do Shopify. Atualiza automaticamente a cada 30 segundos e registra toda
-                reposição de produtos em tempo real.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RestockManager />
-            </CardContent>
-          </Card>
-        );
-      
       case "store-config":
         return (
           <StoreConfigEditor
