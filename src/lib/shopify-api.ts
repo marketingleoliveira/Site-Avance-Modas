@@ -310,10 +310,12 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
     const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
     if (!data) return [];
     const products: ShopifyProduct[] = data.data.products.edges;
-    // Map quantityAvailable to inventoryQuantity
+    // Map quantityAvailable or inventoryItem quantities to inventoryQuantity
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
-        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
+        const node = v.node as any;
+        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
+        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
       });
     });
     return products;
