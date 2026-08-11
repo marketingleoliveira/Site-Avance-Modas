@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2, FileDown, Clock, Loader2, Save } from "lucide-react";
+import { Plus, Trash2, FileDown, Clock, Loader2, Save, Search, Check, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,28 @@ import {
   emptySignatures,
   generateRequestPDF,
 } from "@/lib/marketing-request-pdf";
+import { fetchProducts, ShopifyProduct } from "@/lib/shopify-api";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const newItem = (): RequestItem => ({
   id: Math.random().toString(36).slice(2, 11),
@@ -31,14 +53,60 @@ const MarketingRequestManager = () => {
   const [purpose, setPurpose] = useState("");
   const [saving, setSaving] = useState(false);
   const [refreshToken, setRefreshToken] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<ShopifyProduct[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<Record<string, ShopifyProduct['node']>>({});
+
+  const searchProducts = useCallback(async (term: string) => {
+    if (!term || term.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    try {
+      const results = await fetchProducts(20, term);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchProducts(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm, searchProducts]);
 
   const addItem = () => setItems((prev) => [...prev, newItem()]);
 
-  const removeItem = (id: string) =>
+  const removeItem = (id: string) => {
     setItems((prev) => (prev.length > 1 ? prev.filter((item) => item.id !== id) : prev));
+    setSelectedProducts((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
 
   const updateItem = (id: string, field: keyof RequestItem, value: string) =>
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+
+  const handleProductSelect = (itemId: string, product: ShopifyProduct['node']) => {
+    setSelectedProducts(prev => ({ ...prev, [itemId]: product }));
+    
+    // Auto-fill SKU from first variant or handle
+    const firstVariant = product.variants.edges[0]?.node;
+    updateItem(itemId, "sku", firstVariant?.sku || product.handle);
+    
+    // Reset size and color when product changes
+    setItems(prev => prev.map(item => 
+      item.id === itemId ? { ...item, size: "", color: "" } : item
+    ));
+  };
 
   const buildRecord = (requestNumber: string): MarketingRequestRecord => ({
     request_number: requestNumber,
@@ -158,39 +226,143 @@ const MarketingRequestManager = () => {
           </Button>
         </div>
 
-        {items.map((item) => (
-          <Card key={item.id} className="relative">
-            <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label>SKU</Label>
-                <Input value={item.sku} onChange={(e) => updateItem(item.id, "sku", e.target.value)} placeholder="Ex: BER-001" />
-              </div>
-              <div className="space-y-2">
-                <Label>Tamanho</Label>
-                <Input value={item.size} onChange={(e) => updateItem(item.id, "size", e.target.value)} placeholder="Ex: G1" />
-              </div>
-              <div className="space-y-2">
-                <Label>Cor</Label>
-                <Input value={item.color} onChange={(e) => updateItem(item.id, "color", e.target.value)} placeholder="Ex: Preto" />
-              </div>
-              <div className="space-y-2">
-                <Label>Tipo de Tecido</Label>
-                <Input value={item.fabric} onChange={(e) => updateItem(item.id, "fabric", e.target.value)} placeholder="Ex: Suplex" />
-              </div>
-              {items.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Remover item"
-                  className="absolute -top-2 -right-2 bg-background border rounded-full h-8 w-8 hover:bg-destructive hover:text-destructive-foreground"
-                  onClick={() => removeItem(item.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        {items.map((item) => {
+          const selectedProduct = selectedProducts[item.id];
+          const variants = selectedProduct?.variants.edges.map(e => e.node) || [];
+          
+          // Get unique sizes and colors for the selected product
+          const sizes = Array.from(new Set(variants.flatMap(v => 
+            v.selectedOptions.filter(o => o.name.toLowerCase() === "tamanho" || o.name.toLowerCase() === "size").map(o => o.value)
+          )));
+          const colors = Array.from(new Set(variants.flatMap(v => 
+            v.selectedOptions.filter(o => o.name.toLowerCase() === "cor" || o.name.toLowerCase() === "color").map(o => o.value)
+          )));
+
+          return (
+            <Card key={item.id} className="relative">
+              <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label>Produto (Busca)</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between font-normal",
+                          !selectedProduct && "text-muted-foreground"
+                        )}
+                      >
+                        {selectedProduct ? selectedProduct.title : "Pesquisar produto..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0" align="start">
+                      <Command shouldFilter={false}>
+                        <CommandInput 
+                          placeholder="Digite o nome do produto..." 
+                          value={searchTerm}
+                          onValueChange={setSearchTerm}
+                        />
+                        <CommandList>
+                          {searching && <div className="p-4 text-sm text-center">Buscando...</div>}
+                          <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+                          <CommandGroup>
+                            {searchResults.map((result) => (
+                              <CommandItem
+                                key={result.node.id}
+                                value={result.node.title}
+                                onSelect={() => handleProductSelect(item.id, result.node)}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedProduct?.id === result.node.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {result.node.title}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {item.sku && <p className="text-[10px] text-muted-foreground mt-1">SKU: {item.sku}</p>}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Tamanho</Label>
+                  <Select 
+                    value={item.size} 
+                    onValueChange={(val) => updateItem(item.id, "size", val)}
+                    disabled={!selectedProduct}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={selectedProduct ? "Selecione" : "Aguardando produto"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sizes.map(size => (
+                        <SelectItem key={size} value={size}>{size}</SelectItem>
+                      ))}
+                      {sizes.length === 0 && selectedProduct && (
+                        <SelectItem value="U">Tamanho Único</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Cor</Label>
+                  <Select 
+                    value={item.color} 
+                    onValueChange={(val) => updateItem(item.id, "color", val)}
+                    disabled={!selectedProduct}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={selectedProduct ? "Selecione" : "Aguardando produto"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {colors.map(color => (
+                        <SelectItem key={color} value={color}>{color}</SelectItem>
+                      ))}
+                      {colors.length === 0 && selectedProduct && (
+                        <SelectItem value="N/A">N/A</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tipo de Tecido</Label>
+                  <Select 
+                    value={item.fabric} 
+                    onValueChange={(val) => updateItem(item.id, "fabric", val)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Milano">Milano</SelectItem>
+                      <SelectItem value="Velocity">Velocity</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {items.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Remover item"
+                    className="absolute -top-2 -right-2 bg-background border rounded-full h-8 w-8 hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => removeItem(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="flex flex-wrap justify-end gap-2 border-b pb-6">
