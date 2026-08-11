@@ -151,6 +151,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     e.preventDefault();
     e.stopPropagation();
     
+    const firstVariant = product.node.variants.edges[0]?.node;
     const isAtacadoProduct = product.node.title?.toUpperCase().includes('ATACADO');
     // For VAREJO, we still check availability. For ATACADO, we assume immediate availability as per business rules.
     if (!firstVariant || (type === 'VAREJO' && !firstVariant.availableForSale)) {
