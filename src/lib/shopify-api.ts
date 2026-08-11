@@ -349,9 +349,12 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
   try {
     // Search directly for products with the type in the title
     const query = `title:*${type}*`;
-    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
+    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: query || null });
     
-    if (!data || !data.data || !data.data.products) return [];
+    if (!data || !data.data || !data.data.products) {
+      console.warn(`No products found for type ${type} using query ${query}`);
+      return [];
+    }
     
     const products: ShopifyProduct[] = data.data.products.edges;
     
@@ -365,10 +368,13 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
     });
 
     // Filter locally just to be absolutely sure no mixed products leak through
-    return products.filter(product => {
+    const filtered = products.filter(product => {
       const title = product.node.title.toUpperCase();
       return title.includes(type);
     });
+
+    console.log(`fetchProductsByType(${type}): Found ${products.length} total, ${filtered.length} after filter`);
+    return filtered;
   } catch (error) {
     console.error(`Error fetching ${type} products:`, error);
     return [];

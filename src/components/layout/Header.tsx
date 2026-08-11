@@ -33,10 +33,8 @@ const Header = () => {
   const storeType = useStoreContext((s) => s.storeType);
   const setStoreType = useStoreContext((s) => s.setStoreType);
 
-  // Determine current store context (pathname takes precedence over persisted store)
-  const isAtacadoContext =
-    location.pathname.startsWith("/atacado") ||
-    (!location.pathname.startsWith("/varejo") && storeType === "atacado");
+  // Determine current store context
+  const isAtacadoContext = location.pathname.startsWith("/atacado");
   const otherStore = isAtacadoContext
     ? { label: "Varejo", href: "/varejo", type: "varejo" as const }
     : { label: "Atacado", href: "/atacado", type: "atacado" as const };
@@ -171,12 +169,12 @@ const Header = () => {
               <Search className="w-[18px] h-[18px]" />
             </button>
 
-            {/* Switch store (mobile, blinking) */}
+            {/* Switch store (mobile/desktop, blinking) */}
             <Link
               to={otherStore.href}
               onClick={() => setStoreType(otherStore.type)}
               aria-label={`Ir para ${otherStore.label}`}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider uppercase bg-accent text-accent-foreground animate-pulse-ring"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider uppercase bg-red-600 text-white animate-pulse-ring shadow-lg border-2 border-white"
             >
               <Repeat className="w-3.5 h-3.5" />
               {otherStore.label}

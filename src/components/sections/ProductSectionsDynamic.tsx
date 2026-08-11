@@ -90,6 +90,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
       setLoading(true);
       // Fetch products filtered by store type directly
       const products = await fetchProductsByType(type, 250);
+      console.log(`Loaded ${products.length} products for ${type}`, products);
       setAllProducts(products);
       setLoading(false);
     };
@@ -126,6 +127,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
         const sorted = [...allProducts].sort(
           (a, b) => getRank(a.node.title) - getRank(b.node.title)
         );
+        console.log(`Filtering 'todos': showing ${sorted.length} products`);
         setFilteredProducts(sorted);
         return;
       }
@@ -261,10 +263,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-12 bg-secondary/30 rounded-lg">
+          <div className="text-center py-12 bg-secondary/30 rounded-lg w-full">
             <p className="text-muted-foreground text-sm">
-              Nenhum produto encontrado para esta categoria.
+              Nenhum produto {type.toLowerCase()} encontrado para a categoria selecionada.
             </p>
+            {loading && <p className="text-xs mt-2 italic">Carregando estoque...</p>}
+            {!loading && allProducts.length === 0 && (
+              <p className="text-xs mt-2 text-red-500">Erro: Nenhum produto carregado da API para {type}.</p>
+            )}
           </div>
         ) : (
           <>
