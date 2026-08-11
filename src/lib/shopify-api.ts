@@ -193,7 +193,6 @@ const STOREFRONT_QUERY = `
                   currencyCode
                 }
                 availableForSale
-                quantityAvailable
                 selectedOptions {
                   name
                   value
@@ -260,7 +259,6 @@ const PRODUCT_BY_HANDLE_QUERY = `
               currencyCode
             }
             availableForSale
-            quantityAvailable
             selectedOptions {
               name
               value
@@ -374,7 +372,6 @@ const STOREFRONT_QUERY_PAGED = `
               price { amount currencyCode }
               compareAtPrice { amount currencyCode }
               availableForSale
-              quantityAvailable
               selectedOptions { name value }
             } }
           }
