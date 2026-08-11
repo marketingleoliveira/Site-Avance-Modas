@@ -94,6 +94,7 @@ export interface ShopifyProduct {
           weight?: number;
           weightUnit?: 'GRAMS' | 'KILOGRAMS' | 'OUNCES' | 'POUNDS';
           sku?: string | null;
+          inventoryQuantity: number;
         };
       }>;
     };
@@ -199,6 +200,7 @@ const STOREFRONT_QUERY = `
                 weight
                 weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
@@ -265,9 +267,10 @@ const PRODUCT_BY_HANDLE_QUERY = `
             weight
             weightUnit
                 sku
+                quantityAvailable
+              }
+            }
           }
-        }
-      }
       options {
         name
         values
@@ -353,6 +356,7 @@ const STOREFRONT_QUERY_PAGED = `
               compareAtPrice { amount currencyCode }
               availableForSale
               selectedOptions { name value }
+              quantityAvailable
             } }
           }
           options { name values }
