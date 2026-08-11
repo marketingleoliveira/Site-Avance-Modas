@@ -349,7 +349,7 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
   try {
     // Search directly for products with the type in the title
     const query = `title:*${type}*`;
-    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
+    const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query: query || null });
     
     if (!data || !data.data || !data.data.products) return [];
     
