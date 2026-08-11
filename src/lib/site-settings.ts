@@ -1,3 +1,10 @@
+/* Para habilitar a permissão de leitura de inventário no Shopify:
+1. No Admin do Shopify, vá em "Configurações" > "Apps e canais de vendas".
+2. Selecione seu App de Storefront e clique em "Desenvolver app".
+3. Em "Configuração", clique em "Editar" na seção "Escopos da Storefront API".
+4. Procure por "Inventário" (Inventory) e marque "unauthenticated_read_product_inventory".
+5. Clique em "Salvar" no topo da página.
+*/
 import { supabase } from "@/integrations/supabase/client";
 import { Json } from "@/integrations/supabase/types";
 
