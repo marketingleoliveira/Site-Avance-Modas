@@ -187,7 +187,8 @@ const ShopifyProductPage = () => {
     
     const checkAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
       return product.variants.edges.some(({ node }) => {
-        if (!isAtacadoProduct && !node.availableForSale) return false;
+        // For VAREJO, check availability. For ATACADO, assume always available.
+        if (!isAtacadoProduct && !node.availableForSale && (node as any).inventoryQuantity <= 0) return false;
         
         let sizeMatch = false;
         let colorMatch = selectedColor ? false : true;
