@@ -200,6 +200,7 @@ const STOREFRONT_QUERY = `
                 weight
                 weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
@@ -266,6 +267,7 @@ const PRODUCT_BY_HANDLE_QUERY = `
             weight
             weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
@@ -373,6 +375,7 @@ const STOREFRONT_QUERY_PAGED = `
               compareAtPrice { amount currencyCode }
               availableForSale
               selectedOptions { name value }
+              quantityAvailable
             } }
           }
           options { name values }
