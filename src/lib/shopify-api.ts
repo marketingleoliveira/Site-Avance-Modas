@@ -333,7 +333,9 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
     const products: ShopifyProduct[] = data.data.products.edges;
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
-        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
+        const node = v.node as any;
+        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
+        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
       });
     });
     return products;
