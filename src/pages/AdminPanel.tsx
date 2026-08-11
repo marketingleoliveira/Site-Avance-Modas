@@ -1926,46 +1926,6 @@ const AdminPanel = () => {
           </Card>
         );
 
-      case "wholesale-orders":
-        return <WholesaleOrdersManager />;
-
-      case "restock":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5" />
-                Reposição de Estoque
-              </CardTitle>
-              <CardDescription>
-                Sincronizado com o estoque do Shopify. Atualiza automaticamente a cada 30 segundos e registra toda
-                reposição de produtos em tempo real.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RestockManager />
-            </CardContent>
-          </Card>
-        );
-      
-
-      case "coupons":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Percent className="w-5 h-5" />
-                Cupons de Desconto
-              </CardTitle>
-              <CardDescription>
-                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CouponsManager />
-            </CardContent>
-          </Card>
-        );
 
       case "support-tickets":
         return (
