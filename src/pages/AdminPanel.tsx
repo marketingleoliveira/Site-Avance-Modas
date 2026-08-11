@@ -609,6 +609,25 @@ const AdminPanel = () => {
       case "dashboard":
         return <DashboardStats />;
       
+      case "marketing-request":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Solicitação de Peças (Marketing)
+              </CardTitle>
+              <CardDescription>
+                Crie documentos PDF para solicitação de peças do estoque para a equipe de marketing.
+                Inclui campos para SKU, Tamanho, Cor e Tipo de Tecido, além de espaços para assinaturas de retirada e devolução.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MarketingRequestManager />
+            </CardContent>
+          </Card>
+        );
+      
       case "wholesale-orders":
         return <WholesaleOrdersManager />;
       
