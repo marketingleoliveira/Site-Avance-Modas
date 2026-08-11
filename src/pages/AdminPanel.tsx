@@ -30,6 +30,7 @@ import CouponsManager from "@/components/admin/CouponsManager";
 import RestockManager from "@/components/admin/RestockManager";
 import GuidesManager from "@/components/admin/GuidesManager";
 import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
+import MarketingRequestManager from "@/components/admin/MarketingRequestManager";
 import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
@@ -218,6 +219,7 @@ const AdminPanel = () => {
         { id: "wholesale-orders", label: "Solicitações Atacado", icon: <Package className="w-4 h-4" />, badge: pendingWholesaleCount > 0 ? String(pendingWholesaleCount) : undefined, badgeType: 'warning' as const },
         { id: "coupons", label: "Cupons de Desconto", icon: <Percent className="w-4 h-4" /> },
         { id: "restock", label: "Reposição", icon: <RefreshCw className="w-4 h-4" /> },
+        { id: "marketing-request", label: "Solicitação", icon: <FileText className="w-4 h-4" /> },
       ]
     },
     {
@@ -606,6 +608,65 @@ const AdminPanel = () => {
     switch (activeTab) {
       case "dashboard":
         return <DashboardStats />;
+      
+      case "wholesale-orders":
+        return <WholesaleOrdersManager />;
+      
+      case "coupons":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Percent className="w-5 h-5" />
+                Cupons de Desconto
+              </CardTitle>
+              <CardDescription>
+                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CouponsManager />
+            </CardContent>
+          </Card>
+        );
+      
+      case "restock":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <RefreshCw className="w-5 h-5" />
+                Reposição de Estoque
+              </CardTitle>
+              <CardDescription>
+                Sincronizado com o estoque do Shopify. Atualiza automaticamente a cada 30 segundos e registra toda
+                reposição de produtos em tempo real.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RestockManager />
+            </CardContent>
+          </Card>
+        );
+
+      case "marketing-request":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Solicitação de Peças (Marketing)
+              </CardTitle>
+              <CardDescription>
+                Crie documentos PDF para solicitação de peças do estoque para a equipe de marketing.
+                Inclui campos para SKU, Tamanho, Cor e Tipo de Tecido, além de espaços para assinaturas de retirada e devolução.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MarketingRequestManager />
+            </CardContent>
+          </Card>
+        );
       
       case "store-config":
         return (
@@ -1806,45 +1867,6 @@ const AdminPanel = () => {
           </Card>
         );
 
-      case "wholesale-orders":
-        return <WholesaleOrdersManager />;
-
-      case "restock":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5" />
-                Reposição de Estoque
-              </CardTitle>
-              <CardDescription>
-                Sincronizado com o estoque do Shopify. Atualiza automaticamente a cada 30 segundos e registra toda
-                reposição de produtos em tempo real.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RestockManager />
-            </CardContent>
-          </Card>
-        );
-
-      case "coupons":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Percent className="w-5 h-5" />
-                Cupons de Desconto
-              </CardTitle>
-              <CardDescription>
-                Crie e gerencie cupons aplicados no checkout do Shopify (sem conflito com o sistema de pagamento)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CouponsManager />
-            </CardContent>
-          </Card>
-        );
 
       case "support-tickets":
         return (
