@@ -609,6 +609,18 @@ const AdminPanel = () => {
       case "dashboard":
         return <DashboardStats />;
       
+      case "wholesale-orders":
+        return <WholesaleOrdersManager />;
+      
+      case "coupons":
+        return <CouponsManager />;
+      
+      case "restock":
+        return <RestockManager />;
+
+      case "marketing-request":
+        return <MarketingRequestManager />;
+      
       case "store-config":
         return (
           <StoreConfigEditor
