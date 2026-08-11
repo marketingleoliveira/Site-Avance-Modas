@@ -63,7 +63,7 @@ const MarketingRequestManager = () => {
       startY: 45,
       head: [["SKU", "Tamanho", "Cor", "Tecido"]],
       body: items.map(item => [item.sku, item.size, item.color, item.fabric]),
-      headStyles: { fillStyle: 'F', fillColor: [0, 0, 0] }
+      headStyles: { fillColor: [0, 0, 0] }
     });
 
     const finalY = (doc as any).lastAutoTable.finalY + 20;

@@ -31,7 +31,7 @@ import RestockManager from "@/components/admin/RestockManager";
 import GuidesManager from "@/components/admin/GuidesManager";
 import SearchConsoleDashboard from "@/components/admin/SearchConsoleDashboard";
 import MarketingRequestManager from "@/components/admin/MarketingRequestManager";
-import { cn } from "@/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface NewsletterSubscriber {
   id: string;
