@@ -446,6 +446,31 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                           </div>
                         );
                       })()}
+                      {/* Stock Info */}
+                      {(() => {
+                        const firstVariant = product.node.variants.edges[0]?.node;
+                        if (!firstVariant) return null;
+                        
+                        const isAtacado = product.node.title?.toUpperCase().includes('ATACADO');
+                        
+                        return (
+                          <div className="flex items-center justify-center gap-1.5 pt-0.5">
+                            <span className={`text-[9px] sm:text-[10px] font-medium ${
+                              isAtacado 
+                                ? 'text-emerald-600' 
+                                : firstVariant.availableForSale 
+                                  ? 'text-muted-foreground' 
+                                  : 'text-destructive'
+                            }`}>
+                              {isAtacado 
+                                ? 'Disponibilidade imediata' 
+                                : firstVariant.availableForSale 
+                                  ? (firstVariant.inventoryQuantity > 0 ? `${firstVariant.inventoryQuantity} em estoque` : 'Em estoque')
+                                  : 'Esgotado'}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </Link>
                 );

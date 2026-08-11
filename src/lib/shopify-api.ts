@@ -94,6 +94,7 @@ export interface ShopifyProduct {
           weight?: number;
           weightUnit?: 'GRAMS' | 'KILOGRAMS' | 'OUNCES' | 'POUNDS';
           sku?: string | null;
+          inventoryQuantity: number;
         };
       }>;
     };
@@ -199,6 +200,7 @@ const STOREFRONT_QUERY = `
                 weight
                 weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
@@ -265,9 +267,10 @@ const PRODUCT_BY_HANDLE_QUERY = `
             weight
             weightUnit
                 sku
+                quantityAvailable
+              }
+            }
           }
-        }
-      }
       options {
         name
         values
@@ -280,7 +283,14 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
   try {
     const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
     if (!data) return [];
-    return data.data.products.edges;
+    const products: ShopifyProduct[] = data.data.products.edges;
+    // Map quantityAvailable to inventoryQuantity
+    products.forEach(p => {
+      p.node.variants.edges.forEach(v => {
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
+      });
+    });
+    return products;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
@@ -292,7 +302,13 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
     const query = `tag:${tag}`;
     const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
     if (!data) return [];
-    return data.data.products.edges;
+    const products: ShopifyProduct[] = data.data.products.edges;
+    products.forEach(p => {
+      p.node.variants.edges.forEach(v => {
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
+      });
+    });
+    return products;
   } catch (error) {
     console.error('Error fetching products by tag:', error);
     return [];
@@ -323,7 +339,13 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
   try {
     const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
     if (!data) return null;
-    return data.data.productByHandle;
+    const product = data.data.productByHandle;
+    if (product) {
+      product.variants.edges.forEach((v: any) => {
+        v.node.inventoryQuantity = v.node.quantityAvailable || 0;
+      });
+    }
+    return product;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
@@ -353,6 +375,7 @@ const STOREFRONT_QUERY_PAGED = `
               compareAtPrice { amount currencyCode }
               availableForSale
               selectedOptions { name value }
+              quantityAvailable
             } }
           }
           options { name values }
@@ -377,8 +400,14 @@ export async function fetchProductsPaged(
     const data = await storefrontApiRequest(STOREFRONT_QUERY_PAGED, { first, after, query: query || null });
     if (!data) return { edges: [], hasNextPage: false, endCursor: null };
     const products = data.data.products;
+    const edges = products.edges as ShopifyProduct[];
+    edges.forEach(p => {
+      p.node.variants.edges.forEach(v => {
+        (v.node as any).inventoryQuantity = (v.node as any).quantityAvailable || 0;
+      });
+    });
     return {
-      edges: products.edges as ShopifyProduct[],
+      edges,
       hasNextPage: !!products.pageInfo?.hasNextPage,
       endCursor: products.pageInfo?.endCursor ?? null,
     };
