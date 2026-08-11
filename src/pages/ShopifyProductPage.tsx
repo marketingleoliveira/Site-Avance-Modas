@@ -187,7 +187,8 @@ const ShopifyProductPage = () => {
     
     const checkAvailability = (size: string, sizeType: 'regular' | 'top' | 'bottom'): boolean => {
       return product.variants.edges.some(({ node }) => {
-        if (!isAtacadoProduct && !node.availableForSale) return false;
+        // For VAREJO, check availability. For ATACADO, assume always available.
+        if (!isAtacadoProduct && !node.availableForSale && (node as any).inventoryQuantity <= 0) return false;
         
         let sizeMatch = false;
         let colorMatch = selectedColor ? false : true;
@@ -240,7 +241,7 @@ const ShopifyProductPage = () => {
     
     colors.forEach(color => {
       const isAvailable = product.variants.edges.some(({ node }) => {
-        if (!isAtacadoProduct && !node.availableForSale) return false;
+        if (!isAtacadoProduct && !node.availableForSale && (node as any).inventoryQuantity <= 0) return false;
         
         let colorMatch = false;
         let sizeMatch = false;
@@ -1119,8 +1120,8 @@ const ShopifyProductPage = () => {
                     <span className="font-medium text-foreground">
                       {isAtacadoProduct 
                         ? "Disponibilidade imediata (Atacado)" 
-                        : currentVariant.availableForSale 
-                          ? `${currentVariant.inventoryQuantity > 0 ? `${currentVariant.inventoryQuantity} unidades em estoque` : 'Disponível'}`
+                        : (currentVariant.availableForSale || (currentVariant as any).inventoryQuantity > 0)
+                          ? `${(currentVariant as any).inventoryQuantity > 0 ? `${(currentVariant as any).inventoryQuantity} unidades em estoque` : 'Disponível'}`
                           : "Produto esgotado"}
                     </span>
                   </div>

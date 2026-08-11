@@ -89,7 +89,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     const loadProducts = async () => {
       setLoading(true);
       // Fetch products filtered by store type directly
-      const products = await fetchProductsByType(type, 100);
+      const products = await fetchProductsByType(type, 250);
       setAllProducts(products);
       setLoading(false);
     };
@@ -153,7 +153,8 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
     
     const firstVariant = product.node.variants.edges[0]?.node;
     const isAtacadoProduct = product.node.title?.toUpperCase().includes('ATACADO');
-    if (!firstVariant || (!isAtacadoProduct && !firstVariant.availableForSale)) {
+    // For VAREJO, we still check availability. For ATACADO, we assume immediate availability as per business rules.
+    if (!firstVariant || (type === 'VAREJO' && !firstVariant.availableForSale)) {
       toast.error("Produto indisponível");
       return;
     }
@@ -290,7 +291,7 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
               }
             `}</style>
             <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-              {filteredProducts.slice(0, 8).map((product) => {
+              {filteredProducts.map((product) => {
                 const colors = getProductColors(product);
                 const tags = product.node.tags || [];
                 const isNew = tags.some(tag => tag.toLowerCase() === 'novo');
@@ -458,14 +459,14 @@ const ProductSectionsDynamic = ({ type }: ProductSectionsDynamicProps) => {
                             <span className={`text-[9px] sm:text-[10px] font-medium ${
                               isAtacado 
                                 ? 'text-emerald-600' 
-                                : firstVariant.availableForSale 
+                                : (firstVariant.availableForSale || (firstVariant as any).inventoryQuantity > 0)
                                   ? 'text-muted-foreground' 
                                   : 'text-destructive'
                             }`}>
                               {isAtacado 
                                 ? 'Disponibilidade imediata' 
-                                : firstVariant.availableForSale 
-                                  ? (firstVariant.inventoryQuantity > 0 ? `${firstVariant.inventoryQuantity} em estoque` : 'Em estoque')
+                                : (firstVariant.availableForSale || (firstVariant as any).inventoryQuantity > 0)
+                                  ? ((firstVariant as any).inventoryQuantity > 0 ? `${(firstVariant as any).inventoryQuantity} em estoque` : 'Em estoque')
                                   : 'Esgotado'}
                             </span>
                           </div>
