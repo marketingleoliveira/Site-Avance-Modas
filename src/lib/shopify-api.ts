@@ -200,6 +200,7 @@ const STOREFRONT_QUERY = `
                 weight
                 weightUnit
                 sku
+                quantityAvailable
               }
             }
           }
