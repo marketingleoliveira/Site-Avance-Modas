@@ -105,11 +105,26 @@ export interface ShopifyProduct {
   };
 }
 
+// Alguns tokens de Storefront não possuem o escopo
+// `unauthenticated_read_product_inventory`, o que faz a API rejeitar TODA a
+// query quando `quantityAvailable` está presente. Detectamos isso uma vez e
+// removemos o campo das próximas requisições.
+let inventoryFieldDenied = false;
+
+function stripInventoryField(query: string): string {
+  return query
+    .split("\n")
+    .filter((line) => line.trim() !== "quantityAvailable")
+    .join("\n");
+}
+
 // Storefront API helper function - now async to get config
 export async function storefrontApiRequest(query: string, variables: Record<string, unknown> = {}) {
   const config = await getShopifyConfig();
   const url = getStorefrontUrl(config);
-  
+
+  const effectiveQuery = inventoryFieldDenied ? stripInventoryField(query) : query;
+
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -117,7 +132,7 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
       'X-Shopify-Storefront-Access-Token': config.storefront_token
     },
     body: JSON.stringify({
-      query,
+      query: effectiveQuery,
       variables,
     }),
     // Always request fresh data from Shopify so inventory/availability
@@ -139,7 +154,15 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
   const data = await response.json();
   
   if (data.errors) {
-    throw new Error(`Error calling Shopify: ${data.errors.map((e: { message: string }) => e.message).join(', ')}`);
+    const message = data.errors.map((e: { message: string }) => e.message).join(', ');
+
+    // Falta o escopo de inventário: refaz a query sem `quantityAvailable`.
+    if (!inventoryFieldDenied && /quantityAvailable/i.test(message)) {
+      inventoryFieldDenied = true;
+      return storefrontApiRequest(query, variables);
+    }
+
+    throw new Error(`Error calling Shopify: ${message}`);
   }
 
   return data;
