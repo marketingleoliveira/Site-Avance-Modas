@@ -194,19 +194,14 @@ const STOREFRONT_QUERY = `
                 }
                 availableForSale
                 quantityAvailable
-                inventoryItem {
-                  inventoryLevels(first: 1) {
-                    edges {
-                      node {
-                        quantities(names: ["available"]) {
-                          name
-                          quantity
-                        }
-                      }
-                    }
-                  }
-                }
-                selectedOptions {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
                   name
                   value
                 }
@@ -274,19 +269,12 @@ const PRODUCT_BY_HANDLE_QUERY = `
             }
             availableForSale
             quantityAvailable
-            inventoryItem {
-              inventoryLevels(first: 1) {
-                edges {
-                  node {
-                    quantities(names: ["available"]) {
-                      name
-                      quantity
-                    }
-                  }
-                }
-              }
-            }
-            selectedOptions {
+          }
+        }
+      }
+    }
+  }
+`;
               name
               value
             }
@@ -314,8 +302,7 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
     return products;
@@ -465,8 +452,7 @@ export async function fetchProductsPaged(
     edges.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
     return {
