@@ -194,18 +194,6 @@ const STOREFRONT_QUERY = `
                 }
                 availableForSale
                 quantityAvailable
-                inventoryItem {
-                  inventoryLevels(first: 1) {
-                    edges {
-                      node {
-                        quantities(names: ["available"]) {
-                          name
-                          quantity
-                        }
-                      }
-                    }
-                  }
-                }
                 selectedOptions {
                   name
                   value
@@ -213,7 +201,6 @@ const STOREFRONT_QUERY = `
                 weight
                 weightUnit
                 sku
-                quantityAvailable
               }
             }
           }
@@ -274,29 +261,16 @@ const PRODUCT_BY_HANDLE_QUERY = `
             }
             availableForSale
             quantityAvailable
-            inventoryItem {
-              inventoryLevels(first: 1) {
-                edges {
-                  node {
-                    quantities(names: ["available"]) {
-                      name
-                      quantity
-                    }
-                  }
-                }
-              }
-            }
             selectedOptions {
               name
               value
             }
             weight
             weightUnit
-                sku
-                quantityAvailable
-              }
-            }
+            sku
           }
+        }
+      }
       options {
         name
         values
@@ -310,12 +284,11 @@ export async function fetchProducts(first: number = 20, query?: string): Promise
     const data = await storefrontApiRequest(STOREFRONT_QUERY, { first, query });
     if (!data) return [];
     const products: ShopifyProduct[] = data.data.products.edges;
-    // Map quantityAvailable or inventoryItem quantities to inventoryQuantity
+    // Map quantityAvailable to inventoryQuantity
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
     return products;
@@ -334,8 +307,7 @@ export async function fetchProductsByTag(tag: string, first: number = 50): Promi
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
     return products;
@@ -362,8 +334,7 @@ export async function fetchProductsByType(type: 'ATACADO' | 'VAREJO', first: num
     products.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
 
@@ -389,8 +360,7 @@ export async function fetchProductByHandle(handle: string): Promise<ShopifyProdu
     const product = data.data.productByHandle;
     if (product) {
       product.variants.edges.forEach((v: any) => {
-        const availableQuantity = v.node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        v.node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (v.node.quantityAvailable || 0);
+        v.node.inventoryQuantity = v.node.quantityAvailable || 0;
       });
     }
     return product;
@@ -423,20 +393,7 @@ const STOREFRONT_QUERY_PAGED = `
               compareAtPrice { amount currencyCode }
               availableForSale
               quantityAvailable
-              inventoryItem {
-                inventoryLevels(first: 1) {
-                  edges {
-                    node {
-                      quantities(names: ["available"]) {
-                        name
-                        quantity
-                      }
-                    }
-                  }
-                }
-              }
               selectedOptions { name value }
-              quantityAvailable
             } }
           }
           options { name values }
@@ -465,8 +422,7 @@ export async function fetchProductsPaged(
     edges.forEach(p => {
       p.node.variants.edges.forEach(v => {
         const node = v.node as any;
-        const availableQuantity = node.inventoryItem?.inventoryLevels?.edges[0]?.node?.quantities?.find((q: any) => q.name === 'available')?.quantity;
-        node.inventoryQuantity = availableQuantity !== undefined ? availableQuantity : (node.quantityAvailable || 0);
+        node.inventoryQuantity = node.quantityAvailable || 0;
       });
     });
     return {
