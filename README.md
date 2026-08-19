@@ -1,26 +1,36 @@
-# Avance Modas SHOPFY
+# Site Avance Modas (Shopify E-Commerce)
 
-desenvolva um template para o shopfy que seja totalmente compativel com a plataforma, eu quero colocar esse template na shopfy, quero que seja possível baixa-lo por aqui depois, o template, é de uma loja virtual de roupa fitness, o faça, baseado em www.avancemodas.com.br vou anexar o logo
+E-commerce moderno e de alta performance desenvolvido para a marca **Avance Modas**, focado no segmento de moda e moda fitness. O projeto combina uma interface fluida com integrações avançadas para a plataforma Shopify e canais de venda.
 
-This project was built with [Lovable](https://lovable.dev).
+🔗 **Live App:** [avancemodas.lovable.app](https://avancemodas.lovable.app)  
+🛒 **Loja Oficial:** [www.avancemodas.com.br](https://www.avancemodas.com.br)  
+🌐 **Portfólio do Desenvolvedor:** [porfolioleoliveira.lovable.app](https://porfolioleoliveira.lovable.app)
 
-**Live app**: https://avancemodas.lovable.app
+---
 
-## Build with Lovable
+## 📌 Sobre o Projeto
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/a98d94c5-330a-4067-8bf9-dcd080230d78).
+O repositório **Site-Avance-Modas** contém o ecossistema completo de storefront e integrações e-commerce da **Avance Modas**. Desenvolvido com foco em conversão, responsividade e compatibilidade com o ecossistema Shopify, o projeto inclui scripts de integração de estoque e catálogo de produtos (ex.: `test_shopify.py`).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+---
 
-## Development
+## ⚡ Tecnologias Utilizadas
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+* **Frontend:** TypeScript, React, Vite, Tailwind CSS, shadcn/ui
+* **Backend & Banco de Dados:** Supabase (PL/pgSQL)
+* **Scripts & Integrações:** Python (Shopify API)
+* **Gerenciador de Pacotes:** Bun / npm
+* **Desenvolvimento Acelerado:** Lovable
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+---
+
+## 🚀 Como Executar o Projeto
+
+### Pré-requisitos
+Certifique-se de ter o **Node.js** e o **npm** (ou **Bun**) instalados na sua máquina.
+
+### Passo a Passo
+
+1. **Clonar o repositório:**
+   ```bash
+   git clone [https://github.com/RennanLucas/Site-Avance-Modas.git](https://github.com/RennanLucas/Site-Avance-Modas.git)
