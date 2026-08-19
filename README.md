@@ -4,7 +4,7 @@ E-commerce moderno e de alta performance desenvolvido para a marca **Avance Moda
 
 🔗 **Live App:** [avancemodas.lovable.app](https://avancemodas.lovable.app)  
 🛒 **Loja Oficial:** [www.avancemodas.com.br](https://www.avancemodas.com.br)  
-🌐 **Portfólio do Desenvolvedor:** [porfolioleoliveira.lovable.app](https://porfolioleoliveira.lovable.app)
+🌐 **Portfólio do Desenvolvedor:** [portfolioleoliveira.lovable.app](https://portfolioleoliveira.lovable.app)
 
 ---
 
