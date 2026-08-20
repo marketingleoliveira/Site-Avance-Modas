@@ -172,9 +172,9 @@ export const CartDrawer = () => {
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
         <SheetHeader className="flex-shrink-0 pb-4 border-b">
           <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" />
-              Carrinho de Compras
+            <SheetTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tighter">
+              <ShoppingBag className="w-6 h-6 text-primary" />
+              Meu Carrinho
             </SheetTitle>
             {isSyncing && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
