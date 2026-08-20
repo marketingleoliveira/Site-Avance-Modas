@@ -81,6 +81,27 @@ export const CartDrawer = () => {
       syncCart();
     }
   }, [isOpen, syncCart]);
+  
+  // Validate applied coupon status on open
+  useEffect(() => {
+    if (isOpen && appliedCoupon) {
+      const validateStatus = async () => {
+        const { data, error } = await supabase
+          .from('coupons')
+          .select('is_active')
+          .eq('code', appliedCoupon.code)
+          .maybeSingle();
+        
+        if (error || !data || !data.is_active) {
+          removeCoupon();
+          toast.info("O cupom anteriormente aplicado não está mais ativo.", {
+            description: "O desconto foi removido do seu carrinho."
+          });
+        }
+      };
+      validateStatus();
+    }
+  }, [isOpen, appliedCoupon, removeCoupon]);
 
   const handleCheckout = () => {
     // Atacado: redirect to wholesale checkout form
