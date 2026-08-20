@@ -152,7 +152,9 @@ export const CartDrawer = () => {
   const formatPrice = (amount: number, currencyCode: string = 'BRL') => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: currencyCode
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -162,7 +164,7 @@ export const CartDrawer = () => {
         <button aria-label="Abrir carrinho" className="p-2 hover:bg-secondary rounded-full transition-colors relative">
           <ShoppingBag className="w-5 h-5" />
           {totalItems > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-accent text-accent-foreground border-0">
+            <Badge className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px] font-black bg-primary text-white border-2 border-background shadow-lg">
               {totalItems}
             </Badge>
           )}
@@ -172,9 +174,9 @@ export const CartDrawer = () => {
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full">
         <SheetHeader className="flex-shrink-0 pb-4 border-b">
           <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" />
-              Carrinho de Compras
+            <SheetTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tighter">
+              <ShoppingBag className="w-6 h-6 text-primary" />
+              Meu Carrinho
             </SheetTitle>
             {isSyncing && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -183,8 +185,8 @@ export const CartDrawer = () => {
               </div>
             )}
           </div>
-          <SheetDescription>
-            {totalItems === 0 ? "Seu carrinho está vazio" : `${totalItems} ${totalItems !== 1 ? 'itens' : 'item'} no carrinho`}
+          <SheetDescription className="font-medium text-xs uppercase tracking-widest opacity-70">
+            {totalItems === 0 ? "Sua sacola está vazia" : `${totalItems} ${totalItems !== 1 ? 'produtos' : 'produto'} selecionados`}
           </SheetDescription>
         </SheetHeader>
         
@@ -205,15 +207,15 @@ export const CartDrawer = () => {
                 {items.map((item) => (
                   <div 
                     key={item.variantId} 
-                    className={`relative flex gap-3 p-3 rounded-xl border transition-colors ${
+                    className={`relative flex gap-3 p-3 rounded-xl border transition-all duration-300 ${
                       couponEligible && hasHandleRestriction
                         ? isItemEligible(item.product?.node?.handle)
-                          ? 'bg-green-50/60 dark:bg-green-950/20 border-green-300/70 dark:border-green-800/60'
-                          : 'bg-secondary/20 border-dashed border-border/60 opacity-80'
-                        : 'bg-secondary/30 border-border/50 hover:border-border'
+                          ? 'bg-green-50/60 dark:bg-green-950/20 border-green-300/70 dark:border-green-800/60 shadow-sm shadow-green-100'
+                          : 'bg-secondary/10 border-dashed border-border/40 opacity-70 scale-[0.98]'
+                        : 'bg-secondary/30 border-border/50 hover:border-border hover:shadow-sm'
                     }`}
                   >
-                    <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50">
+                    <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50 relative">
                       {item.product.node.images?.edges?.[0]?.node && (
                         <img
                           src={item.product.node.images.edges[0].node.url}
@@ -222,46 +224,63 @@ export const CartDrawer = () => {
                           className="w-full h-full object-cover"
                         />
                       )}
+                      {couponEligible && isItemEligible(item.product?.node?.handle) && (
+                        <div className="absolute top-0 right-0 bg-green-500 text-white p-1 rounded-bl-lg">
+                          <BadgePercent className="w-3 h-3" />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-medium truncate text-sm leading-tight">{item.product.node.title}</h4>
+                        <h4 className="font-bold truncate text-[13px] leading-tight uppercase tracking-tight">{item.product.node.title}</h4>
                         {item.selectedOptions.length > 0 && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
+                          <p className="text-[11px] font-medium text-muted-foreground mt-0.5">
                             {item.selectedOptions.map(option => option.value).join(' • ')}
                           </p>
                         )}
-                        {couponEligible && hasHandleRestriction && (
+                        {couponEligible && (
                           isItemEligible(item.product?.node?.handle) ? (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950/50 px-1.5 py-0.5 rounded">
-                              <BadgePercent className="w-3 h-3" />
-                              -{appliedCoupon!.discount_percent}% com {appliedCoupon!.code}
-                            </span>
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950/50 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800">
+                                <BadgePercent className="w-3 h-3" />
+                                -{appliedCoupon!.discount_percent}% COM {appliedCoupon!.code}
+                              </span>
+                            </div>
                           ) : (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                            <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded-full">
                               <Ban className="w-3 h-3" />
-                              Não inclui o cupom
+                              Não elegível
                             </span>
                           )
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between mt-2 gap-2">
-                        <p className="font-bold text-primary text-sm sm:text-base flex-shrink-0">
-                          {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
-                        </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex flex-col">
+                          {couponEligible && isItemEligible(item.product?.node?.handle) && (
+                            <span className="text-[10px] text-muted-foreground line-through decoration-red-500/50">
+                              {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
+                            </span>
+                          )}
+                          <p className={`font-black text-sm sm:text-base tracking-tight ${couponEligible && isItemEligible(item.product?.node?.handle) ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
+                            {formatPrice(
+                              (parseFloat(item.price.amount) * (couponEligible && isItemEligible(item.product?.node?.handle) ? (1 - appliedCoupon!.discount_percent / 100) : 1)) * item.quantity, 
+                              item.price.currencyCode
+                            )}
+                          </p>
+                        </div>
                         
-                        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-1 flex-shrink-0 bg-background/50 rounded-full p-0.5 border border-border/50">
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
+                            className="h-7 w-7 rounded-full hover:bg-secondary"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                             disabled={isLoading}
                             aria-label="Diminuir quantidade"
                           >
-                            <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <Minus className="h-3 w-3" />
                           </Button>
                           <input
                             type="number"
@@ -273,34 +292,29 @@ export const CartDrawer = () => {
                                 updateQuantity(item.variantId, val);
                               }
                             }}
-                            onBlur={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (isNaN(val) || val < 1) {
-                                updateQuantity(item.variantId, 1);
-                              }
-                            }}
-                            className="w-10 sm:w-12 text-center text-xs sm:text-sm font-medium border border-border rounded-md bg-background h-6 sm:h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="w-8 text-center text-xs font-bold bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             disabled={isLoading}
                           />
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
+                            className="h-7 w-7 rounded-full hover:bg-secondary"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                             disabled={isLoading}
                             aria-label="Aumentar quantidade"
                           >
-                            <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <Plus className="h-3 w-3" />
                           </Button>
+                          <div className="w-px h-4 bg-border mx-0.5" />
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-0.5 sm:ml-1"
+                            className="h-7 w-7 rounded-full text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                             onClick={() => removeItem(item.variantId)}
                             disabled={isLoading}
                             aria-label="Remover produto"
                           >
-                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
@@ -310,22 +324,31 @@ export const CartDrawer = () => {
               </div>
 
               {/* Coupon eligibility summary */}
-              {couponEligible && hasHandleRestriction && (
-                <div className="mt-3 rounded-lg border border-border/60 bg-secondary/20 p-3 text-xs">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400 font-medium">
-                      <BadgePercent className="w-3.5 h-3.5" />
-                      Cupom <strong className="font-mono">{appliedCoupon!.code}</strong> aplicado a {items.length - ineligibleCount} de {items.length} itens
-                    </span>
+              {couponEligible && (
+                <div className="mt-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20 p-4 transition-all duration-300 shadow-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800">
+                        <BadgePercent className="w-5 h-5" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">
+                          Cupom {appliedCoupon!.code} Aplicado!
+                        </span>
+                        <span className="text-[11px] text-green-600/80 dark:text-green-400/80">
+                          {items.length - ineligibleCount} de {items.length} itens elegíveis
+                        </span>
+                      </div>
+                    </div>
                     {ineligibleCount > 0 && (
-                      <span className="text-muted-foreground">
-                        {ineligibleCount} fora da promoção
+                      <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 uppercase">
+                        {ineligibleCount} restritos
                       </span>
                     )}
                   </div>
                   {ineligibleCount > 0 && (
-                    <p className="text-muted-foreground mt-1">
-                      O desconto incide somente sobre os produtos selecionados pela loja para este cupom.
+                    <p className="text-[10px] text-muted-foreground mt-3 italic leading-relaxed">
+                      * O desconto incide somente sobre os produtos da coleção selecionada pela loja.
                     </p>
                   )}
                 </div>
@@ -447,8 +470,11 @@ export const CartDrawer = () => {
                     <span>{totalPrice >= 1500 ? 'Grátis' : 'Calculado no checkout'}</span>
                   </div>
                   {couponEligible && (
-                    <div className="flex justify-between text-sm text-green-700 dark:text-green-500 font-medium">
-                      <span>Desconto ({appliedCoupon!.code} • {appliedCoupon!.discount_percent}%)</span>
+                    <div className="flex justify-between text-sm text-green-700 dark:text-green-500 font-bold uppercase tracking-tight">
+                      <span className="flex items-center gap-1.5">
+                        <BadgePercent className="w-4 h-4" />
+                        Desconto ({appliedCoupon!.code} • {appliedCoupon!.discount_percent}%)
+                      </span>
                       <span>- {formatPrice(discountAmount, items[0]?.price.currencyCode || 'BRL')}</span>
                     </div>
                   )}
@@ -462,27 +488,34 @@ export const CartDrawer = () => {
 
                 {/* Coupon input - only for varejo Shopify checkout */}
                 {!useWholesaleFlow && (
-                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-2">
+                  <div className="rounded-xl border border-border/50 bg-secondary/10 p-4 transition-all duration-300">
                     {couponEligible ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0">
-                            <Tag className="w-4 h-4 text-green-700 dark:text-green-400" />
+                      <div className="flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-200">
+                            <Tag className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-green-800 dark:text-green-400 truncate">{appliedCoupon!.code}</p>
-                            <p className="text-xs text-muted-foreground">{appliedCoupon!.discount_percent}% de desconto aplicado</p>
+                            <p className="text-sm font-black text-foreground uppercase tracking-tight">{appliedCoupon!.code}</p>
+                            <p className="text-[11px] font-bold text-green-600 uppercase">{appliedCoupon!.discount_percent}% de desconto ativo</p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={() => { removeCoupon(); toast.success("Cupom removido"); }}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full" 
+                          onClick={() => { removeCoupon(); toast.success("Cupom removido"); }}
+                        >
                           <X className="w-4 h-4" />
                         </Button>
                       </div>
                     ) : (
-                      <>
+                      <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <Tag className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Tem um cupom?</span>
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Tag className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <span className="text-xs font-bold uppercase tracking-widest text-foreground/80">Código Promocional</span>
                         </div>
                         <div className="flex gap-2">
                           <input
@@ -490,21 +523,20 @@ export const CartDrawer = () => {
                             value={couponInput}
                             onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
-                            placeholder="DIGITE O CÓDIGO"
-                            className="flex-1 h-9 px-3 text-sm rounded-md border border-border bg-background uppercase placeholder:normal-case font-mono"
+                            placeholder="DIGITE AQUI"
+                            className="flex-1 h-10 px-4 text-xs font-black rounded-lg border border-border bg-background uppercase placeholder:font-normal placeholder:tracking-normal tracking-widest focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                             disabled={isValidatingCoupon}
                           />
                           <Button
                             size="sm"
-                            variant="outline"
                             onClick={handleApplyCoupon}
                             disabled={isValidatingCoupon || !couponInput.trim()}
-                            className="h-9"
+                            className="h-10 px-6 font-bold uppercase tracking-wider rounded-lg shadow-sm"
                           >
-                            {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aplicar"}
+                            {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Ativar"}
                           </Button>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 )}
