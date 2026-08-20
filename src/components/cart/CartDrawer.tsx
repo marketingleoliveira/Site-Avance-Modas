@@ -459,8 +459,11 @@ export const CartDrawer = () => {
                     <span>{totalPrice >= 1500 ? 'Grátis' : 'Calculado no checkout'}</span>
                   </div>
                   {couponEligible && (
-                    <div className="flex justify-between text-sm text-green-700 dark:text-green-500 font-medium">
-                      <span>Desconto ({appliedCoupon!.code} • {appliedCoupon!.discount_percent}%)</span>
+                    <div className="flex justify-between text-sm text-green-700 dark:text-green-500 font-bold uppercase tracking-tight">
+                      <span className="flex items-center gap-1.5">
+                        <BadgePercent className="w-4 h-4" />
+                        Desconto ({appliedCoupon!.code} • {appliedCoupon!.discount_percent}%)
+                      </span>
                       <span>- {formatPrice(discountAmount, items[0]?.price.currencyCode || 'BRL')}</span>
                     </div>
                   )}
