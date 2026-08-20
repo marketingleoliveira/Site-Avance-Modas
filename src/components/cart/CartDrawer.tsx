@@ -488,27 +488,34 @@ export const CartDrawer = () => {
 
                 {/* Coupon input - only for varejo Shopify checkout */}
                 {!useWholesaleFlow && (
-                  <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 space-y-2">
+                  <div className="rounded-xl border border-border/50 bg-secondary/10 p-4 transition-all duration-300">
                     {couponEligible ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0">
-                            <Tag className="w-4 h-4 text-green-700 dark:text-green-400" />
+                      <div className="flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-200">
+                            <Tag className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-green-800 dark:text-green-400 truncate">{appliedCoupon!.code}</p>
-                            <p className="text-xs text-muted-foreground">{appliedCoupon!.discount_percent}% de desconto aplicado</p>
+                            <p className="text-sm font-black text-foreground uppercase tracking-tight">{appliedCoupon!.code}</p>
+                            <p className="text-[11px] font-bold text-green-600 uppercase">{appliedCoupon!.discount_percent}% de desconto ativo</p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={() => { removeCoupon(); toast.success("Cupom removido"); }}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full" 
+                          onClick={() => { removeCoupon(); toast.success("Cupom removido"); }}
+                        >
                           <X className="w-4 h-4" />
                         </Button>
                       </div>
                     ) : (
-                      <>
+                      <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <Tag className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Tem um cupom?</span>
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Tag className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <span className="text-xs font-bold uppercase tracking-widest text-foreground/80">Código Promocional</span>
                         </div>
                         <div className="flex gap-2">
                           <input
@@ -516,21 +523,20 @@ export const CartDrawer = () => {
                             value={couponInput}
                             onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
-                            placeholder="DIGITE O CÓDIGO"
-                            className="flex-1 h-9 px-3 text-sm rounded-md border border-border bg-background uppercase placeholder:normal-case font-mono"
+                            placeholder="DIGITE AQUI"
+                            className="flex-1 h-10 px-4 text-xs font-black rounded-lg border border-border bg-background uppercase placeholder:font-normal placeholder:tracking-normal tracking-widest focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                             disabled={isValidatingCoupon}
                           />
                           <Button
                             size="sm"
-                            variant="outline"
                             onClick={handleApplyCoupon}
                             disabled={isValidatingCoupon || !couponInput.trim()}
-                            className="h-9"
+                            className="h-10 px-6 font-bold uppercase tracking-wider rounded-lg shadow-sm"
                           >
-                            {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aplicar"}
+                            {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Ativar"}
                           </Button>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 )}
