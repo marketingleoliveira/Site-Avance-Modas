@@ -152,7 +152,9 @@ export const CartDrawer = () => {
   const formatPrice = (amount: number, currencyCode: string = 'BRL') => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: currencyCode
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
