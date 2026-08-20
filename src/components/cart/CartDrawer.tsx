@@ -322,22 +322,31 @@ export const CartDrawer = () => {
               </div>
 
               {/* Coupon eligibility summary */}
-              {couponEligible && hasHandleRestriction && (
-                <div className="mt-3 rounded-lg border border-border/60 bg-secondary/20 p-3 text-xs">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-green-700 dark:text-green-400 font-medium">
-                      <BadgePercent className="w-3.5 h-3.5" />
-                      Cupom <strong className="font-mono">{appliedCoupon!.code}</strong> aplicado a {items.length - ineligibleCount} de {items.length} itens
-                    </span>
+              {couponEligible && (
+                <div className="mt-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20 p-4 transition-all duration-300 shadow-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800">
+                        <BadgePercent className="w-5 h-5" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">
+                          Cupom {appliedCoupon!.code} Aplicado!
+                        </span>
+                        <span className="text-[11px] text-green-600/80 dark:text-green-400/80">
+                          {items.length - ineligibleCount} de {items.length} itens elegíveis
+                        </span>
+                      </div>
+                    </div>
                     {ineligibleCount > 0 && (
-                      <span className="text-muted-foreground">
-                        {ineligibleCount} fora da promoção
+                      <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 uppercase">
+                        {ineligibleCount} restritos
                       </span>
                     )}
                   </div>
                   {ineligibleCount > 0 && (
-                    <p className="text-muted-foreground mt-1">
-                      O desconto incide somente sobre os produtos selecionados pela loja para este cupom.
+                    <p className="text-[10px] text-muted-foreground mt-3 italic leading-relaxed">
+                      * O desconto incide somente sobre os produtos da coleção selecionada pela loja.
                     </p>
                   )}
                 </div>
