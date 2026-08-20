@@ -16,6 +16,7 @@ import { useStoreContext } from "@/stores/storeContextStore";
 import { useAtacadoSettings } from "@/hooks/useAtacadoSettings";
 import { useCouponStore } from "@/stores/couponStore";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const CartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
