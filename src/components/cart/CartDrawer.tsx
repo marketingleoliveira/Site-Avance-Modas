@@ -205,15 +205,15 @@ export const CartDrawer = () => {
                 {items.map((item) => (
                   <div 
                     key={item.variantId} 
-                    className={`relative flex gap-3 p-3 rounded-xl border transition-colors ${
+                    className={`relative flex gap-3 p-3 rounded-xl border transition-all duration-300 ${
                       couponEligible && hasHandleRestriction
                         ? isItemEligible(item.product?.node?.handle)
-                          ? 'bg-green-50/60 dark:bg-green-950/20 border-green-300/70 dark:border-green-800/60'
-                          : 'bg-secondary/20 border-dashed border-border/60 opacity-80'
-                        : 'bg-secondary/30 border-border/50 hover:border-border'
+                          ? 'bg-green-50/60 dark:bg-green-950/20 border-green-300/70 dark:border-green-800/60 shadow-sm shadow-green-100'
+                          : 'bg-secondary/10 border-dashed border-border/40 opacity-70 scale-[0.98]'
+                        : 'bg-secondary/30 border-border/50 hover:border-border hover:shadow-sm'
                     }`}
                   >
-                    <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50">
+                    <div className="w-20 h-20 bg-card rounded-lg overflow-hidden flex-shrink-0 border border-border/50 relative">
                       {item.product.node.images?.edges?.[0]?.node && (
                         <img
                           src={item.product.node.images.edges[0].node.url}
@@ -222,46 +222,63 @@ export const CartDrawer = () => {
                           className="w-full h-full object-cover"
                         />
                       )}
+                      {couponEligible && isItemEligible(item.product?.node?.handle) && (
+                        <div className="absolute top-0 right-0 bg-green-500 text-white p-1 rounded-bl-lg">
+                          <BadgePercent className="w-3 h-3" />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-medium truncate text-sm leading-tight">{item.product.node.title}</h4>
+                        <h4 className="font-bold truncate text-[13px] leading-tight uppercase tracking-tight">{item.product.node.title}</h4>
                         {item.selectedOptions.length > 0 && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
+                          <p className="text-[11px] font-medium text-muted-foreground mt-0.5">
                             {item.selectedOptions.map(option => option.value).join(' • ')}
                           </p>
                         )}
-                        {couponEligible && hasHandleRestriction && (
+                        {couponEligible && (
                           isItemEligible(item.product?.node?.handle) ? (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950/50 px-1.5 py-0.5 rounded">
-                              <BadgePercent className="w-3 h-3" />
-                              -{appliedCoupon!.discount_percent}% com {appliedCoupon!.code}
-                            </span>
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-950/50 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800">
+                                <BadgePercent className="w-3 h-3" />
+                                -{appliedCoupon!.discount_percent}% COM {appliedCoupon!.code}
+                              </span>
+                            </div>
                           ) : (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                            <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded-full">
                               <Ban className="w-3 h-3" />
-                              Não inclui o cupom
+                              Não elegível
                             </span>
                           )
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between mt-2 gap-2">
-                        <p className="font-bold text-primary text-sm sm:text-base flex-shrink-0">
-                          {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
-                        </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex flex-col">
+                          {couponEligible && isItemEligible(item.product?.node?.handle) && (
+                            <span className="text-[10px] text-muted-foreground line-through decoration-red-500/50">
+                              {formatPrice(parseFloat(item.price.amount) * item.quantity, item.price.currencyCode)}
+                            </span>
+                          )}
+                          <p className={`font-black text-sm sm:text-base tracking-tight ${couponEligible && isItemEligible(item.product?.node?.handle) ? 'text-green-600 dark:text-green-400' : 'text-primary'}`}>
+                            {formatPrice(
+                              (parseFloat(item.price.amount) * (couponEligible && isItemEligible(item.product?.node?.handle) ? (1 - appliedCoupon!.discount_percent / 100) : 1)) * item.quantity, 
+                              item.price.currencyCode
+                            )}
+                          </p>
+                        </div>
                         
-                        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-1 flex-shrink-0 bg-background/50 rounded-full p-0.5 border border-border/50">
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
+                            className="h-7 w-7 rounded-full hover:bg-secondary"
                             onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
                             disabled={isLoading}
                             aria-label="Diminuir quantidade"
                           >
-                            <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <Minus className="h-3 w-3" />
                           </Button>
                           <input
                             type="number"
@@ -273,34 +290,29 @@ export const CartDrawer = () => {
                                 updateQuantity(item.variantId, val);
                               }
                             }}
-                            onBlur={(e) => {
-                              const val = parseInt(e.target.value, 10);
-                              if (isNaN(val) || val < 1) {
-                                updateQuantity(item.variantId, 1);
-                              }
-                            }}
-                            className="w-10 sm:w-12 text-center text-xs sm:text-sm font-medium border border-border rounded-md bg-background h-6 sm:h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="w-8 text-center text-xs font-bold bg-transparent border-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             disabled={isLoading}
                           />
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full"
+                            className="h-7 w-7 rounded-full hover:bg-secondary"
                             onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                             disabled={isLoading}
                             aria-label="Aumentar quantidade"
                           >
-                            <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            <Plus className="h-3 w-3" />
                           </Button>
+                          <div className="w-px h-4 bg-border mx-0.5" />
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 sm:h-7 sm:w-7 rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 ml-0.5 sm:ml-1"
+                            className="h-7 w-7 rounded-full text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                             onClick={() => removeItem(item.variantId)}
                             disabled={isLoading}
                             aria-label="Remover produto"
                           >
-                            <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
