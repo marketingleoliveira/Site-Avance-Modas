@@ -183,8 +183,8 @@ export const CartDrawer = () => {
               </div>
             )}
           </div>
-          <SheetDescription>
-            {totalItems === 0 ? "Seu carrinho está vazio" : `${totalItems} ${totalItems !== 1 ? 'itens' : 'item'} no carrinho`}
+          <SheetDescription className="font-medium text-xs uppercase tracking-widest opacity-70">
+            {totalItems === 0 ? "Sua sacola está vazia" : `${totalItems} ${totalItems !== 1 ? 'produtos' : 'produto'} selecionados`}
           </SheetDescription>
         </SheetHeader>
         
