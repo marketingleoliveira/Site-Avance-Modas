@@ -4,7 +4,7 @@ import { Search, Heart, ShoppingBag, Menu, X, ChevronDown, Headphones, Mail, Ref
 import logo from "@/assets/logo-avance.png";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
-import { useStoreContext } from "@/stores/storeContextStore";
+import { StoreType, useStoreContext } from "@/stores/storeContextStore";
 
 const navLinks = [
   { name: "Início", href: "/varejo" },
@@ -24,20 +24,25 @@ const navLinks = [
   { name: "Rastreio", href: "/rastreio" },
 ];
 
-const Header = () => {
+interface HeaderProps {
+  storeContext?: Exclude<StoreType, null>;
+}
+
+const Header = ({ storeContext }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
-  const storeType = useStoreContext((s) => s.storeType);
   const setStoreType = useStoreContext((s) => s.setStoreType);
 
   // Determine current store context
-  const isAtacadoContext = location.pathname.startsWith("/atacado");
+  const isAtacadoContext = storeContext
+    ? storeContext === "atacado"
+    : location.pathname.startsWith("/atacado");
   const otherStore = isAtacadoContext
-    ? { label: "Varejo", href: "/varejo", type: "varejo" as const }
-    : { label: "Atacado", href: "/atacado", type: "atacado" as const };
+    ? { label: "Ir ao Varejo", href: "/varejo", type: "varejo" as const }
+    : { label: "Ir ao Atacado", href: "/atacado", type: "atacado" as const };
 
   const handleToggleMenu = useCallback(() => {
     if (mobileMenuOpen) {
@@ -124,7 +129,7 @@ const Header = () => {
             <Link
               to={otherStore.href}
               onClick={() => setStoreType(otherStore.type)}
-              aria-label={`Ir para ${otherStore.label}`}
+               aria-label={otherStore.label}
               className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase bg-accent text-accent-foreground shadow-[0_0_0_0_hsl(var(--accent)/0.6)] animate-pulse-ring hover:animate-none hover:bg-accent/90 transition-colors"
             >
               <Repeat className="w-4 h-4" />
@@ -173,7 +178,7 @@ const Header = () => {
             <Link
               to={otherStore.href}
               onClick={() => setStoreType(otherStore.type)}
-              aria-label={`Ir para ${otherStore.label}`}
+               aria-label={otherStore.label}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-black text-[10px] tracking-wider uppercase bg-red-600 text-white animate-pulse-ring shadow-lg border-2 border-white"
             >
               <Repeat className="w-3.5 h-3.5" />

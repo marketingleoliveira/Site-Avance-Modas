@@ -647,7 +647,7 @@ const ShopifyProductPage = () => {
         available={isAtacadoProduct || !!currentVariant?.availableForSale}
       />
       <AnnouncementBar />
-      <Header />
+      <Header storeContext={isAtacadoProduct ? "atacado" : "varejo"} />
       
       <main className="flex-1 py-4 sm:py-8 lg:py-12 bg-background">
         <div className="container px-3 sm:px-4 lg:px-6">
