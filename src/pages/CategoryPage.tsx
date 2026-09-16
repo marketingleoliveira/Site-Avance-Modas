@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
@@ -72,16 +72,32 @@ const categoryConfig: Record<string, { title: string; description: string }> = {
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
+  const location = useLocation();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
   
   // Use persistent store context
   const storeType = useStoreContext(state => state.storeType);
-  const { getCouponForProduct } = useActiveCoupons(storeType === 'atacado' ? 'atacado' : 'varejo');
-  const displayStoreType = storeType === 'atacado' ? 'ATACADO' : 'VAREJO';
+  const setStoreType = useStoreContext(state => state.setStoreType);
+  const routeStoreType = location.pathname.startsWith('/atacado/categoria/')
+    ? 'atacado'
+    : location.pathname.startsWith('/varejo/categoria/')
+      ? 'varejo'
+      : null;
+  const activeStoreType = routeStoreType ?? (storeType === 'atacado' ? 'atacado' : 'varejo');
+  const { getCouponForProduct } = useActiveCoupons(activeStoreType);
+  const displayStoreType = activeStoreType === 'atacado' ? 'ATACADO' : 'VAREJO';
+  const storeHomePath = activeStoreType === 'atacado' ? '/atacado' : '/varejo';
 
   const config = category ? categoryConfig[category] : null;
+
+  useEffect(() => {
+    if (routeStoreType && storeType !== routeStoreType) {
+      setStoreType(routeStoreType);
+      sessionStorage.setItem("store_type", routeStoreType);
+    }
+  }, [routeStoreType, setStoreType, storeType]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -155,10 +171,10 @@ const CategoryPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <AnnouncementBar />
-        <Header />
+        <Header storeContext={activeStoreType} />
         <div className="container py-20 text-center">
           <h1 className="text-xl font-bold">Categoria não encontrada</h1>
-          <Link to="/" className="text-sm text-accent hover:underline mt-4 inline-block">
+          <Link to={storeHomePath} className="text-sm text-accent hover:underline mt-4 inline-block">
             Voltar ao início
           </Link>
         </div>
@@ -182,13 +198,13 @@ const CategoryPage = () => {
         }))}
       />
       <AnnouncementBar />
-      <Header />
+      <Header storeContext={activeStoreType} />
       
       {/* Breadcrumb */}
       <div className="border-b border-border">
         <div className="container px-4 sm:px-6 py-2 sm:py-3">
           <nav className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">Início</Link>
+            <Link to={storeHomePath} className="hover:text-foreground transition-colors">Início</Link>
             <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             <span className="text-foreground font-medium">{config.title}</span>
           </nav>

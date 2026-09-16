@@ -6,22 +6,13 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import SearchModal from "@/components/search/SearchModal";
 import { StoreType, useStoreContext } from "@/stores/storeContextStore";
 
-const navLinks = [
-  { name: "Início", href: "/varejo" },
-  { 
-    name: "Produtos", 
-    href: "#",
-    submenu: [
-      { name: "Shorts", href: "/categoria/shorts" },
-      { name: "Bermudas", href: "/categoria/bermudas" },
-      { name: "Leggings", href: "/categoria/leggings" },
-      { name: "Tops", href: "/categoria/tops" },
-      { name: "Blusas", href: "/categoria/blusas" },
-      { name: "Conjuntos", href: "/categoria/conjuntos" },
-    ]
-  },
-  { name: "Promoções", href: "/categoria/promocoes" },
-  { name: "Rastreio", href: "/rastreio" },
+const productCategories = [
+  { name: "Shorts", slug: "shorts" },
+  { name: "Bermudas", slug: "bermudas" },
+  { name: "Leggings", slug: "leggings" },
+  { name: "Tops", slug: "tops" },
+  { name: "Blusas", slug: "blusas" },
+  { name: "Conjuntos", slug: "conjuntos" },
 ];
 
 interface HeaderProps {
@@ -40,6 +31,20 @@ const Header = ({ storeContext }: HeaderProps) => {
   const isAtacadoContext = storeContext
     ? storeContext === "atacado"
     : location.pathname.startsWith("/atacado");
+  const currentStorePath = isAtacadoContext ? "/atacado" : "/varejo";
+  const navLinks = [
+    { name: "Início", href: currentStorePath },
+    {
+      name: "Produtos",
+      href: "#",
+      submenu: productCategories.map((category) => ({
+        name: category.name,
+        href: `${currentStorePath}/categoria/${category.slug}`,
+      })),
+    },
+    { name: "Promoções", href: `${currentStorePath}/categoria/promocoes` },
+    { name: "Rastreio", href: "/rastreio" },
+  ];
   const otherStore = isAtacadoContext
     ? { label: "Ir ao Varejo", href: "/varejo", type: "varejo" as const }
     : { label: "Ir ao Atacado", href: "/atacado", type: "atacado" as const };

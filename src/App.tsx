@@ -72,6 +72,8 @@ const AppContent = () => {
         <Route path="/atacado" element={<InicioAtacado />} />
         <Route path="/varejo" element={<InicioVarejo />} />
         <Route path="/produto/:handle" element={<ShopifyProductPage />} />
+        <Route path="/atacado/categoria/:category" element={<CategoryPage />} />
+        <Route path="/varejo/categoria/:category" element={<CategoryPage />} />
         <Route path="/categoria/:category" element={<CategoryPage />} />
         <Route path="/contato" element={<ContactPage />} />
         <Route path="/rastreio" element={<TrackingPage />} />
