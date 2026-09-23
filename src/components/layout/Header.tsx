@@ -143,7 +143,7 @@ const Header = () => {
             {/* Contato Button (desktop) */}
             {/* Trocas Button (desktop) */}
             <a
-              href="https://troqueavancemodas.lovable.app"
+              href="/suporte"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden lg:flex items-center gap-2 px-5 py-2 border-2 border-accent rounded-full text-accent font-semibold text-xs tracking-wider uppercase hover:bg-accent hover:text-accent-foreground transition-all duration-300"
@@ -254,7 +254,7 @@ const Header = () => {
                 SAC
               </Link>
               <a
-                href="https://troqueavancemodas.lovable.app"
+                href="/suporte"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleCloseMenu}

@@ -7,7 +7,7 @@ const HeroSection = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img 
-          src="/lovable-uploads/ed06370d-6a7a-4b82-87c6-835ea02c4d21.jpg"
+          src="/site-assets/hero-avance.jpg"
           alt="Modelo fitness usando roupas Avance" 
           className="w-full h-full object-cover object-top"
         />
