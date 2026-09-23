@@ -2,9 +2,7 @@
 
 E-commerce moderno e de alta performance desenvolvido para a marca **Avance Modas**, focado no segmento de moda e moda fitness. O projeto combina uma interface fluida com integrações avançadas para a plataforma Shopify e canais de venda.
 
-🔗 **Live App:** [avancemodas.lovable.app](https://avancemodas.lovable.app)  
 🛒 **Loja Oficial:** [www.avancemodas.com.br](https://www.avancemodas.com.br)  
-🌐 **Portfólio do Desenvolvedor:** [portfolioleoliveira.lovable.app](https://portfolioleoliveira.lovable.app)
 
 ---
 
@@ -20,7 +18,6 @@ O repositório **Site-Avance-Modas** contém o ecossistema completo de storefron
 * **Backend & Banco de Dados:** Supabase (PL/pgSQL)
 * **Scripts & Integrações:** Python (Shopify API)
 * **Gerenciador de Pacotes:** Bun / npm
-* **Desenvolvimento Acelerado:** Lovable
 
 ---
 
