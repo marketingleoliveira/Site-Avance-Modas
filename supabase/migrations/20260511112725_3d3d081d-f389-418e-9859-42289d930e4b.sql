@@ -1,3 +1,7 @@
+-- Compatibilidade com Supabase gerenciado:
+-- Os comandos que alteravam realtime.messages foram removidos porque essa
+-- tabela interna pertence ao serviço Realtime e não ao usuário postgres.
+-- Isso não remove nem altera tabelas pertencentes ao Site Avance Modas.
 
 -- 1. Make sac-attachments bucket PRIVATE and remove public read
 UPDATE storage.buckets SET public = false WHERE id = 'sac-attachments';
@@ -11,16 +15,6 @@ USING (
   bucket_id = 'sac-attachments'
   AND has_role(auth.uid(), 'admin'::app_role)
 );
-
--- 2. Realtime channel authorization: restrict realtime.messages to admins
-ALTER TABLE IF EXISTS realtime.messages ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Admins can receive realtime messages" ON realtime.messages;
-CREATE POLICY "Admins can receive realtime messages"
-ON realtime.messages
-FOR SELECT
-TO authenticated
-USING (has_role(auth.uid(), 'admin'::app_role));
 
 -- 3. Wholesale orders: add lightweight server-side validation to prevent garbage submissions
 CREATE OR REPLACE FUNCTION public.validate_wholesale_order()
