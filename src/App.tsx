@@ -6,10 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useCartSync } from "@/hooks/useCartSync";
 import { useMaintenanceMode } from "@/hooks/useMaintenanceMode";
-import { useStoreSelectorSettings } from "@/hooks/useSiteSettings";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 // Eager: storefront entry routes (LCP-critical, frequently the first paint)
-import StoreSelector from "./pages/StoreSelector";
 import InicioVarejo from "./pages/InicioVarejo";
 import InicioAtacado from "./pages/InicioAtacado";
 // Lazy: everything else — keeps initial bundle small.
@@ -37,21 +35,6 @@ import { landingPages } from "@/content/seoContent";
 const queryClient = new QueryClient();
 
 // Gate that decides whether the homepage selector renders or redirects to /varejo
-const HomeGate = () => {
-  const { settings, loading } = useStoreSelectorSettings();
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-  if (settings?.homepage_enabled === false) {
-    return <Navigate to="/varejo" replace />;
-  }
-  return <StoreSelector />;
-};
-
 // Component that uses the cart sync hook and checks maintenance mode
 const AppContent = () => {
   useCartSync();
@@ -85,7 +68,7 @@ const AppContent = () => {
         }
       >
         <Routes>
-        <Route path="/" element={<HomeGate />} />
+        <Route path="/" element={<InicioVarejo />} />
         <Route path="/atacado" element={<InicioAtacado />} />
         <Route path="/varejo" element={<InicioVarejo />} />
         <Route path="/produto/:handle" element={<ShopifyProductPage />} />
